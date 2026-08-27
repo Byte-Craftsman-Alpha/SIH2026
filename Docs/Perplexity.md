@@ -1,5 +1,3 @@
-Great — you’ve picked a high-impact, well-scoped problem. Below is a structured, prototype-ready breakdown tailored for SIH 2026, with clear modules, MVP scope, workflows (Mermaid), and a practical data/UX plan. I’ll keep it concise and implementation-focused.
-
 ## 1) Problem Statement Breakdown (SIH26047)
 
 - Core bottleneck: OPD consultation time in India is 2–5 minutes; history-taking (the most diagnostic part) is systematically truncated. [play.google](https://play.google.com/store/apps/details?id=com.medoc.doctor&hl=en_IN)
@@ -245,4 +243,177 @@ flowchart LR
 - Impact: throughput, accuracy, patient experience, AYUSH personalization. [play.google](https://play.google.com/store/apps/details?id=com.medoc.doctor&hl=en_IN)
 - Roadmap: languages, AYUSH depth, hospital integrations. [play.google](https://play.google.com/store/apps/details?id=com.medoc.doctor&hl=en_IN)
 
-If you share your preferred tech stack (e.g., React Native/Flutter for kiosk, Node/Python backend, HAPI FHIR, Bhashini ASR), I can draft a concrete component diagram, API contracts (FHIR resources), and a sample FHIR bundle for your prototype.
+***
+
+## 1) End-to-End Patient Journey (High-Level)
+
+```mermaid
+flowchart LR
+  A["Patient Arrival at OPD"] --> B["Identify & Authenticate"]
+  B --> C["Consent Capture (ABDM)"]
+  C --> D["Conversational History (Voice + Touch)"]
+  D --> E["Document Scan & OCR"]
+  E --> F["Structure & Summarize"]
+  F --> G["Push to HIS / ABHA (FHIR R4)"]
+  G --> H["Doctor Review & Confirm"]
+  H --> I["Consultation & Counselling"]
+
+  style A fill:#e3f2fd,stroke:#1565c0
+  style B fill:#fff3e0,stroke:#ef6c00
+  style C fill:#e8f5e9,stroke:#2e7d32
+  style D fill:#f3e5f5,stroke:#7b1fa2
+  style E fill:#fff8e1,stroke:#f9a825
+  style F fill:#e0f7fa,stroke:#00838f
+  style G fill:#e8eaf6,stroke:#3949ab
+  style H fill:#ffebee,stroke:#c62828
+  style I fill:#f1f8e9,stroke:#558b2f
+```
+
+***
+
+## 2) Detailed System Architecture & Data Flow
+
+```mermaid
+flowchart TB
+  subgraph Kiosk["MediKiosk Kiosk (Patient-Facing)"]
+    UI["Touch + Audio UI"]
+    ASR["Indian-language ASR<br/>(Bhashini/AI4Bharat)"]
+    DM["Dialogue Manager<br/>(Clinical Ontology)"]
+    TTS["Text-to-Speech Prompts"]
+    OCR["Document OCR + NER<br/>(Printed + Handwritten)"]
+    Summ["Summary Generator<br/>(CC → HPI → PMH → Drugs/Allergy → ROS)"]
+    RedFlag["Red-Flag Rules Engine<br/>(Triage Alert)"]
+  end
+
+  subgraph Secure["Consent & Security Layer"]
+    Auth["ABHA / OTP Auth"]
+    ConsentMgr["ABDM Consent Manager Client<br/>(HIE-CM)"]
+    Encrypt["Encryption: ECDH + AES-GCM"]
+    Audit["Audit Logs + Session Wipe"]
+    DPDP["DPDP 2023 Controls<br/>(Purpose, Retention, Erasure)"]
+  end
+
+  subgraph Backend["Hospital / ABDM Backend"]
+    FHIR["HAPI FHIR Server (R4)<br/>Patient, Encounter, Condition,<br/>MedicationStatement, Observation"]
+    HIS["Hospital EMR/HIS"]
+    HIECM["ABDM HIE-CM Gateway"]
+    PHR["ABHA Personal Health Record"]
+  end
+
+  UI --> ASR --> DM --> Summ
+  UI --> OCR --> Summ
+  UI --> TTS
+  DM --> RedFlag
+  Summ --> FHIR
+  FHIR --> HIS
+  ConsentMgr --> HIECM --> PHR
+  Auth --> ConsentMgr
+  Encrypt -.-> FHIR
+  Audit -.-> Backend
+  DPDP -.-> Secure
+
+  style Kiosk fill:#e3f2fd,stroke:#1565c0
+  style Secure fill:#e8f5e9,stroke:#2e7d32
+  style Backend fill:#e0f7fa,stroke:#00838f
+```
+
+***
+
+## 3) ABDM Consent Flow (HIU → HIE-CM → HIP → PHR)
+
+```mermaid
+sequenceDiagram
+  participant P as "Patient (Kiosk)"
+  participant K as "MediKiosk (HIU)"
+  participant CM as "ABDM HIE-CM"
+  participant HIP as "Prior Hospital / Lab (HIP)"
+  participant PHR as "ABHA PHR"
+
+  P->>K: Authenticate (ABHA/OTP) + Select Language
+  K->>CM: Consent Request<br/>(Data types: Condition, MedicationStatement, Observation,<br/>Purpose: Treatment, Duration: 30 days)
+  CM->>P: Consent Notification (Patient App / SMS)
+  P->>CM: Grant Consent (Granular, Revocable)
+  CM->>K: Consent Artefact (Signed, Machine-Readable) [23][24]
+  K->>HIP: Fetch Records (Present Consent Artefact) [25]
+  HIP->>K: FHIR R4 Bundle (Conditions, Meds, Labs) [dev](https://dev.to/hgvanpariya/fhir-in-indian-healthcare-it-what-every-developer-building-hmis-software-needs-to-know-3lp7)
+  K->>PHR: Push New Encounter + Summary (FHIR R4) [hapi.fhir](https://hapi.fhir.org/resource?serverId=home_r4&pretty=true&_summary=&resource=Patient)
+  K->>K: Audit Log + Session Wipe [atrius](https://atrius.in/fhir/r4/atrius-in/atrius-and-ndhm.html)
+
+  note right of K: Consent artefact specifies<br/>who, what, purpose, duration [23]
+```
+
+***
+
+## 4) AI & Data Processing Pipeline (Voice/Touch + Documents → Summary)
+
+```mermaid
+flowchart LR
+  subgraph Input["Patient Input"]
+    V["Voice (ASR)"]
+    T["Touch (MCQ/Icons)"]
+    D["Document Images<br/>(Prescriptions, Labs, Discharge)"]
+  end
+
+  subgraph Process["Processing"]
+    ASR["ASR → Text (Hindi/English/Regional)"]
+    NLU["NLU + Clinical Ontology Mapping<br/>(CC, HPI, PMH, Drugs, Allergy, Family, Personal, ROS)"]
+    OCR["OCR + NER<br/>(Diagnoses, Meds, Labs, Procedures)"]
+    Norm["Unit Normalization + Abnormal Flagging"]
+    Merge["Merge: Conversation + Extracted Entities"]
+    Rules["Red-Flag Rules (Triage)"]
+  end
+
+  subgraph Output["Outputs"]
+    Summ["Structured Summary<br/>(Physician-Ready)"]
+    FHIR["FHIR R4 Bundle<br/>(Patient, Encounter, Condition,<br/>MedicationStatement, Observation)"]
+    Alert["Triage Alert (if emergency)"]
+  end
+
+  V --> ASR --> NLU --> Merge
+  T --> NLU
+  D --> OCR --> Norm --> Merge
+  Merge --> Rules
+  Merge --> Summ
+  Summ --> FHIR
+  Rules --> Alert
+
+  style Input fill:#fff8e1,stroke:#f9a825
+  style Process fill:#e3f2fd,stroke:#1565c0
+  style Output fill:#e8f5e9,stroke:#2e7d32
+```
+
+***
+
+## 5) Doctor/HIS Integration & Edit Loop
+
+```mermaid
+flowchart TB
+  A["Doctor Opens Patient Queue"] --> B["Load Structured Summary<br/>(CC → HPI → PMH → Drugs/Allergy → ROS)"]
+  B --> C["Review Timeline of Prior Records<br/>(Labs, Prescriptions, Discharge Summaries)"]
+  C --> D["Edit/Confirm Fields<br/>(Add/Amend/Reject)"]
+  D --> E["Save to EMR (FHIR R4 Update)"]
+  E --> F["Proceed to Examination & Counselling"]
+
+  subgraph EMR["Hospital EMR / HIS"]
+    E
+  end
+
+  style A fill:#ffebee,stroke:#c62828
+  style B fill:#e3f2fd,stroke:#1565c0
+  style C fill:#e8f5e9,stroke:#2e7d32
+  style D fill:#fff3e0,stroke:#ef6c00
+  style E fill:#e0f7fa,stroke:#00838f
+  style F fill:#f1f8e9,stroke:#558b2f
+  style EMR fill:#e8eaf6,stroke:#3949ab
+```
+
+***
+
+## How to Use These in Your PPT
+
+- **Slide 1 (Problem → Solution):** Use Diagram 1 (Patient Journey) to show the before/after flow.
+- **Slide 2 (Architecture):** Use Diagram 2 for tech stack, modules, and security.
+- **Slide 3 (Compliance):** Use Diagram 3 (ABDM Consent) to demonstrate DPDP + ABDM alignment. [caladriushealth](https://caladriushealth.ai/blog/2026/07/22/Consent-By-Design/)
+- **Slide 4 (AI Pipeline):** Use Diagram 4 to explain how voice/touch + documents become a structured summary.
+- **Slide 5 (Doctor Workflow):** Use Diagram 5 to show physician control and EMR integration.
+
