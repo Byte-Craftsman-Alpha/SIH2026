@@ -50,17 +50,20 @@ app.include_router(portal_router, prefix="/portal", tags=["portal"])
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 static_dir = os.path.join(base_dir, "app", "static")
 
-if os.environ.get("VERCEL"):
+if os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"):
     uploads_dir = "/tmp/uploads"
+    try:
+        os.makedirs(uploads_dir, exist_ok=True)
+    except Exception:
+        pass
 else:
     uploads_dir = os.path.join(base_dir, "uploads")
-
-try:
-    os.makedirs(os.path.join(static_dir, "css"), exist_ok=True)
-    os.makedirs(os.path.join(static_dir, "js"), exist_ok=True)
-    os.makedirs(uploads_dir, exist_ok=True)
-except Exception as e:
-    logger.warning(f"Could not create static/upload folders: {e}")
+    try:
+        os.makedirs(os.path.join(static_dir, "css"), exist_ok=True)
+        os.makedirs(os.path.join(static_dir, "js"), exist_ok=True)
+        os.makedirs(uploads_dir, exist_ok=True)
+    except Exception as e:
+        logger.warning(f"Could not create static/upload folders: {e}")
 
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")

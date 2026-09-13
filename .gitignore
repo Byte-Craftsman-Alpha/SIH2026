@@ -45,10 +45,8 @@ build/
 develop-eggs/
 dist/
 downloads/
-eggs/
-.eggs/
-lib/
-lib64/
+/lib/
+!**/medikiosk_app/lib/**
 parts/
 sdist/
 var/

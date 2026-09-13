@@ -7,10 +7,25 @@ from app.config import settings
 
 # Normalize database URL for asyncpg if PostgreSQL is supplied
 db_url = settings.DATABASE_URL
-if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
-elif db_url.startswith("postgresql://") and "+asyncpg" not in db_url:
-    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+connect_args = {}
+
+if "postgres" in db_url:
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif db_url.startswith("postgresql://") and "+asyncpg" not in db_url:
+        db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+    # asyncpg does not accept ?sslmode= in the connection string, but expects ssl in connect_args
+    if "sslmode=" in db_url:
+        import urllib.parse
+        parsed = urllib.parse.urlparse(db_url)
+        query_params = urllib.parse.parse_qs(parsed.query)
+        query_params.pop("sslmode", None)
+        new_query = urllib.parse.urlencode(query_params, doseq=True)
+        db_url = urllib.parse.urlunparse(parsed._replace(query=new_query))
+        connect_args["ssl"] = "require"
+    elif "supabase" in db_url:
+        connect_args["ssl"] = "require"
 
 # Connection engine with pre-ping to handle serverless connection drops
 if "sqlite" in db_url:
@@ -19,6 +34,7 @@ else:
     engine = create_async_engine(
         db_url,
         echo=False,
+        connect_args=connect_args,
         pool_pre_ping=True,
         pool_recycle=300
     )

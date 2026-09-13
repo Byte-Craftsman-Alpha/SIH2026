@@ -93,50 +93,67 @@ In your GitHub Repository $\rightarrow$ **Settings** $\rightarrow$ **Secrets and
 
 ---
 
-## 📱 3. End-to-End Verified Workflows & Visual Evidence
+## 📱 3. End-to-End Verified Workflows & Visual Evidence (MDS v1.0 Physical Hardware)
 
-### 3.1 User Registration (5-Step Wizard)
-| Step 1: Identity | Step 2: Contact & ABHA | Step 3: Emergency Contacts |
-| :---: | :---: | :---: |
-| ![Identity](screenshots/device_screenshot_368.png) | ![Contact](screenshots/device_screenshot_369.png) | ![Emergency](screenshots/device_screenshot_371.png) |
+All screenshots below were captured directly from the attached physical hardware (**Xiaomi Redmi Note 8 - 1080x2340 px**) running the updated build compliant with the **MediKiosk Design System (MDS) v1.0**.
 
-| Step 4: DPDP Consent | Step 5: Review & Submit | Dashboard Transition |
+### 3.1 Onboarding & Authentication Flow
+| Splash Screen | Language Selection | Kiosk Welcome |
 | :---: | :---: | :---: |
-| ![Consent](screenshots/device_screenshot_372.png) | ![Review](screenshots/device_screenshot_373.png) | ![Home](screenshots/device_screenshot_374.png) |
+| ![Splash](screenshots/01_splash_screen.png) | ![Language](screenshots/02_language_selection.png) | ![Welcome](screenshots/03_kiosk_welcome.png) |
+
+| Phone Login | OTP Verification (4-digit) | Home Dashboard |
+| :---: | :---: | :---: |
+| ![Login](screenshots/04_login_screen.png) | ![OTP](screenshots/05_otp_screen.png) | ![Home](screenshots/10_home_dashboard.png) |
 
 ---
 
-### 3.2 Authentication & Dual-Mode Ping
-| Login (Phone) | OTP Verification | Live Ping (Beta 115ms) |
+### 3.2 Registration Wizard (5 Steps + Review)
+| Step 1: Identity & DOB | Step 2: Contact & ABHA | Step 3: Emergency Contacts |
 | :---: | :---: | :---: |
-| ![Login](screenshots/device_screenshot_379.png) | ![OTP](screenshots/device_screenshot_380.png) | ![Ping](screenshots/device_screenshot_386.png) |
+| ![Step 1](screenshots/06_registration_step1_identity.png) | ![Step 2](screenshots/07_registration_step2_contact.png) | ![Step 3](screenshots/08_registration_step3_emergency.png) |
+
+| Step 4: Audio-Guided Consent | Step 5: Summary Review | Post-Registration Dashboard |
+| :---: | :---: | :---: |
+| ![Step 4](screenshots/09_registration_step4_consent.png) | ![Step 5](screenshots/10_registration_step5_review.png) | ![Post-Reg](screenshots/11_home_post_registration.png) |
 
 ---
 
-### 3.3 Clinical Intake Chat: General & AYUSH
-| Complaint Selector | General Intake Question | AYUSH Mode & Prakriti Chip |
+### 3.3 Prakriti Assessment & Dual Environment Settings
+| Prakriti Intro | Prakriti Assessment MCQ | Live Server Ping (Beta) |
 | :---: | :---: | :---: |
-| ![Complaint](screenshots/device_screenshot_397.png) | ![General Question](screenshots/device_screenshot_398.png) | ![AYUSH Mode](screenshots/device_screenshot_403.png) |
+| ![Intro](screenshots/11_prakriti_intro.png) | ![MCQ](screenshots/12_prakriti_questions.png) | ![Ping](screenshots/13_server_ping_result.png) |
 
 ---
 
-### 3.4 Appointments, DPDP Revocation & Booking
-| DPDP Consent Revocation | Appointment Cancellation | Hospital Selection |
+### 3.4 Clinical Intake: General, AYUSH & Emergency Red Flags
+| Chief Complaints Grid | General Question (Fever) | Answer Bubble & Follow-up |
 | :---: | :---: | :---: |
-| ![Revoke Consent](screenshots/device_screenshot_409.png) | ![Cancel Appointment](screenshots/device_screenshot_413.png) | ![Hospitals](screenshots/device_screenshot_415.png) |
+| ![Complaints](screenshots/15_chat_intake_general_complaints.png) | ![Question](screenshots/16_chat_intake_question_fever.png) | ![Bubble](screenshots/16b_chat_intake_answered_bubble.png) |
 
-| Doctor & Slot Selection | Booking Wizard | Token Generated (A-008) |
+| AYUSH Dashavidha Mode | Emergency Red Flag Triage (108) | Notifications Screen |
 | :---: | :---: | :---: |
-| ![Slots](screenshots/device_screenshot_416.png) | ![Wizard](screenshots/device_screenshot_417.png) | ![Token](screenshots/device_screenshot_420.png) |
+| ![AYUSH](screenshots/17_chat_intake_ayush_mode.png) | ![Emergency](screenshots/18_emergency_red_flag_screen.png) | ![Notifications](screenshots/32_notifications_screen.png) |
 
-| Reflected in Appointments List | Digital OPD Token Slip |
+---
+
+### 3.5 OPD Appointments, Discovery & Booking Wizard
+| Appointments List | Hospital Discovery | Doctor OPD Slots |
+| :---: | :---: | :---: |
+| ![Appointments](screenshots/19_appointments_list.png) | ![Hospitals](screenshots/20_hospitals_discovery.png) | ![Slots](screenshots/21_doctor_slots.png) |
+
+| Booking Wizard & DPDP Scope | Token Confirmation (A-008) | Digital OPD Token Slip |
+| :---: | :---: | :---: |
+| ![Wizard](screenshots/22_booking_wizard.png) | ![Confirm](screenshots/23_booking_confirmation.png) | ![Slip](screenshots/24_digital_token_slip.png) |
+
+---
+
+### 3.6 Medical Records, Multi-Stage OCR & Clinical Extraction
+| Records Timeline | Document Upload | 4-Stage OCR Animation |
+| :---: | :---: | :---: |
+| ![History](screenshots/25_document_history.png) | ![Upload](screenshots/26_document_upload.png) | ![OCR Progress](screenshots/27_ocr_pipeline_progress.png) |
+
+| Extracted Entities & Drug Safety | Profile & Donut Chart |
 | :---: | :---: |
-| ![Appointments List](screenshots/device_screenshot_422.png) | ![Digital Slip](screenshots/device_screenshot_424.png) |
-
----
-
-### 3.5 Medical Records, Multi-Stage OCR & Drug Safety
-| Upload Screen | 4-Stage OCR Pipeline | Extracted Entities & Drug Alert |
-| :---: | :---: | :---: |
-| ![Upload](screenshots/device_screenshot_427.png) | ![OCR Pipeline](screenshots/device_screenshot_428.png) | ![Drug Alert](screenshots/device_screenshot_429.png) |
+| ![Clinical Extraction](screenshots/28_ocr_clinical_extraction.png) | ![Profile Screen](screenshots/29_profile_screen.png) |
 

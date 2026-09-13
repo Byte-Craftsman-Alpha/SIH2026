@@ -20,8 +20,24 @@ from app.supabase import get_supabase_client
 
 router = APIRouter()
 
-UPLOAD_DIR = "/home/aditya/Downloads/SIH 2026/V1/backend/uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+def get_upload_dir() -> str:
+    """Returns a writable upload directory, defaulting to /tmp/uploads in serverless/read-only environments."""
+    if os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"):
+        upload_path = "/tmp/uploads"
+    else:
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        upload_path = os.path.join(base_dir, "uploads")
+    try:
+        os.makedirs(upload_path, exist_ok=True)
+    except Exception:
+        upload_path = "/tmp/uploads"
+        try:
+            os.makedirs(upload_path, exist_ok=True)
+        except Exception:
+            pass
+    return upload_path
+
+UPLOAD_DIR = get_upload_dir()
 
 @router.post("", response_model=DocumentUploadResponse)
 async def upload_document(
@@ -33,11 +49,20 @@ async def upload_document(
 ):
     doc_id = f"doc_{uuid.uuid4().hex[:8]}"
     file_ext = os.path.splitext(file.filename)[1] or ".jpg"
-    dest_path = os.path.join(UPLOAD_DIR, f"{doc_id}{file_ext}")
+    upload_dir = get_upload_dir()
+    dest_path = os.path.join(upload_dir, f"{doc_id}{file_ext}")
 
     content = await file.read()
-    with open(dest_path, "wb") as f:
-        f.write(content)
+    try:
+        with open(dest_path, "wb") as f:
+            f.write(content)
+    except Exception:
+        dest_path = os.path.join("/tmp", f"{doc_id}{file_ext}")
+        try:
+            with open(dest_path, "wb") as f:
+                f.write(content)
+        except Exception:
+            pass
 
     # 1. Upload to Supabase Storage if available
     storage_path = f"{user.id}/{doc_id}{file_ext}"
