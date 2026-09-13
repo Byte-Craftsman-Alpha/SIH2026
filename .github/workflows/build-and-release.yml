@@ -194,7 +194,7 @@ jobs:
             --dart-define=APP_ENV=beta
           mkdir -p ../../dist/ios
           cd build/ios/iphoneos
-          zip -r -9 ../../../../dist/ios/medikiosk-ios-beta.zip Runner.app
+          zip -r -9 ../../../../../dist/ios/medikiosk-ios-beta.zip Runner.app
 
       # Build 2: iOS Production (Unsigned release bundle for Vercel/Supabase)
       - name: Build iOS Production Package
@@ -207,7 +207,7 @@ jobs:
             --dart-define=VERCEL_URL=${PROD_URL}
           mkdir -p ../../dist/ios
           cd build/ios/iphoneos
-          zip -r -9 ../../../../dist/ios/medikiosk-ios-production.zip Runner.app
+          zip -r -9 ../../../../../dist/ios/medikiosk-ios-production.zip Runner.app
 
       - name: Upload iOS Build Artifacts
         uses: actions/upload-artifact@v4
