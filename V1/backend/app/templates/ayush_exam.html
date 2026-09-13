@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}Ashtavidha Pariksha Form — MediKiosk{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <a href="/portal/queue" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.8rem;">← Back to Queue</a>
+      <h1 class="page-title" style="margin: 0;">Ashtavidha Pariksha (अष्टविध परीक्षा)</h1>
+    </div>
+    <p class="page-subtitle" style="margin-left: 110px;">Doctor-Side 8-Point Physical Examination Form · Merges with AI Intake to Complete Dashavidha Profile</p>
+  </div>
+  <div>
+    <span class="badge badge-ready">CCRAS / AIIA Ayurvedic Standard</span>
+  </div>
+</div>
+
+<div class="card" style="max-width: 900px; margin: 0 auto; padding: 2rem;">
+  <form id="ayush-form" onsubmit="handleExamSubmit(event)">
+    <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-soft);">
+      <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--ayush-green);">Physical Diagnostic Examination</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Select clinical findings observed during patient examination. Quick-select defaults provided for efficient &lt;60s completion.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+      <!-- 1. NADI (Pulse) -->
+      <div class="form-group">
+        <label class="form-label">1. नाड़ी (Nadi - Pulse Gati)</label>
+        <select class="form-control" name="nadi_gati">
+          <option value="Sarpagati (Snake-like / Vata)">Sarpagati (सर्पगति - Vata)</option>
+          <option value="Mandukagati (Frog-like / Pitta)">Mandukagati (मण्डूकगति - Pitta)</option>
+          <option value="Hamsagati (Swan-like / Kapha)">Hamsagati (हंसगति - Kapha)</option>
+          <option value="Vata-Pitta Sarpamandukagati" selected>Vata-Pitta Mishra Gati (Mixed)</option>
+        </select>
+      </div>
+
+      <!-- 2. JIHVA (Tongue) -->
+      <div class="form-group">
+        <label class="form-label">2. जिह्वा (Jihva - Tongue Coating)</label>
+        <select class="form-control" name="jihva">
+          <option value="Nirama (Clear, uncoated)">Nirama (निराम - Clean, pinkish)</option>
+          <option value="Sama (Coated / Ama present)" selected>Sama (साम - White coating / Ama present)</option>
+          <option value="Ruksha (Dry / Fissured)">Ruksha (रूक्ष - Dry, rough)</option>
+          <option value="Pita varna (Yellowish coating)">Pita varna (पीत - Yellow / Pitta)</option>
+        </select>
+      </div>
+
+      <!-- 3. MUTRA (Urine) -->
+      <div class="form-group">
+        <label class="form-label">3. मूत्र (Mutra - Urine Nature)</label>
+        <select class="form-control" name="mutra">
+          <option value="Prakrita (Normal pale yellow)" selected>Prakrita (प्राकृत - Normal pale yellow)</option>
+          <option value="Peeta (Dark yellow / Burning)">Peeta (पीत - Dark yellow / Burning sensation)</option>
+          <option value="Shveta (Turbid / Frequent)">Shveta (श्वेत - Clear / Frequent)</option>
+        </select>
+      </div>
+
+      <!-- 4. MALA (Stool) -->
+      <div class="form-group">
+        <label class="form-label">4. मल (Mala - Bowel Consistency)</label>
+        <select class="form-control" name="mala">
+          <option value="Samyak (Normal formed)">Samyak (सम्यक - Normal)</option>
+          <option value="Baddha (Constipated / Hard)" selected>Baddha (बद्ध - Hard / Constipated)</option>
+          <option value="Drava (Loose / Unformed)">Drava (द्रव - Loose / Frequent)</option>
+        </select>
+      </div>
+
+      <!-- 5. SPARSHA (Touch/Skin) -->
+      <div class="form-group">
+        <label class="form-label">5. स्पर्श (Sparsha - Skin Texture & Temp)</label>
+        <select class="form-control" name="sparsha">
+          <option value="Prakrita (Normal temperature)">Prakrita (Normal)</option>
+          <option value="Ruksha (Dry / Cool)" selected>Ruksha (रूक्ष - Dry, rough skin)</option>
+          <option value="Ushna (Warm / Febrile)">Ushna (उष्ण - Warm / Heat sensation)</option>
+          <option value="Snigdha (Oily / Moist)">Snigdha (स्निग्ध - Oily, cold)</option>
+        </select>
+      </div>
+
+      <!-- 6. DRIK (Eyes/Vision) -->
+      <div class="form-group">
+        <label class="form-label">6. दृक् (Drik - Eyes / Sclera)</label>
+        <select class="form-control" name="drik">
+          <option value="Prakrita (Clear, normal)" selected>Prakrita (प्राकृत - Clear)</option>
+          <option value="Rakta (Red / Congested)">Rakta (रक्त - Red / Irritated)</option>
+          <option value="Peeta (Icteric / Yellow)">Peeta (पीत - Yellow / Pallor)</option>
+        </select>
+      </div>
+
+      <!-- 7. AKRITI (Build) -->
+      <div class="form-group">
+        <label class="form-label">7. आकृति (Akriti - Physical Build)</label>
+        <select class="form-control" name="akriti">
+          <option value="Madhyama (Medium proportion)" selected>Madhyama (मध्यम - Medium build)</option>
+          <option value="Krisha (Lean / Emaciated)">Krisha (कृश - Thin, slender)</option>
+          <option value="Sthula (Heavy / Obese)">Sthula (स्थूल - Heavy / Overweight)</option>
+        </select>
+      </div>
+
+      <!-- 8. SHABDA (Voice) -->
+      <div class="form-group">
+        <label class="form-label">8. शब्द (Shabda - Voice Quality)</label>
+        <select class="form-control" name="shabda">
+          <option value="Spashta (Clear, resonant)" selected>Spashta (स्पष्ट - Clear, resonant)</option>
+          <option value="Ksheena (Weak / Low energy)">Ksheena (क्षीण - Low, weak)</option>
+          <option value="Bhinna (Hoarse)">Bhinna (भिन्न - Hoarse, strained)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Clinical Notes -->
+    <div class="form-group" style="margin-top: 1.5rem;">
+      <label class="form-label">Physician Clinical Remarks / Chikitsa Sutra (चिकित्सा सूत्र)</label>
+      <textarea class="form-control" rows="3" name="notes" placeholder="Enter specific treatment guidelines, dietary advice, or Panchakarma recommendations...">Deepana-Pachana therapy recommended. Start with Hingwashtak Churna 3g BD before meals and Shankha Vati 2 tabs after meals. Avoid Ushna-Tikshna ahara.</textarea>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-soft);">
+      <a href="/portal/queue" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-success" style="padding: 0.75rem 2rem;">
+        💾 Save Ashtavidha Exam & Merge into Record
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+function handleExamSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const data = {
+    visit_id: "visit_ramesh_01",
+    exam: {
+      nadi: { gati: form.nadi_gati.value },
+      jihva: { coating: form.jihva.value },
+      mutra: { nature: form.mutra.value },
+      mala: { nature: form.mala.value },
+      sparsha: { texture: form.sparsha.value },
+      drik: { observation: form.drik.value },
+      akriti: { build: form.akriti.value },
+      shabda: { quality: form.shabda.value },
+      physician_notes: form.notes.value
+    }
+  };
+
+  fetch('/api/v1/doctor/exam/ayush', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  })
+  .then(r => r.json())
+  .then(res => {
+    alert('Ashtavidha physical examination successfully merged into patient record!');
+    window.location.href = '/portal/queue';
+  });
+}
+</script>
+{% endblock %}

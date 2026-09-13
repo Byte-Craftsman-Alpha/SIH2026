@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% block title %}Clinical History Summary — {{ summary.patient_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <a href="/portal/queue" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.8rem;">← Back to Queue</a>
+      <h1 class="page-title" style="margin: 0;">Clinical Intake Summary: {{ summary.patient_name }} ({{ summary.token_no }})</h1>
+    </div>
+    <p class="page-subtitle" style="margin-left: 110px;">Token {{ summary.token_no }} · Age 64y / Male · ABHA 91-XXXX-XXXX-9012 · Version {{ summary.version }}</p>
+  </div>
+  <div style="display: flex; gap: 0.75rem; align-items: center;">
+    <div class="pill-group">
+      <span class="pill-item {% if lang == 'en' %}active{% endif %}" onclick="switchLang('en')">English</span>
+      <span class="pill-item {% if lang == 'hi' %}active{% endif %}" onclick="switchLang('hi')">हिंदी</span>
+    </div>
+    <span class="badge badge-ready" style="font-size: 0.85rem; padding: 6px 12px;">Consent Valid: Next 3h 15m</span>
+  </div>
+</div>
+
+<div class="summary-grid">
+  <!-- LEFT COLUMN: 12-SECTION CLINICAL SUMMARY -->
+  <div class="card" style="padding: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-soft);">
+      <div>
+        <span class="badge badge-ready">AI-Drafted Intake</span>
+        <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 8px;">Captured via Voice + Touch at Sarita Vihar Kiosk</span>
+      </div>
+      <div style="font-size: 0.8rem; color: var(--text-muted);">
+        Estimated physician reading time: <strong>45 seconds</strong>
+      </div>
+    </div>
+
+    <!-- Section 1: Identity -->
+    <div class="section-box">
+      <div class="section-header">
+        <span class="section-label">1. Patient Demographics & Identification</span>
+      </div>
+      <div class="section-content">
+        <strong>Name:</strong> Ramesh Kumar &nbsp;·&nbsp; <strong>Age:</strong> 64 Years &nbsp;·&nbsp; <strong>Gender:</strong> Male &nbsp;·&nbsp; <strong>ABHA ID:</strong> 91-XXXX-XXXX-9012 &nbsp;·&nbsp; <strong>Phone:</strong> +91 98765-XXXXX
+      </div>
+    </div>
+
+    <!-- Section 2: Chief Complaint -->
+    <div class="section-box">
+      <div class="section-header">
+        <span class="section-label">2. Chief Complaint (मुख्य समस्या)</span>
+        <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.75rem;" onclick="editSection('cc')">Edit</button>
+      </div>
+      <div class="section-content" id="cc-text" style="font-weight: 600; font-size: 1.05rem;">
+        {{ content['2_chief_complaint'] }}
+      </div>
+    </div>
+
+    <!-- Section 3: HPI (SOCRATES) -->
+    <div class="section-box">
+      <div class="section-header">
+        <span class="section-label">3. History of Present Illness (SOCRATES Probed)</span>
+      </div>
+      <div class="section-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; background: var(--bg-card-subtle); padding: 1rem; border-radius: var(--radius-sm);">
+        <div><strong>Site:</strong> {{ content['3_hpi_socrates']['site'] }}</div>
+        <div><strong>Onset:</strong> {{ content['3_hpi_socrates']['onset'] }}</div>
+        <div><strong>Character:</strong> {{ content['3_hpi_socrates']['character'] }}</div>
+        <div><strong>Radiation:</strong> {{ content['3_hpi_socrates']['radiation'] }}</div>
+        <div><strong>Timing:</strong> {{ content['3_hpi_socrates']['timing'] }}</div>
+        <div><strong>Severity:</strong> <span class="highlight-red">{{ content['3_hpi_socrates']['severity'] }}</span></div>
+        <div style="grid-column: span 2;"><strong>Exacerbating factors:</strong> {{ content['3_hpi_socrates']['exacerbating'] }}</div>
+        <div style="grid-column: span 2;"><strong>Relieving factors:</strong> {{ content['3_hpi_socrates']['relieving'] }}</div>
+      </div>
+    </div>
+
+    <!-- Section 4: PMH -->
+    <div class="section-box">
+      <div class="section-header">
+        <span class="section-label">4. Past Medical & Surgical History</span>
+      </div>
+      <div class="section-content">
+        {{ content['4_past_medical_surgical'] }}
+      </div>
+    </div>
+
+    <!-- Section 5: Drug & Allergy -->
+    <div class="section-box">
+      <div class="section-header">
+        <span class="section-label">5. Drug & Allergy History</span>
+      </div>
+      <div class="section-content">
+        {{ content['5_drug_allergies'] }}
+      </div>
+    </div>
+
+    <!-- Section 6: Family History -->
+    <div class="section-box">
+      <div class="section-header">
+        <span class="section-label">6. Family History</span>
+      </div>
+      <div class="section-content">
+        {{ content['6_family_history'] }}
+      </div>
+    </div>
+
+    <!-- Section 7: Personal Habits -->
+    <div class="section-box">
+      <div class="section-header">
+        <span class="section-label">7. Personal History & Habits</span>
+      </div>
+      <div class="section-content">
+        {{ content['7_personal_habits'] }}
+      </div>
+    </div>
+
+    <!-- Section 8: Review of Systems -->
+    <div class="section-box">
+      <div class="section-header">
+        <span class="section-label">8. Review of Systems (ROS)</span>
+      </div>
+      <div class="section-content">
+        {{ content['8_review_of_systems'] }}
+      </div>
+    </div>
+
+    <!-- Section 9: Prior Investigations -->
+    <div class="section-box">
+      <div class="section-header">
+        <span class="section-label">9. Prior Investigations (Abnormal Highlighted)</span>
+      </div>
+      <div class="section-content" style="background: #FFF9F8; border-left: 4px solid var(--red-flag); padding: 0.75rem 1rem; border-radius: 4px;">
+        <div>🧪 <strong>Fasting Blood Sugar:</strong> <span class="highlight-red">186 mg/dL</span> (Ref: 70-100) — <small>Source: SRL Report (20 Aug 2026)</small></div>
+        <div>🧪 <strong>HbA1c:</strong> <span class="highlight-red">8.2 %</span> (Ref: 4.0-5.6)</div>
+        <div>🧪 <strong>Total Cholesterol:</strong> <span style="color: var(--saffron); font-weight: 700;">220 mg/dL</span> (Ref: &lt;200)</div>
+        <div>🧪 <strong>Serum Creatinine:</strong> 0.9 mg/dL (Normal)</div>
+      </div>
+    </div>
+
+    <!-- Section 10: AYUSH Dashavidha Profile -->
+    <div class="section-box" style="background: var(--ayush-bg); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid rgba(78, 124, 80, 0.2);">
+      <div class="section-header">
+        <span class="section-label" style="color: var(--ayush-green);">10. Ayurvedic Dashavidha Pariksha Intake</span>
+        <span class="badge" style="background: var(--ayush-green); color: #FFF;">CCRAS Framework</span>
+      </div>
+      <div class="section-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem;">
+        <div><strong>Prakriti Baseline:</strong> <span style="font-weight: 700; color: var(--ayush-green);">Vata-Pitta (55% V / 30% P)</span></div>
+        <div><strong>Current Vikriti:</strong> <span style="font-weight: 700; color: var(--saffron);">Pitta-Vata (पित्त-वात प्रकोप)</span></div>
+        <div><strong>Agni (पाचन):</strong> Tikshnagni / Mandagni variable</div>
+        <div><strong>Koshtha (कोष्ठ):</strong> Krura (कब्ज प्रवृत्ति)</div>
+        <div style="grid-column: span 2;"><strong>Ahara-Vihara (आहार-विहार):</strong> Ushna-Tikshna food, Ratrijagarana (Late sleeping)</div>
+        <div style="grid-column: span 2;"><strong>Nidana (हेतु):</strong> Viruddha Ahara & irregular timings with work stress</div>
+      </div>
+    </div>
+
+    <!-- Section 11: Red Flags -->
+    <div class="section-box">
+      <div class="section-header">
+        <span class="section-label">11. Critical Red-Flag Evaluation</span>
+      </div>
+      <div class="section-content">
+        <span style="color: var(--ayush-green); font-weight: 600;">✓ No acute red flags (chest pain, stroke symptoms, unconsciousness) triggered during this intake.</span>
+      </div>
+    </div>
+
+    <!-- Section 12: Disclaimer -->
+    <div class="section-box">
+      <div class="section-header">
+        <span class="section-label">12. Clinical Governance Disclaimer</span>
+      </div>
+      <div class="section-content" style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">
+        {{ content['12_ai_disclaimer'] }}
+      </div>
+    </div>
+
+    <!-- STICKY ACTION FOOTER (ACCEPT / AMEND / REJECT) -->
+    <div style="position: sticky; bottom: -2rem; background: var(--bg-card); padding: 1.25rem 0; border-top: 2px solid var(--border-soft); display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
+      <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Final decision will be committed to patient's hospital record.
+      </div>
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn btn-outline" style="color: var(--red-flag); border-color: rgba(192, 57, 43, 0.4);" onclick="submitDecision('rejected')">
+          ❌ Reject Draft
+        </button>
+        <button class="btn btn-warning" onclick="submitDecision('amended')">
+          ✏️ Amend & Save
+        </button>
+        <button class="btn btn-success" onclick="submitDecision('accepted')">
+          ✅ Accept & Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT RAIL: SOURCE DOCUMENTS & PROVENANCE (D-04) -->
+  <div>
+    <div class="card" style="position: sticky; top: 80px; max-height: calc(100vh - 120px); overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 800;">Source Documents ({{ source_docs|length }})</h3>
+        <span class="badge badge-ready">Human-in-Loop Verified</span>
+      </div>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Digitized past prescriptions & lab reports uploaded by patient. Click any record to inspect original scan and extracted data.
+      </p>
+
+      {% for doc in source_docs %}
+      <div style="background: var(--bg-card-subtle); border: 1px solid var(--border-soft); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <strong style="font-size: 0.95rem;">
+            {% if doc.doc_type == 'prescription' %}💊 Prescription{% else %}🧪 Lab Report{% endif %}
+          </strong>
+          <span class="badge badge-ready">OCR {{ (doc.confidence * 100)|int }}%</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+          Date: {{ doc.doc_date }} · Status: <span style="color: var(--ayush-green); font-weight: 600;">{{ doc.verify_status|capitalize }}</span>
+        </div>
+
+        {% if doc.doc_type == 'prescription' %}
+        <div style="font-size: 0.85rem; line-height: 1.4; background: #FFF; padding: 0.6rem; border-radius: 4px; border: 1px solid var(--border-soft);">
+          <div>• Metformin 500mg (2x/day)</div>
+          <div>• Amlodipine 5mg (1x/day)</div>
+          <div>• Triphala Churna 5g (Bedtime)</div>
+        </div>
+        {% if doc.flags.drug_interactions %}
+        <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--saffron); background: var(--saffron-bg); padding: 4px 8px; border-radius: 4px;">
+          ⚠️ <strong>Interaction Note:</strong> Triphala may augment Metformin hypoglycemic action.
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div style="font-size: 0.85rem; line-height: 1.4; background: #FFF; padding: 0.6rem; border-radius: 4px; border: 1px solid var(--border-soft);">
+          <div>• Fasting Sugar: <span class="highlight-red">186 mg/dL (Abnormal)</span></div>
+          <div>• HbA1c: <span class="highlight-red">8.2% (Abnormal)</span></div>
+          <div>• Total Cholesterol: <span style="color: var(--saffron); font-weight: 700;">220 mg/dL</span></div>
+        </div>
+        {% endif %}
+
+        <div style="margin-top: 0.75rem; text-align: right;">
+          <a href="#" class="btn btn-outline" style="padding: 3px 8px; font-size: 0.75rem;">🔍 View Original Scan</a>
+        </div>
+      </div>
+      {% endfor %}
+
+      <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-soft);">
+        <a href="/portal/exam/visit_ramesh_01" class="btn btn-outline" style="width: 100%; justify-content: center;">
+          🩺 Record Ashtavidha Examination Form
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchLang(l) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('lang', l);
+  window.location.href = url.toString();
+}
+
+function submitDecision(decision) {
+  const reason = prompt(`Confirm ${decision.toUpperCase()} decision for this intake summary:\n(Enter clinical notes or confirm to save)`);
+  if (reason !== null) {
+    fetch('/api/v1/summaries/{{ summary_id }}/doctor-decision', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        decision: decision,
+        reason: reason || 'Reviewed during OPD consultation',
+        edits: []
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      alert(`Summary successfully ${decision}! Committed to hospital records.`);
+      window.location.href = '/portal/queue';
+    });
+  }
+}
+
+function editSection(id) {
+  const el = document.getElementById(id + '-text');
+  const current = el.innerText;
+  const updated = prompt('Edit Chief Complaint:', current);
+  if (updated) {
+    el.innerText = updated;
+  }
+}
+</script>
+{% endblock %}

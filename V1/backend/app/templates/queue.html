@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Today's OPD Queue{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">OPD Patient Queue</h1>
+    <p class="page-subtitle">All India Institute of Ayurveda — Kayachikitsa OPD Room 104 · {{ today_date }}</p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    <a href="/portal/triage" class="btn btn-outline" style="border-color: rgba(192, 57, 43, 0.4); color: var(--red-flag);">🚨 1 Urgent Alert</a>
+    <button class="btn btn-primary" onclick="window.location.reload();">🔄 Refresh Queue</button>
+  </div>
+</div>
+
+<div class="banner-alert">
+  <span style="font-size: 1.2rem;">⚠️</span>
+  <div>
+    <strong>Urgent Patient in Waiting:</strong> Token U-007 (Sunita D***) reported acute abdominal pain and high fever. Prioritized on top of OPD queue.
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 1.5rem; padding: 1rem 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div class="pill-group">
+      <span class="pill-item active" onclick="filterQueue('all', this)">All Patients ({{ queue|length }})</span>
+      <span class="pill-item" onclick="filterQueue('ready', this)">Summary Ready ({{ queue|selectattr('summary_ready')|list|length }})</span>
+      <span class="pill-item" onclick="filterQueue('urgent', this)">Urgent Priority ({{ queue|selectattr('red_flag')|list|length }})</span>
+    </div>
+    <div style="color: var(--text-muted); font-size: 0.85rem;">
+      Average history review time: <strong>48 seconds</strong> (vs 4.5 mins manual)
+    </div>
+  </div>
+</div>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Patient Name</th>
+        <th>Age / Sex</th>
+        <th>Slot Time</th>
+        <th>Urgency</th>
+        <th>AI Intake Summary</th>
+        <th>Consent Window</th>
+        <th style="text-align: right;">Clinical Actions</th>
+      </tr>
+    </thead>
+    <tbody id="queue-tbody">
+      {% for item in queue %}
+      <tr class="queue-row {% if item.red_flag %}row-urgent{% endif %}" data-ready="{{ item.summary_ready }}" data-urgent="{{ item.red_flag }}">
+        <td>
+          <span style="font-weight: 800; font-size: 1rem; color: {% if item.red_flag %}var(--red-flag){% else %}var(--text-charcoal){% endif %};">
+            {{ item.token_no }}
+          </span>
+        </td>
+        <td>
+          <strong>{{ item.patient_name_masked }}</strong>
+          {% if item.red_flag %}
+          <span class="badge badge-urgent" style="margin-left: 6px;">PRIORITY</span>
+          {% endif %}
+        </td>
+        <td>{{ item.age }}y / {{ item.gender|capitalize }}</td>
+        <td>{{ item.time }}</td>
+        <td>
+          {% if item.urgency == 'urgent' %}
+          <span class="badge badge-urgent">Urgent OPD</span>
+          {% else %}
+          <span class="badge badge-regular">Regular</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if item.summary_ready %}
+          <span class="badge badge-ready">✓ Summary Ready</span>
+          {% else %}
+          <span class="badge badge-pending">⏳ In Progress</span>
+          {% endif %}
+        </td>
+        <td>
+          <span style="color: var(--ayush-green); font-size: 0.8rem; font-weight: 600;">✓ Active Consultation</span>
+        </td>
+        <td style="text-align: right;">
+          <div style="display: inline-flex; gap: 0.5rem;">
+            {% if item.summary_ready %}
+            <a href="/portal/summary/{{ item.summary_id }}?appt_id={{ item.appointment_id }}" class="btn btn-primary" style="padding: 5px 12px; font-size: 0.8rem;">
+              📄 View Summary
+            </a>
+            {% else %}
+            <button class="btn btn-outline" disabled style="padding: 5px 12px; font-size: 0.8rem; opacity: 0.5;">
+              Intake Pending
+            </button>
+            {% endif %}
+            <a href="/portal/exam/visit_ramesh_01" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8rem;" title="Record Ashtavidha Examination">
+              🩺 Exam
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+function filterQueue(type, el) {
+  document.querySelectorAll('.pill-item').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const rows = document.querySelectorAll('.queue-row');
+  rows.forEach(r => {
+    if (type === 'all') r.style.display = '';
+    else if (type === 'ready') r.style.display = (r.getAttribute('data-ready') === 'True') ? '' : 'none';
+    else if (type === 'urgent') r.style.display = (r.getAttribute('data-urgent') === 'True') ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

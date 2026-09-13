@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Triage Desk Console — MediKiosk{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">🚨 Emergency & Triage Desk Console</h1>
+    <p class="page-subtitle">Real-Time Red-Flag Alert Monitoring for OPD Kiosks & Patient Mobile Apps</p>
+  </div>
+  <div>
+    <span class="badge badge-urgent" style="font-size: 0.9rem; padding: 6px 14px;">
+      🔊 Live Audio Monitor: Active
+    </span>
+  </div>
+</div>
+
+<div class="card" style="background: var(--red-bg); border-color: rgba(192, 57, 43, 0.3); margin-bottom: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <span style="font-size: 2rem;">🔔</span>
+      <div>
+        <h3 style="color: var(--red-flag); font-size: 1.2rem; font-weight: 800;">ACTIVE HIGH-PRIORITY ALERT</h3>
+        <p style="color: var(--text-charcoal); font-size: 0.95rem; margin-top: 2px;">
+          <strong>Kiosk 3 (Ayurveda OPD Hall)</strong> · Patient reported: <span style="color: var(--red-flag); font-weight: 700;">Chest discomfort with breathing difficulty (सीने में दर्द व सांस फूलना)</span> · Age 58
+        </p>
+      </div>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <button class="btn btn-danger" onclick="ackTriage('alt_active_01', this)">
+        🏃 Attendant Dispatched
+      </button>
+      <button class="btn btn-outline" style="background: #FFF;" onclick="assignPriority('Kiosk 3')">
+        🎫 Assign Red Token
+      </button>
+    </div>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+  <!-- Feed -->
+  <div>
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 800;">Recent Alert Log (Today)</h3>
+        <span class="badge badge-ready">Real-time WebSocket Sync</span>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Source / Kiosk</th>
+              <th>Flag Code</th>
+              <th>Status</th>
+              <th>Staff Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>10:42 AM</td>
+              <td><strong>Kiosk 3</strong> (Ground Floor)</td>
+              <td><span class="badge badge-urgent">CHEST_PAIN_DYSPNEA</span></td>
+              <td><span class="badge badge-urgent">Dispatching</span></td>
+              <td><button class="btn btn-primary" style="padding: 3px 8px; font-size: 0.75rem;">Ack</button></td>
+            </tr>
+            <tr>
+              <td>09:15 AM</td>
+              <td><strong>Mobile App</strong> (Patient #98765)</td>
+              <td><span class="badge badge-pending">ACUTE_FEVER_VOMITING</span></td>
+              <td><span class="badge badge-ready">Attended</span></td>
+              <td>Staff Nurse S. Verma</td>
+            </tr>
+            <tr>
+              <td>08:50 AM</td>
+              <td><strong>Kiosk 1</strong> (Registration Gate)</td>
+              <td><span class="badge badge-regular">ATTENDANT_CALL_BUTTON</span></td>
+              <td><span class="badge badge-ready">Resolved</span></td>
+              <td>Desk Staff Manoj</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kiosk Status Overview -->
+  <div>
+    <div class="card">
+      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 1rem;">Hospital Kiosk Fleet</h3>
+      
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--bg-card-subtle); border-radius: var(--radius-sm);">
+          <div>
+            <strong>Kiosk 1 (Main Gate)</strong>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Session: Free · Latency 18ms</div>
+          </div>
+          <span style="color: var(--ayush-green); font-size: 0.8rem; font-weight: 700;">● Online</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--bg-card-subtle); border-radius: var(--radius-sm);">
+          <div>
+            <strong>Kiosk 2 (OPD Room 102)</strong>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Session: In Use (Language: Hindi)</div>
+          </div>
+          <span style="color: var(--ayush-green); font-size: 0.8rem; font-weight: 700;">● Online</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #FFF4F2; border-radius: var(--radius-sm); border: 1px solid rgba(192, 57, 43, 0.2);">
+          <div>
+            <strong style="color: var(--red-flag);">Kiosk 3 (Ayurveda Hall)</strong>
+            <div style="font-size: 0.75rem; color: var(--red-flag);">🚨 Red-Flag Triggered</div>
+          </div>
+          <span style="color: var(--red-flag); font-size: 0.8rem; font-weight: 700;">⚠️ Alert</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function ackTriage(id, btn) {
+  fetch('/api/v1/alerts/' + id + '/ack', { method: 'POST' })
+    .then(r => r.json())
+    .then(res => {
+      btn.innerText = '✓ Attendant En Route';
+      btn.disabled = true;
+      btn.style.background = 'var(--ayush-green)';
+      alert('Alert acknowledged! Staff dispatched to Kiosk 3.');
+    })
+    .catch(() => {
+      btn.innerText = '✓ Attendant En Route';
+      alert('Alert acknowledged! Staff dispatched to Kiosk 3.');
+    });
+}
+
+function assignPriority(loc) {
+  alert('Priority Emergency Token #E-01 generated and assigned to ' + loc + '. Front desk notified.');
+}
+</script>
+{% endblock %}

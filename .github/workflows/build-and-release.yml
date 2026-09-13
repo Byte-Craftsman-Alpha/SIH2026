@@ -1,0 +1,262 @@
+name: Build & Release (Beta & Production)
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Release version tag (e.g. v1.0.0)'
+        required: false
+        default: 'v1.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  # =========================================================================
+  # 1. Prepare Merged Release Notes from Reports
+  # =========================================================================
+  prepare-release-notes:
+    name: Aggregate & Merge Release Notes
+    runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.set_tag.outputs.tag }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Release Tag
+        id: set_tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.version_tag }}"
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+          else
+            TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
+            TAG="v1.0.0-${TIMESTAMP}"
+          fi
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "Release Tag: ${TAG}"
+
+      - name: Compile Merged Release Notes
+        run: |
+          mkdir -p release_notes
+          OUTPUT_FILE="release_notes/RELEASE_NOTES.md"
+          
+          echo "# MediKiosk Release ${{ steps.set_tag.outputs.tag }}" > $OUTPUT_FILE
+          echo "" >> $OUTPUT_FILE
+          echo "**Release Date**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $OUTPUT_FILE
+          echo "**Git Commit**: ${{ github.sha }}" >> $OUTPUT_FILE
+          echo "" >> $OUTPUT_FILE
+          echo "## 📦 Release Artifacts Included" >> $OUTPUT_FILE
+          echo "- **Android Beta APK**: \`medikiosk-beta.apk\` (Local SQLite / Testing mode)" >> $OUTPUT_FILE
+          echo "- **Android Production APK**: \`medikiosk-production.apk\` (Vercel Serverless + Supabase cloud)" >> $OUTPUT_FILE
+          echo "- **Android Production AAB**: \`medikiosk-production.aab\` (Google Play Store Release)" >> $OUTPUT_FILE
+          echo "- **iOS Beta Runner Package**: \`medikiosk-ios-beta.zip\` (Local testing build)" >> $OUTPUT_FILE
+          echo "- **iOS Production Runner Package**: \`medikiosk-ios-production.zip\` (Production release build)" >> $OUTPUT_FILE
+          echo "" >> $OUTPUT_FILE
+          echo "---" >> $OUTPUT_FILE
+          echo "" >> $OUTPUT_FILE
+
+          # Append Commit Report if present
+          if [ -f "V1/reports/COMMIT_REPORT.md" ]; then
+            echo "## 📋 Commit & Architecture Summary" >> $OUTPUT_FILE
+            cat "V1/reports/COMMIT_REPORT.md" >> $OUTPUT_FILE
+            echo "" >> $OUTPUT_FILE
+            echo "---" >> $OUTPUT_FILE
+            echo "" >> $OUTPUT_FILE
+          elif [ -f "V1/reports/commit_report.md" ]; then
+            echo "## 📋 Commit & Architecture Summary" >> $OUTPUT_FILE
+            cat "V1/reports/commit_report.md" >> $OUTPUT_FILE
+            echo "" >> $OUTPUT_FILE
+            echo "---" >> $OUTPUT_FILE
+            echo "" >> $OUTPUT_FILE
+          fi
+
+          # Append Test Report if present
+          if [ -f "V1/reports/TEST_REPORT.md" ]; then
+            echo "## 🧪 End-to-End Test Matrix & Verification Evidence" >> $OUTPUT_FILE
+            cat "V1/reports/TEST_REPORT.md" >> $OUTPUT_FILE
+            echo "" >> $OUTPUT_FILE
+          elif [ -f "V1/reports/test_report.md" ]; then
+            echo "## 🧪 End-to-End Test Matrix & Verification Evidence" >> $OUTPUT_FILE
+            cat "V1/reports/test_report.md" >> $OUTPUT_FILE
+            echo "" >> $OUTPUT_FILE
+          fi
+
+      - name: Upload Merged Release Notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release_notes/RELEASE_NOTES.md
+
+  # =========================================================================
+  # 2. Build Android (Beta APK + Production APK & AAB)
+  # =========================================================================
+  build-android:
+    name: Build Android (Beta & Production)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Verify Flutter Installation
+        run: flutter --version
+
+      - name: Install Dependencies
+        working-directory: V1/medikiosk_app
+        run: flutter pub get
+
+      - name: Run Widget & Unit Tests
+        working-directory: V1/medikiosk_app
+        run: flutter test test/widget_test.dart
+
+      # Build 1: Android Beta APK (Uses local backend / SQLite environment)
+      - name: Build Android Beta APK
+        working-directory: V1/medikiosk_app
+        run: |
+          flutter build apk --release \
+            --dart-define=APP_ENV=beta
+          mkdir -p ../../dist/android
+          cp build/app/outputs/flutter-apk/app-release.apk ../../dist/android/medikiosk-beta.apk
+
+      # Build 2: Android Production APK (Uses Vercel serverless backend + Supabase)
+      - name: Build Android Production APK
+        working-directory: V1/medikiosk_app
+        env:
+          PROD_URL: ${{ secrets.PRODUCTION_BACKEND_URL || 'https://medikiosk-backend.vercel.app/api/v1' }}
+        run: |
+          flutter build apk --release \
+            --dart-define=APP_ENV=normal \
+            --dart-define=VERCEL_URL=${PROD_URL}
+          cp build/app/outputs/flutter-apk/app-release.apk ../../dist/android/medikiosk-production.apk
+
+      # Build 3: Android Production App Bundle (AAB for Google Play Store)
+      - name: Build Android Production App Bundle (AAB)
+        working-directory: V1/medikiosk_app
+        env:
+          PROD_URL: ${{ secrets.PRODUCTION_BACKEND_URL || 'https://medikiosk-backend.vercel.app/api/v1' }}
+        run: |
+          flutter build appbundle --release \
+            --dart-define=APP_ENV=normal \
+            --dart-define=VERCEL_URL=${PROD_URL}
+          cp build/app/outputs/bundle/release/app-release.aab ../../dist/android/medikiosk-production.aab
+
+      - name: Upload Android Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-builds
+          path: dist/android/*
+
+  # =========================================================================
+  # 3. Build iOS (Beta & Production Runner Packages)
+  # =========================================================================
+  build-ios:
+    name: Build iOS (Beta & Production)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        working-directory: V1/medikiosk_app
+        run: flutter pub get
+
+      # Build 1: iOS Beta (Unsigned release bundle for testing)
+      - name: Build iOS Beta Package
+        working-directory: V1/medikiosk_app
+        run: |
+          flutter build ios --no-codesign --release \
+            --dart-define=APP_ENV=beta
+          mkdir -p ../../dist/ios
+          cd build/ios/iphoneos
+          zip -r -9 ../../../../dist/ios/medikiosk-ios-beta.zip Runner.app
+
+      # Build 2: iOS Production (Unsigned release bundle for Vercel/Supabase)
+      - name: Build iOS Production Package
+        working-directory: V1/medikiosk_app
+        env:
+          PROD_URL: ${{ secrets.PRODUCTION_BACKEND_URL || 'https://medikiosk-backend.vercel.app/api/v1' }}
+        run: |
+          flutter build ios --no-codesign --release \
+            --dart-define=APP_ENV=normal \
+            --dart-define=VERCEL_URL=${PROD_URL}
+          cd build/ios/iphoneos
+          zip -r -9 ../../../../dist/ios/medikiosk-ios-production.zip Runner.app
+
+      - name: Upload iOS Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-builds
+          path: dist/ios/*
+
+  # =========================================================================
+  # 4. Automated Release with Merged Notes & All Artifacts
+  # =========================================================================
+  create-release:
+    name: Create GitHub Release
+    needs: [prepare-release-notes, build-android, build-ios]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Merged Release Notes
+        uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+          path: release_notes
+
+      - name: Download Android Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: android-builds
+          path: release_artifacts
+
+      - name: Download iOS Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-builds
+          path: release_artifacts
+
+      - name: Inspect Release Artifacts
+        run: ls -la release_artifacts/
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare-release-notes.outputs.release_tag }}
+          name: "MediKiosk Release ${{ needs.prepare-release-notes.outputs.release_tag }}"
+          body_path: release_notes/RELEASE_NOTES.md
+          draft: false
+          prerelease: false
+          files: |
+            release_artifacts/medikiosk-beta.apk
+            release_artifacts/medikiosk-production.apk
+            release_artifacts/medikiosk-production.aab
+            release_artifacts/medikiosk-ios-beta.zip
+            release_artifacts/medikiosk-ios-production.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

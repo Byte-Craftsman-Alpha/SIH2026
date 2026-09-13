@@ -1,0 +1,122 @@
+# =========================================================================
+# Security & Credentials (CRITICAL - NEVER COMMIT)
+# =========================================================================
+.env
+.env.*
+!.env.example
+*.env
+*.pem
+*.key
+*.cert
+*.p8
+*.p12
+*.jks
+*.keystore
+*.mobileprovision
+google-services.json
+GoogleService-Info.plist
+secrets.json
+service_account*.json
+.vercel
+
+# =========================================================================
+# Databases & Local Storage
+# =========================================================================
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+backend/medikiosk.db*
+V1/backend/medikiosk.db*
+uploads/*
+!uploads/.gitkeep
+V1/backend/uploads/*
+!V1/backend/uploads/.gitkeep
+
+# =========================================================================
+# Python & Virtual Environments
+# =========================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+.venv/
+env/
+ENV/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================================================================
+# Flutter & Dart
+# =========================================================================
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+**/build/
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.framework
+**/android/.gradle/
+**/android/local.properties
+**/android/app/release/
+**/android/key.properties
+
+# =========================================================================
+# Node & Expo
+# =========================================================================
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# =========================================================================
+# OS & IDE
+# =========================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# =========================================================================
+# CI/CD & Build Artifacts
+# =========================================================================
+release_artifacts/
+release_notes/
+dist/android/
+dist/ios/

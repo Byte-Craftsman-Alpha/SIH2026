@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy[asyncio]
+aiosqlite
+asyncpg
+pyjwt
+pydantic-settings
+python-multipart
+jinja2
+aiofiles
+python-dateutil
+supabase
+google-genai
+mangum
+requests

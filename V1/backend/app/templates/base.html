@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Doctor Console{% endblock %} — MediKiosk</title>
+  <link rel="stylesheet" href="/static/css/portal.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div style="display: flex; align-items: center; gap: 2rem;">
+      <a href="/portal/queue" class="nav-brand">
+        <span style="font-size: 1.4rem;">🌿</span>
+        <div>
+          <span class="brand-title">MediKiosk</span>
+          <span class="brand-badge">AYUSH OPD</span>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="/portal/queue" class="nav-link {% if active_page == 'queue' %}active{% endif %}">📋 Today's Queue</a>
+        <a href="/portal/triage" class="nav-link {% if active_page == 'triage' %}active{% endif %}">🚨 Triage Desk</a>
+        <a href="/portal/admin" class="nav-link {% if active_page == 'admin' %}active{% endif %}">🛡️ Audit & DPDP</a>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <div class="doc-badge">
+        <span>👨‍⚕️</span>
+        <span>Dr. Rajesh Sharma</span>
+        <span style="color: var(--ayush-green); font-size: 0.75rem;">● Online</span>
+      </div>
+      <a href="/portal/login" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.8rem;">Logout</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer style="text-align: center; padding: 1.5rem; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border-soft); margin-top: auto; background: var(--bg-card);">
+    MediKiosk Clinical Intake System — Ministry of Ayush & AIIA New Delhi · ABDM FHIR R4 Compliant · DPDP Act 2023 Secure
+  </footer>
+
+  <script src="/static/js/portal.js"></script>
+</body>
+</html>

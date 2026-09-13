@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Hospital Admin & Compliance Console — MediKiosk{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">🛡️ Admin & DPDP Compliance Console</h1>
+    <p class="page-subtitle">Immutable Audit Trails, ABDM Consent Artifact Ledger & DPDP Act 2023 Governance</p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    <a href="/api/v1/admin/audit/export" class="btn btn-outline">📥 Export Audit Log (CSV)</a>
+    <button class="btn btn-primary" onclick="resetDemoFixtures()">🔄 Reset Demo Fixtures</button>
+  </div>
+</div>
+
+<!-- Consent Ledger Metrics -->
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+  <div class="card" style="text-align: center; padding: 1.25rem;">
+    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">TOTAL CONSENT ARTIFACTS</div>
+    <div style="font-size: 2rem; font-weight: 800; margin-top: 4px;">{{ stats.total_grants }}</div>
+    <div style="font-size: 0.75rem; color: var(--ayush-green); margin-top: 4px;">100% Time-Bound</div>
+  </div>
+
+  <div class="card" style="text-align: center; padding: 1.25rem;">
+    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">ACTIVE DOCTOR SESSIONS</div>
+    <div style="font-size: 2rem; font-weight: 800; color: var(--ayush-green); margin-top: 4px;">{{ stats.active_grants }}</div>
+    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Auto-Revoke on Consult End</div>
+  </div>
+
+  <div class="card" style="text-align: center; padding: 1.25rem;">
+    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">EARLY REVOCATIONS</div>
+    <div style="font-size: 2rem; font-weight: 800; color: var(--saffron); margin-top: 4px;">{{ stats.revoked_grants }}</div>
+    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Patient Self-Revoked via App</div>
+  </div>
+
+  <div class="card" style="text-align: center; padding: 1.25rem;">
+    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">DPDP DATA EXPORTS</div>
+    <div style="font-size: 2rem; font-weight: 800; color: var(--text-charcoal); margin-top: 4px;">12</div>
+    <div style="font-size: 0.75rem; color: var(--ayush-green); margin-top: 4px;">Portability §6 Fulfilled</div>
+  </div>
+</div>
+
+<!-- Audit Trail Table -->
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3 style="font-size: 1.1rem; font-weight: 800;">Append-Only Compliance Audit Log</h3>
+    <span class="badge badge-ready">AES-256 Tamper-Evident</span>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Actor Type</th>
+          <th>Actor ID</th>
+          <th>Action</th>
+          <th>Target Type</th>
+          <th>Target ID</th>
+          <th>Client IP</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in audit_logs %}
+        <tr>
+          <td style="font-size: 0.8rem; font-family: monospace;">{{ l.timestamp }}</td>
+          <td><span class="badge badge-regular">{{ l.actor_type }}</span></td>
+          <td style="font-family: monospace;">{{ l.actor_id }}</td>
+          <td><strong>{{ l.action }}</strong></td>
+          <td>{{ l.target_type }}</td>
+          <td style="font-family: monospace;">{{ l.target_id }}</td>
+          <td>{{ l.ip }}</td>
+          <td style="font-size: 0.8rem; color: var(--text-muted);">{{ l.meta }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function resetDemoFixtures() {
+  if (confirm('Reset database fixtures to initial demonstration state?')) {
+    fetch('/api/v1/admin/demo/reset', { method: 'POST' })
+      .then(r => r.json())
+      .then(res => {
+        alert('Demo fixtures reset successfully.');
+        window.location.reload();
+      });
+  }
+}
+</script>
+{% endblock %}
