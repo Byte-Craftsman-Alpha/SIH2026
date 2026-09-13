@@ -16,7 +16,7 @@
 >   // Deployed Normal Backend (Vercel Serverless + Supabase cloud storage & database)
 >   static const String defaultVercelUrl = String.fromEnvironment(
 >     'VERCEL_URL',
-> >>> defaultValue: 'https://medikiosk-backend.vercel.app/api/v1', <<< // REPLACE THIS URL
+> >>> defaultValue: 'https://backend-three-alpha-77.vercel.app/api/v1', <<< // LIVE PRODUCTION SERVER URL
 >   );
 > ```
 >

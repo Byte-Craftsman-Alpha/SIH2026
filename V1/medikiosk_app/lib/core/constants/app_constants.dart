@@ -17,7 +17,7 @@ abstract class AppConstants {
   // Deployed Normal Backend (Vercel Serverless + Supabase cloud storage & database)
   static const String defaultVercelUrl = String.fromEnvironment(
     'VERCEL_URL',
-    defaultValue: 'https://medikiosk-backend.vercel.app/api/v1',
+    defaultValue: 'https://backend-three-alpha-77.vercel.app/api/v1',
   );
 
   // Active default URL
