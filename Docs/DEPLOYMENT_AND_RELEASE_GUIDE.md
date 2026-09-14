@@ -100,60 +100,60 @@ All screenshots below were captured directly from the attached physical hardware
 ### 3.1 Onboarding & Authentication Flow
 | Splash Screen | Language Selection | Kiosk Welcome |
 | :---: | :---: | :---: |
-| ![Splash](screenshots/01_splash_screen.png) | ![Language](screenshots/02_language_selection.png) | ![Welcome](screenshots/03_kiosk_welcome.png) |
+| <img src="screenshots/01_splash_screen.png" width="250"> | <img src="screenshots/02_language_selection.png" width="250"> | <img src="screenshots/03_kiosk_welcome.png" width="250"> |
 
 | Phone Login | OTP Verification (4-digit) | Home Dashboard |
 | :---: | :---: | :---: |
-| ![Login](screenshots/04_login_screen.png) | ![OTP](screenshots/05_otp_screen.png) | ![Home](screenshots/10_home_dashboard.png) |
+| <img src="screenshots/04_login_screen.png" width="250"> | <img src="screenshots/05_otp_screen.png" width="250"> | <img src="screenshots/10_home_dashboard.png" width="250"> |
 
 ---
 
 ### 3.2 Registration Wizard (5 Steps + Review)
 | Step 1: Identity & DOB | Step 2: Contact & ABHA | Step 3: Emergency Contacts |
 | :---: | :---: | :---: |
-| ![Step 1](screenshots/06_registration_step1_identity.png) | ![Step 2](screenshots/07_registration_step2_contact.png) | ![Step 3](screenshots/08_registration_step3_emergency.png) |
+| <img src="screenshots/06_registration_step1_identity.png" width="250"> | <img src="screenshots/07_registration_step2_contact.png" width="250"> | <img src="screenshots/08_registration_step3_emergency.png" width="250"> |
 
 | Step 4: Audio-Guided Consent | Step 5: Summary Review | Post-Registration Dashboard |
 | :---: | :---: | :---: |
-| ![Step 4](screenshots/09_registration_step4_consent.png) | ![Step 5](screenshots/10_registration_step5_review.png) | ![Post-Reg](screenshots/11_home_post_registration.png) |
+| <img src="screenshots/09_registration_step4_consent.png" width="250"> | <img src="screenshots/10_registration_step5_review.png" width="250"> | <img src="screenshots/11_home_post_registration.png" width="250"> |
 
 ---
 
 ### 3.3 Prakriti Assessment & Dual Environment Settings
 | Prakriti Intro | Prakriti Assessment MCQ | Live Server Ping (Beta) |
 | :---: | :---: | :---: |
-| ![Intro](screenshots/11_prakriti_intro.png) | ![MCQ](screenshots/12_prakriti_questions.png) | ![Ping](screenshots/13_server_ping_result.png) |
+| <img src="screenshots/11_prakriti_intro.png" width="250"> | <img src="screenshots/12_prakriti_questions.png" width="250"> | <img src="screenshots/13_server_ping_result.png" width="250"> |
 
 ---
 
 ### 3.4 Clinical Intake: General, AYUSH & Emergency Red Flags
 | Chief Complaints Grid | General Question (Fever) | Answer Bubble & Follow-up |
 | :---: | :---: | :---: |
-| ![Complaints](screenshots/15_chat_intake_general_complaints.png) | ![Question](screenshots/16_chat_intake_question_fever.png) | ![Bubble](screenshots/16b_chat_intake_answered_bubble.png) |
+| <img src="screenshots/15_chat_intake_general_complaints.png" width="250"> | <img src="screenshots/16_chat_intake_question_fever.png" width="250"> | <img src="screenshots/16b_chat_intake_answered_bubble.png" width="250"> |
 
 | AYUSH Dashavidha Mode | Emergency Red Flag Triage (108) | Notifications Screen |
 | :---: | :---: | :---: |
-| ![AYUSH](screenshots/17_chat_intake_ayush_mode.png) | ![Emergency](screenshots/18_emergency_red_flag_screen.png) | ![Notifications](screenshots/32_notifications_screen.png) |
+| <img src="screenshots/17_chat_intake_ayush_mode.png" width="250"> | <img src="screenshots/18_emergency_red_flag_screen.png" width="250"> | <img src="screenshots/32_notifications_screen.png" width="250"> |
 
 ---
 
 ### 3.5 OPD Appointments, Discovery & Booking Wizard
 | Appointments List | Hospital Discovery | Doctor OPD Slots |
 | :---: | :---: | :---: |
-| ![Appointments](screenshots/19_appointments_list.png) | ![Hospitals](screenshots/20_hospitals_discovery.png) | ![Slots](screenshots/21_doctor_slots.png) |
+| <img src="screenshots/19_appointments_list.png" width="250"> | <img src="screenshots/20_hospitals_discovery.png" width="250"> | <img src="screenshots/21_doctor_slots.png" width="250"> |
 
 | Booking Wizard & DPDP Scope | Token Confirmation (A-008) | Digital OPD Token Slip |
 | :---: | :---: | :---: |
-| ![Wizard](screenshots/22_booking_wizard.png) | ![Confirm](screenshots/23_booking_confirmation.png) | ![Slip](screenshots/24_digital_token_slip.png) |
+| <img src="screenshots/22_booking_wizard.png" width="250"> | <img src="screenshots/23_booking_confirmation.png" width="250"> | <img src="screenshots/24_digital_token_slip.png" width="250"> |
 
 ---
 
 ### 3.6 Medical Records, Multi-Stage OCR & Clinical Extraction
 | Records Timeline | Document Upload | 4-Stage OCR Animation |
 | :---: | :---: | :---: |
-| ![History](screenshots/25_document_history.png) | ![Upload](screenshots/26_document_upload.png) | ![OCR Progress](screenshots/27_ocr_pipeline_progress.png) |
+| <img src="screenshots/25_document_history.png" width="250"> | <img src="screenshots/26_document_upload.png" width="250"> | <img src="screenshots/27_ocr_pipeline_progress.png" width="250"> |
 
 | Extracted Entities & Drug Safety | Profile & Donut Chart |
 | :---: | :---: |
-| ![Clinical Extraction](screenshots/28_ocr_clinical_extraction.png) | ![Profile Screen](screenshots/29_profile_screen.png) |
+| <img src="screenshots/28_ocr_clinical_extraction.png" width="250"> | <img src="screenshots/29_profile_screen.png" width="250"> |
 

@@ -98,11 +98,11 @@
 
 | User Registration Wizard | Environment Selector & Ping | AYUSH Clinical Intake |
 | :---: | :---: | :---: |
-| ![Registration](Docs/screenshots/device_screenshot_368.png) | ![Ping](Docs/screenshots/device_screenshot_386.png) | ![AYUSH](Docs/screenshots/device_screenshot_403.png) |
+| <img src="Docs/screenshots/device_screenshot_368.png" width="250"> | <img src="Docs/screenshots/device_screenshot_386.png" width="250"> | <img src="Docs/screenshots/device_screenshot_403.png" width="250"> |
 
 | DPDP Consent Revoked | OPD Token Booked (A-008) | OCR & Drug Safety Alert |
 | :---: | :---: | :---: |
-| ![Revoke](Docs/screenshots/device_screenshot_412.png) | ![Token](Docs/screenshots/device_screenshot_420.png) | ![OCR](Docs/screenshots/device_screenshot_429.png) |
+| <img src="Docs/screenshots/device_screenshot_412.png" width="250"> | <img src="Docs/screenshots/device_screenshot_420.png" width="250"> | <img src="Docs/screenshots/device_screenshot_429.png" width="250"> |
 
 ---
 

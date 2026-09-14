@@ -48,11 +48,11 @@ flowchart TD
 The kiosk interface supports bilingual English and colloquial Hindi with high-contrast touch points designed for rural and low-literacy users.
 
 ````carousel
-![Language Selection](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_112.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_112.png" alt="Language Selection" width="250">
 <!-- slide -->
-![Kiosk Welcome Screen](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_113.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_113.png" alt="Kiosk Welcome Screen" width="250">
 <!-- slide -->
-![Phone OTP Login](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_114.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_114.png" alt="Phone OTP Login" width="250">
 ````
 
 - **Language Selection**: Auto-persisted in local state; dynamic text changes seamlessly across all screens.
@@ -64,7 +64,7 @@ The kiosk interface supports bilingual English and colloquial Hindi with high-co
 ### Flow 2: Home Dashboard & Personalized Experience
 The home dashboard synthesizes the patient's ongoing clinical journey:
 
-![Home Dashboard](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_115.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_115.png" alt="Home Dashboard" width="250">
 
 - **Greeting & Prakriti Pill**: Displays *"नमस्ते, रमेश जी!"* alongside their biological constitution tag (*"प्रकृति: वात-पित्त"*).
 - **Primary Action Banner**: *"नया परामर्श शुरू करें (Start Intake)"* with voice guidance indicator.
@@ -82,15 +82,15 @@ The home dashboard synthesizes the patient's ongoing clinical journey:
 The assessment calculates the patient's biological constitution (Vata, Pitta, Kapha) based on CCRAS standardized questions:
 
 ````carousel
-![Prakriti Assessment Intro](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_116.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_116.png" alt="Prakriti Assessment Intro" width="250">
 <!-- slide -->
-![Prakriti Questionnaire Screen](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_117.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_117.png" alt="Prakriti Questionnaire Screen" width="250">
 <!-- slide -->
-![Prakriti Results Donut Chart](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_118.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_118.png" alt="Prakriti Results Donut Chart" width="250">
 <!-- slide -->
-![Ayurvedic Lifestyle Recommendations](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_119.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_119.png" alt="Ayurvedic Lifestyle Recommendations" width="250">
 <!-- slide -->
-![Profile Successfully Saved Toast](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_120.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_120.png" alt="Profile Successfully Saved Toast" width="250">
 ````
 
 - **Intro**: Outlines 18-question standard and estimated duration (~10-12 min) with voice input support.
@@ -106,9 +106,9 @@ The assessment calculates the patient's biological constitution (Vata, Pitta, Ka
 The clinical intake module switches dynamically between General Allopathic SOCRATES questioning and AYUSH Dashavidha Pariksha modes:
 
 ````carousel
-![Clinical Intake Mode & Complaint Grid](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_121.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_121.png" alt="Clinical Intake Mode & Complaint Grid" width="250">
 <!-- slide -->
-![Emergency Red Screen](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_125.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_125.png" alt="Emergency Red Screen" width="250">
 ````
 
 - **Mode Indicator & Context Chip**: Shows active AYUSH mode grounded on the patient's baseline (*"प्रकृति बेसलाइन: Vata-Pitta"*).
@@ -149,19 +149,19 @@ The clinical intake module switches dynamically between General Allopathic SOCRA
 #### 3. Real Device Turn-by-Turn Verification (Redmi Note 8)
 
 ````carousel
-![Chief Complaint Selection - Fever Selected](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_144.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_144.png" alt="Chief Complaint Selection - Fever Selected" width="250">
 <!-- slide -->
-![Live AI Doctor Thinking Indicator](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_145.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_145.png" alt="Live AI Doctor Thinking Indicator" width="250">
 <!-- slide -->
-![Turn 1: Fever Duration Question](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_146.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_146.png" alt="Turn 1: Fever Duration Question" width="250">
 <!-- slide -->
-![Turn 1 Answered: 2-3 Days Selected](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_147.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_147.png" alt="Turn 1 Answered: 2-3 Days Selected" width="250">
 <!-- slide -->
-![Turn 2: Fever Diurnal Pattern Question](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_148.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_148.png" alt="Turn 2: Fever Diurnal Pattern Question" width="250">
 <!-- slide -->
-![Turn 2 Answered: Evening Spike Selected](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_149.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_149.png" alt="Turn 2 Answered: Evening Spike Selected" width="250">
 <!-- slide -->
-![Turn 3: Associated Chills & Rigors Question](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_150.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_150.png" alt="Turn 3: Associated Chills & Rigors Question" width="250">
 ````
 
 - **Turn 1 (Screenshot 144 & 146)**: Patient taps *"बुखार (Fever)"*. The AI Doctor greets the patient with empathy and asks about duration:
@@ -199,21 +199,21 @@ To satisfy clinical usability in rural kiosks and adhere to rigorous clinical sa
 #### 2. On-Device Turn-by-Turn Verification (Redmi Note 8)
 
 ````carousel
-![Grounded Question 1 on Medical History](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_164.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_164.png" alt="Grounded Question 1 on Medical History" width="250">
 <!-- slide -->
-![Turn 2: Appetite & Digestion with Food Icons](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_165.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_165.png" alt="Turn 2: Appetite & Digestion with Food Icons" width="250">
 <!-- slide -->
-![Turn 3: Specific Metformin Adherence Inquiry with Medicine Icons](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_166.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_166.png" alt="Turn 3: Specific Metformin Adherence Inquiry with Medicine Icons" width="250">
 <!-- slide -->
-![Turn 4: Bowel Movement Inquiry with Check & Calendar Icons](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_167.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_167.png" alt="Turn 4: Bowel Movement Inquiry with Check & Calendar Icons" width="250">
 <!-- slide -->
-![Turn 5: Sleep Disruption Final Question with Moon Icon](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_168.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_168.png" alt="Turn 5: Sleep Disruption Final Question with Moon Icon" width="250">
 <!-- slide -->
-![Intake Completed Successfully with Home CTA](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_169.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_169.png" alt="Intake Completed Successfully with Home CTA" width="250">
 <!-- slide -->
-![Source Medical Records & Prescriptions in History](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_172.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_172.png" alt="Source Medical Records & Prescriptions in History" width="250">
 <!-- slide -->
-![Immediate Red-Flag Emergency Flow Triggered for Chest Pain](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_185.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_185.png" alt="Immediate Red-Flag Emergency Flow Triggered for Chest Pain" width="250">
 ````
 
 - **Turn 1 (Screenshot 164)**: Gemini clinically integrates the patient's recorded Diabetes diagnosis:
@@ -244,19 +244,19 @@ To satisfy clinical usability in rural kiosks and adhere to rigorous clinical sa
 The document pipeline processes prescriptions and lab reports directly via Gemini Vision and Supabase Cloud Storage:
 
 ````carousel
-![Document Details - Parsed Medications](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_101.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_101.png" alt="Document Details - Parsed Medications" width="250">
 <!-- slide -->
-![Original Scan Preview](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_102.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_102.png" alt="Original Scan Preview" width="250">
 <!-- slide -->
-![Audit Trail & Verification Status](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_104.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_104.png" alt="Audit Trail & Verification Status" width="250">
 <!-- slide -->
-![Medical History & Document Timeline](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_105.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_105.png" alt="Medical History & Document Timeline" width="250">
 <!-- slide -->
-![Document Upload Picker](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_107.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_107.png" alt="Document Upload Picker" width="250">
 <!-- slide -->
-![Patient Item Verification & Drug Interaction](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_108.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_108.png" alt="Patient Item Verification & Drug Interaction" width="250">
 <!-- slide -->
-![Verified Document Locked into History](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_109.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_109.png" alt="Verified Document Locked into History" width="250">
 ````
 
 - **Cloud Storage**: Scanned documents uploaded securely to Supabase bucket `medical-documents`.
@@ -272,19 +272,19 @@ The document pipeline processes prescriptions and lab reports directly via Gemin
 Patients can discover hospitals, select doctor slots, configure clinical data sharing scope, and obtain digital OPD token slips:
 
 ````carousel
-![Hospital Discovery Screen](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_134.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_134.png" alt="Hospital Discovery Screen" width="250">
 <!-- slide -->
-![Doctor & Slot Selection](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_135.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_135.png" alt="Doctor & Slot Selection" width="250">
 <!-- slide -->
-![Booking Wizard & Urgency](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_136.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_136.png" alt="Booking Wizard & Urgency" width="250">
 <!-- slide -->
-![Consent Scope Picker & Confirm](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_137.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_137.png" alt="Consent Scope Picker & Confirm" width="250">
 <!-- slide -->
-![OPD Token Slip A-042](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_128.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_128.png" alt="OPD Token Slip A-042" width="250">
 <!-- slide -->
-![Token Slip DPDP Summary & Actions](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_129.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_129.png" alt="Token Slip DPDP Summary & Actions" width="250">
 <!-- slide -->
-![Upcoming Appointments List](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_127.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_127.png" alt="Upcoming Appointments List" width="250">
 ````
 
 - **Hospital Discovery**: Lists institutes sorted by GPS proximity with real-time queue wait estimates (e.g., AIIA: 15 min wait, Charak Palika: 5 min wait).
@@ -303,11 +303,11 @@ Patients can discover hospitals, select doctor slots, configure clinical data sh
 Patients retain complete sovereignty over their clinical data in accordance with the Digital Personal Data Protection Act 2023:
 
 ````carousel
-![Profile & ABHA ID](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_131.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_131.png" alt="Profile & ABHA ID" width="250">
 <!-- slide -->
-![Emergency Contacts & DPDP Rights](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_132.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_132.png" alt="Emergency Contacts & DPDP Rights" width="250">
 <!-- slide -->
-![Active Consents Manager](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_133.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_133.png" alt="Active Consents Manager" width="250">
 ````
 
 - **ABHA ID Integration**: Displayed with verified badge (`91-2345-6789-0123`).
@@ -328,15 +328,15 @@ Patients retain complete sovereignty over their clinical data in accordance with
 Real-world validation on the connected Xiaomi Redmi Note 8 (`509191a3`) demonstrating patient data sovereignty under India's Digital Personal Data Protection (DPDP) Act 2023 and ABDM standards:
 
 ````carousel
-![Live Upcoming Appointments](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_190.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_190.png" alt="Live Upcoming Appointments" width="250">
 <!-- slide -->
-![Consent Revocation Dialog](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_191.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_191.png" alt="Consent Revocation Dialog" width="250">
 <!-- slide -->
-![Access Revoked Confirmation](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_192.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_192.png" alt="Access Revoked Confirmation" width="250">
 <!-- slide -->
-![Cancellation Confirmation Dialog](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_194.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_194.png" alt="Cancellation Confirmation Dialog" width="250">
 <!-- slide -->
-![Past Appointments Tab Verified](/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_206.png)
+<img src="/home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_206.png" alt="Past Appointments Tab Verified" width="250">
 ````
 
 1. **Active Data Access Revocation**:

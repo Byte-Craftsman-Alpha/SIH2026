@@ -23,7 +23,7 @@ MediKiosk has been tested and verified across all components:
 - **Phone Login & Auto-Auth (P-04)**: Phone number `9876543210` logs in patient **Ramesh Kumar**.
 - **Home Dashboard (P-06)**: Personal greeting *"नमस्ते, रमेश जी!"*, Prakriti indicator (`वात-पित्त`), quick service grid, and active OPD token notification.
 
-![Home Dashboard on Redmi Note 8](file:///home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_82.png)
+<img src="file:///home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_82.png" alt="Home Dashboard on Redmi Note 8" width="250">
 
 ---
 
@@ -33,7 +33,7 @@ MediKiosk has been tested and verified across all components:
 - **Booking Wizard**: Context checklist (AI Intake Summary, Prescriptions, Labs) and DPDP consent window configuration (24 hours / OPD session).
 - **Confirmation & Token Card**: Generated OPD token **`A-042`**, Room 104 OPD Block A, queue countdown ("आपके आगे 4 मरीज हैं").
 
-![OPD Token Confirmation](file:///home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_80.png)
+<img src="file:///home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_80.png" alt="OPD Token Confirmation" width="250">
 
 ---
 
@@ -44,8 +44,8 @@ MediKiosk has been tested and verified across all components:
 - **Right to Erasure**: Permanent data erasure request submission (#REQ-8821) processed under 72h nodal officer timeline.
 - **Consent Revocation**: Live review and one-tap revocation of data sharing for any active appointment.
 
-![Profile & Prakriti Assessment](file:///home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_84.png)
-![DPDP Data Rights & Erasure](file:///home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_85.png)
+<img src="file:///home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_84.png" alt="Profile & Prakriti Assessment" width="250">
+<img src="file:///home/aditya/.gemini/antigravity/brain/f8952fdc-0e64-47a3-af20-092898a297b3/device_screenshot_85.png" alt="DPDP Data Rights & Erasure" width="250">
 
 ---
 
