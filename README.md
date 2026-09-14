@@ -1,6 +1,6 @@
 # MediKiosk — AI-Powered Clinical History Intake & OPD Triage Platform
 
-[![Build & Release](https://github.com/aditya/medikiosk/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/aditya/medikiosk/actions/workflows/build-and-release.yml)
+[![Latest Release](https://img.shields.io/badge/Release-Beta/Prototype-blue?logo=github)](https://github.com/Byte-Craftsman-Alpha/SIH2026/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Platform: Android & iOS](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-blue.svg)](https://flutter.dev)
 [![Backend: FastAPI & Vercel](https://img.shields.io/badge/Backend-FastAPI%20%7C%20Vercel%20Serverless-green.svg)](https://fastapi.tiangolo.com)
@@ -96,7 +96,7 @@
 
 | DPDP Consent Revoked | OPD Token Booked (A-008) | OCR & Drug Safety Alert |
 | :---: | :---: | :---: |
-| ![Revoke](Docs/screenshots/device_screenshot_412.png) | ![Token](Docs/screenshots/device_screenshot_420.png) | ![OCR](Docs/screenshots/device_screenshot_27.png) |
+| ![Revoke](Docs/screenshots/device_screenshot_433.png) | ![Token](Docs/screenshots/device_screenshot_431.png) | ![OCR](Docs/screenshots/device_screenshot_27.png) |
 
 ---
 
