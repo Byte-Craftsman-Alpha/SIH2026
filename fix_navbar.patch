@@ -1,0 +1,24 @@
+--- V1/medikiosk_app/lib/design/tokens.dart
++++ V1/medikiosk_app/lib/design/tokens.dart
+@@ -330,6 +330,17 @@
+       iconTheme: IconThemeData(color: textPrimary),
+       titleTextStyle: T.titleL(color: textPrimary),
+     ),
++    navigationBarTheme: NavigationBarThemeData(
++      backgroundColor: surfaceBg,
++      indicatorColor: isDark ? C.primaryContainerDark : C.primaryContainer,
++      labelTextStyle: WidgetStateProperty.resolveWith((states) {
++        if (states.contains(WidgetState.selected)) {
++          return T.labelM(color: isDark ? C.primaryDarkTheme : C.primary).copyWith(fontWeight: FontWeight.bold);
++        }
++        return T.labelM(color: textMuted);
++      }),
++      iconTheme: WidgetStateProperty.resolveWith((states) {
++        if (states.contains(WidgetState.selected)) {
++          return IconThemeData(color: isDark ? C.onPrimaryContainerDark : C.primaryDeep);
++        }
++        return IconThemeData(color: textMuted);
++      }),
++    ),
+     pageTransitionsTheme: const PageTransitionsTheme(
+       builders: {

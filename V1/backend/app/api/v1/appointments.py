@@ -273,6 +273,23 @@ async def get_appointment(id: str, user: User = Depends(get_current_user), db: A
         }
     )
 
+import requests
+from app.config import settings
+
+def notify_his_status_change(appt_id: str, status: str, db: AsyncSession):
+    if not settings.HIS_PUSH_URL:
+        return
+    try:
+        payload = {"appointment_id": appt_id, "status": status, "timestamp": datetime.datetime.utcnow().isoformat()}
+        requests.post(
+            f"{settings.HIS_PUSH_URL}/appointment-status",
+            json=payload,
+            timeout=settings.HIS_PUSH_TIMEOUT_SECONDS,
+            headers={"Content-Type": "application/json"}
+        )
+    except Exception:
+        pass # Suppress HIS timeout/failure
+
 @router.post("/appointments/{id}/cancel")
 async def cancel_appointment(id: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     appt = (await db.execute(select(Appointment).where(Appointment.id == id, Appointment.user_id == user.id))).scalar_one_or_none()
@@ -281,6 +298,7 @@ async def cancel_appointment(id: str, user: User = Depends(get_current_user), db
 
     appt.status = "cancelled"
     await db.commit()
+    notify_his_status_change(appt.id, "cancelled", db)
     return {"status": "cancelled", "message": "Appointment cancelled successfully"}
 
 @router.post("/appointments/{id}/reschedule")
@@ -292,7 +310,9 @@ async def reschedule_appointment(id: str, req: dict, user: User = Depends(get_cu
     new_slot = req.get("new_slot")
     if new_slot:
         appt.slot_start = datetime.datetime.utcnow() + datetime.timedelta(days=1, hours=2)
+    appt.status = "rescheduled"
     await db.commit()
+    notify_his_status_change(appt.id, "rescheduled", db)
     return {"status": "rescheduled", "message": "Appointment rescheduled to new slot"}
 
 @router.post("/appointments/{id}/revoke-access")

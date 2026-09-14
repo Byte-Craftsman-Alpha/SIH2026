@@ -405,3 +405,14 @@ async def seed_demo_data(db: AsyncSession):
     db.add(appt2)
 
     await db.commit()
+
+MOCK_PATIENT_ABHA_PROFILE = {
+    "abhaNumber": "91-3422-9844-1234",
+    "name": "Ramesh Kumar",
+    "gender": "M",
+    "yearOfBirth": "1960",
+    "monthOfBirth": "05",
+    "dayOfBirth": "12",
+    "mobile": "9876543210",
+    "phrAddress": ["ramesh1960@abdm"]
+}

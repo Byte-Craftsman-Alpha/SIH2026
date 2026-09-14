@@ -74,6 +74,25 @@ async def build_fhir_bundle(req: dict, db: AsyncSession = Depends(get_db)):
         ]
     }
 
+    import requests
+    from app.config import settings
+
+    push_status = "mock_gateway"
+    if settings.HIS_PUSH_URL:
+        try:
+            r = requests.post(
+                settings.HIS_PUSH_URL,
+                json=bundle,
+                timeout=settings.HIS_PUSH_TIMEOUT_SECONDS,
+                headers={"Content-Type": "application/fhir+json"}
+            )
+            r.raise_for_status()
+            push_status = "delivered_to_his"
+        except requests.exceptions.Timeout:
+            push_status = "his_timeout_fallback"
+        except Exception:
+            push_status = "his_error_fallback"
+
     # Record push audit
     audit = AuditLog(
         id=f"aud_{uuid.uuid4().hex[:8]}",
@@ -82,7 +101,7 @@ async def build_fhir_bundle(req: dict, db: AsyncSession = Depends(get_db)):
         action="ABDM_FHIR_BUNDLE_DISPATCH",
         target_type="bundle",
         target_id=bundle_id,
-        meta_json={"status": "dispatched_to_mock_gateway", "abdm_consent_checked": True},
+        meta_json={"status": push_status, "abdm_consent_checked": True, "target_url": settings.HIS_PUSH_URL},
         ip="127.0.0.1"
     )
     db.add(audit)
@@ -91,7 +110,7 @@ async def build_fhir_bundle(req: dict, db: AsyncSession = Depends(get_db)):
     return {
         "status": "success",
         "bundle_id": bundle_id,
-        "abdm_gateway": "sandbox.abdm.gov.in (Mock)",
+        "abdm_gateway": push_status,
         "fhir_r4_bundle": bundle,
         "message": "HL7 FHIR R4 Bundle constructed and pushed to ABDM Health Information Provider interface."
     }

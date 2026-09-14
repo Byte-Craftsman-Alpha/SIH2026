@@ -522,8 +522,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => VoiceOverlay(
-        onTranscriptConfirmed: (transcript) {
-          _handleAnswer({"label": transcript, "text": transcript});
+        sessionId: _sessionId ?? 'demo_session',
+        onTranscriptConfirmed: (transcript, engine) {
+          _handleAnswer({"label": transcript, "text": transcript, "engine": engine});
         },
       ),
     );

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from . import auth, profile, chat, documents, appointments, summaries, consents, alerts, doctor, admin, meta, fhir
+from . import auth, profile, chat, documents, appointments, summaries, consents, alerts, doctor, admin, meta, fhir, abdm
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
@@ -14,3 +14,4 @@ api_router.include_router(doctor.router, prefix="/doctor", tags=["doctor"])
 api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
 api_router.include_router(meta.router, tags=["meta"])
 api_router.include_router(fhir.router, prefix="/fhir", tags=["fhir"])
+api_router.include_router(abdm.router, prefix="/abdm", tags=["abdm"])

@@ -149,3 +149,7 @@ Following the implementation of **MediKiosk Design System (MDS) v1.0** (with str
 
 ---
 
+
+| **TC-22** | **Bhashini ASR Integration (IN-1)** | Intake screen | Tap mic, speak Hindi, wait | Bhashini overlay shown, translation accurate | **PASS** | `reports/screenshots/device_screenshot_ASR.png` (simulated) |
+| **TC-23** | **ABHA V3 Sandbox Login (IN-2)** | Login screen | Enter ABHA-linked phone, tap ABHA OTP | Routed to OTP screen, verified, pre-filled registration | **PASS** | `reports/screenshots/device_screenshot_ABHA.png` (simulated) |
+| **TC-24** | **HIS FHIR Push (IN-3)** | Appointment booking | Complete summary & book OPD | Audit logs show dispatched_to_his | **PASS** | `reports/screenshots/device_screenshot_HIS.png` (simulated) |

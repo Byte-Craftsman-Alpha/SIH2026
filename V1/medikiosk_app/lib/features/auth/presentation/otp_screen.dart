@@ -11,7 +11,8 @@ import '../../../../data/repositories/auth_repository.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
   final String phone;
-  const OtpScreen({super.key, this.phone = "+91 98765-43210"});
+  final String? abhaTxnId;
+  const OtpScreen({super.key, this.phone = "+91 98765-43210", this.abhaTxnId});
 
   @override
   ConsumerState<OtpScreen> createState() => _OtpScreenState();
@@ -66,28 +67,55 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     setState(() => _isLoading = true);
     final authRepo = AuthRepository();
     final cleanPhone = widget.phone.replaceAll('+91', '').replaceAll(' ', '').replaceAll('-', '').trim();
-    final result = await authRepo.verifyOtp(cleanPhone, otp);
-
-    if (!mounted) return;
-    setState(() => _isLoading = false);
-
-    if (result['success'] == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('सफलतापूर्वक सत्यापित! (Authentication Successful)'),
-          backgroundColor: AppColors.successLight,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      context.go('/home');
+    
+    if (widget.abhaTxnId != null) {
+      // ABHA Flow
+      final result = await authRepo.verifyAbhaOtp(widget.abhaTxnId!, otp);
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      if (result['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('ABHA सत्यापित! पंजीकरण पूरा करें (ABHA Verified!)'),
+            backgroundColor: AppColors.successLight,
+          ),
+        );
+        // Instead of directly going to home, go to register passing the abha details
+        // In a real app we'd pass this via Provider or State, for demo we can push to /register
+        context.push('/register'); // the actual implementation can pick up mock ABHA profile internally or pass extra
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message']?.toString() ?? 'Invalid ABHA OTP'),
+            backgroundColor: AppColors.emergencyLight,
+          ),
+        );
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['message']?.toString() ?? 'गलत OTP दर्ज किया गया (Invalid OTP)'),
-          backgroundColor: AppColors.emergencyLight,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      // Normal Flow
+      final result = await authRepo.verifyOtp(cleanPhone, otp);
+
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      if (result['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('सफलतापूर्वक सत्यापित! (Authentication Successful)'),
+            backgroundColor: AppColors.successLight,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        context.go('/home');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message']?.toString() ?? 'गलत OTP दर्ज किया गया (Invalid OTP)'),
+            backgroundColor: AppColors.emergencyLight,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 

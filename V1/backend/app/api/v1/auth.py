@@ -1,3 +1,4 @@
+from app.models.audit_log import AuditLog
 import uuid
 import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -57,6 +58,22 @@ async def otp_verify(req: OTPVerifyRequest, db: AsyncSession = Depends(get_db)):
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(req: RegisterRequest, db: AsyncSession = Depends(get_db)):
     clean_phone = req.phone.replace("+91", "").replace(" ", "").replace("-", "")
+    
+    # Auto-fill from ABHA profile if provided
+    final_name = req.name
+    final_gender = req.gender
+    final_dob = req.dob
+    abha_id = req.abha_id
+    
+    if req.abha_verified_profile:
+        ab = req.abha_verified_profile
+        if not final_name and ab.get("name"): final_name = ab["name"]
+        if not final_gender and ab.get("gender"): final_gender = ab["gender"]
+        if not final_dob and ab.get("yearOfBirth"):
+            final_dob = f'{ab["yearOfBirth"]}-{ab.get("monthOfBirth", "01")}-{ab.get("dayOfBirth", "01")}'
+        if ab.get("abhaNumber"):
+            abha_id = ab["abhaNumber"]
+    
     # Check if user exists
     existing = (await db.execute(select(User).where(User.phone == clean_phone))).scalar_one_or_none()
     if existing:
@@ -75,20 +92,20 @@ async def register(req: RegisterRequest, db: AsyncSession = Depends(get_db)):
 
     # Parse DOB
     try:
-        dob_date = datetime.date.fromisoformat(req.dob)
+        dob_date = datetime.date.fromisoformat(final_dob)
     except Exception:
         dob_date = datetime.date(1990, 1, 1)
 
     user_id = f"usr_{uuid.uuid4().hex[:8]}"
     new_user = User(
         id=user_id,
-        name=req.name,
+        name=final_name,
         dob=dob_date,
-        gender=req.gender.lower(),
+        gender=final_gender.lower(),
         phone=clean_phone,
         email=req.email,
         language=req.language or "hi",
-        abha_id=req.abha_id or f"91-{clean_phone[:4]}-{clean_phone[4:8]}-{clean_phone[8:]}",
+        abha_id=abha_id or f"91-{clean_phone[:4]}-{clean_phone[4:8]}-{clean_phone[8:]}",
         role=RoleEnum.patient,
         hashed_password=None,
         is_active=True
@@ -141,6 +158,19 @@ async def register(req: RegisterRequest, db: AsyncSession = Depends(get_db)):
         audio_flag=req.consent.audio_consent_flag if req.consent else True
     )
     db.add(consent)
+    if req.abha_verified_profile:
+        audit = AuditLog(
+            id=f"al_{uuid.uuid4().hex[:8]}",
+            actor_type="patient",
+            actor_id=user_id,
+            action="ABHA_VERIFIED_LOGIN",
+            target_type="system",
+            target_id=user_id,
+            meta_json={"abha": abha_id},
+            ip="0.0.0.0"
+        )
+        db.add(audit)
+
 
     await db.commit()
 

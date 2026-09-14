@@ -46,7 +46,8 @@ class AnswerResponse(BaseModel):
     summary_id: Optional[str] = None
 
 class VoiceUploadResponse(BaseModel):
-    transcript: str
+    transcript: Optional[str] = None
+    engine: str = "fallback"
     mapped_option: Optional[str] = None
     confidence: float = 0.92
 

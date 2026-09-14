@@ -334,6 +334,22 @@ ThemeData buildMediKioskTheme({bool isDark = false}) {
       iconTheme: IconThemeData(color: textPrimary),
       titleTextStyle: T.titleL(color: textPrimary),
     ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: surfaceBg,
+      indicatorColor: isDark ? C.primaryContainerDark : C.primaryContainer,
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return T.labelM(color: isDark ? C.primaryDarkTheme : C.primary).copyWith(fontWeight: FontWeight.bold);
+        }
+        return T.labelM(color: textMuted);
+      }),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return IconThemeData(color: isDark ? C.white : C.primaryDeep);
+        }
+        return IconThemeData(color: textMuted);
+      }),
+    ),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
         TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),

@@ -1,3 +1,4 @@
+from typing import Optional
 import uuid
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -213,14 +214,46 @@ async def post_answer(id: str, req: AnswerRequest, user: User = Depends(get_curr
         session_status="in_progress"
     )
 
+from fastapi import UploadFile, File, Form
+from app.services.bhashini_service import bhashini_service
+
 @router.post("/sessions/{id}/voice", response_model=VoiceUploadResponse)
-async def post_voice(id: str, user: User = Depends(get_current_user)):
-    # Demo simulated ASR output
+async def post_voice(
+    id: str, 
+    transcript: Optional[str] = Form(None), 
+    file: Optional[UploadFile] = File(None),
+    user: User = Depends(get_current_user)
+):
+    engine = "fallback"
+    final_transcript = None
+    
+    if transcript:
+        final_transcript = transcript
+        engine = "device"
+    elif file:
+        audio_bytes = await file.read()
+        res = bhashini_service.transcribe(audio_bytes)
+        if res:
+            final_transcript = res
+            engine = "bhashini"
+            
     return VoiceUploadResponse(
-        transcript="Mujhe 3 din se pet mein jalan aur dard hai",
-        mapped_option="B",
+        transcript=final_transcript,
+        engine=engine,
+        mapped_option=None,
         confidence=0.91
     )
+
+@router.post("/asr/test")
+async def asr_test(
+    lang: str = Form("hi"), 
+    file: UploadFile = File(...)
+):
+    audio_bytes = await file.read()
+    res = bhashini_service.transcribe(audio_bytes, source_lang=lang)
+    if res:
+        return {"transcript": res, "engine": "bhashini"}
+    return {"transcript": None, "engine": "fallback"}
 
 @router.post("/sessions/{id}/skip")
 async def skip_q(id: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):

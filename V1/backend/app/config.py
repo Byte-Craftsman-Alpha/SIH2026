@@ -31,6 +31,24 @@ class Settings(BaseSettings):
     VERIFY_ENABLED: bool = True
     MOCK_GEMINI: bool = False
 
+    # Bhashini credentials
+    BHASHINI_USER_ID: str = ""
+    BHASHINI_ULCA_API_KEY: str = ""
+    BHASHINI_ASR_PIPELINE_ID: str = ""
+    BHASHINI_TTS_PIPELINE_ID: str = ""
+
+    # ABDM Sandbox credentials
+    ABDM_CLIENT_ID: str = ""
+    ABDM_CLIENT_SECRET: str = ""
+    ABDM_BASE_URL: str = "https://dev.abdm.gov.in/api/hiecm"
+    ABHA_BASE_URL: str = "https://abhasbx.abdm.gov.in/abha/api"
+    ABDM_CM_ID: str = "sbx"
+    ABHA_MOCK_MODE: bool = False
+
+    # HIS Push configuration
+    HIS_PUSH_URL: str = ""
+    HIS_PUSH_TIMEOUT_SECONDS: int = 15
+
     # Mock responses for testing / offline demo
     MOCK_RESPONSES: Dict[str, Any] = {
         "InterviewStep": {

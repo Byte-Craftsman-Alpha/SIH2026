@@ -86,6 +86,12 @@
    - Interaction alert: Flags simultaneous Triphala Churna and Metformin intake (hypoglycemia risk).
    - Human-in-the-loop verification and immediate timeline persistence.
 
+6. **Government Interoperability (ABDM / Bhashini)**:
+   - **Bhashini ASR (IN-1)**: Multilingual Hindi speech-to-text integration with auto-fallback to device STT.
+   - **ABHA V3 Login (IN-2)**: Secure Aadhaar-based OTP login with instant registration pre-fill.
+   - **HIS FHIR Push (IN-3)**: Automatic HL7 FHIR R4 standard bundle dispatches to external Hospital Information Systems.
+   - *For exact integration details and fallback testing, see the [Integration Test Report](V1/reports/MODULES_TEST_REPORT.md).*
+
 ---
 
 ## 📸 Real-Device Verification Screenshots

@@ -30,6 +30,7 @@ class RegisterRequest(BaseModel):
     email: Optional[str] = None
     language: Optional[str] = "hi"
     abha_id: Optional[str] = None
+    abha_verified_profile: Optional[Dict[str, Any]] = None
     aadhaar_ref: Optional[str] = None
     emergency_contacts: Optional[List[EmergencyContactItem]] = []
     emergency_pre_consent: Optional[bool] = True

@@ -97,10 +97,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/otp',
         pageBuilder: (context, state) {
           final phone = state.uri.queryParameters['phone'] ?? '+91 98765-43210';
+          final abhaTxnId = state.uri.queryParameters['abhaTxnId'];
           return _buildSmoothPage(
             context: context,
             state: state,
-            child: OtpScreen(phone: phone),
+            child: OtpScreen(phone: phone, abhaTxnId: abhaTxnId),
           );
         },
       ),

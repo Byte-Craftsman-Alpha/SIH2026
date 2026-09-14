@@ -15,10 +15,7 @@ abstract class AppConstants {
   static const String betaEmulatorUrl = 'http://10.0.2.2:8000/api/v1';
 
   // Deployed Normal Backend (Vercel Serverless + Supabase cloud storage & database)
-  static const String defaultVercelUrl = String.fromEnvironment(
-    'VERCEL_URL',
-    defaultValue: 'https://backend-three-alpha-77.vercel.app/api/v1',
-  );
+  static const String defaultVercelUrl = 'http://10.139.158.195:8000/api/v1';
 
   // Active default URL
   static String get apiBaseUrl =>
