@@ -90,13 +90,31 @@
 
 ## 📸 Real-Device Verification Screenshots
 
-| User Registration Wizard | Environment Selector & Ping | AYUSH Clinical Intake |
-| :---: | :---: | :---: |
-| <img src="Docs/screenshots/06_registration_step1_identity.png" width="250" height="541"> | <img src="Docs/screenshots/29_profile_screen.png" width="250" height="541"> | <img src="Docs/screenshots/15_chat_intake_general_complaints.png" width="250" height="541"> |
+<table width="100%">
+  <tr>
+    <th width="33%" align="center">User Registration Wizard</th>
+    <th width="33%" align="center">Environment Selector & Ping</th>
+    <th width="33%" align="center">AYUSH Clinical Intake</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="Docs/screenshots/06_registration_step1_identity.png" width="250"></td>
+    <td align="center"><img src="Docs/screenshots/29_profile_screen.png" width="250"></td>
+    <td align="center"><img src="Docs/screenshots/15_chat_intake_general_complaints.png" width="250"></td>
+  </tr>
+</table>
 
-| DPDP Consent Revoked | OPD Token Booked (A-008) | OCR & Drug Safety Alert |
-| :---: | :---: | :---: |
-| <img src="Docs/screenshots/device_screenshot_433.png" width="250" height="541"> | <img src="Docs/screenshots/device_screenshot_431.png" width="250" height="541"> | <img src="Docs/screenshots/device_screenshot_27.png" width="250" height="541"> |
+<table width="100%">
+  <tr>
+    <th width="33%" align="center">DPDP Consent Revoked</th>
+    <th width="33%" align="center">OPD Token Booked (A-008)</th>
+    <th width="33%" align="center">OCR & Drug Safety Alert</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="Docs/screenshots/device_screenshot_433.png" width="250"></td>
+    <td align="center"><img src="Docs/screenshots/device_screenshot_431.png" width="250"></td>
+    <td align="center"><img src="Docs/screenshots/device_screenshot_27.png" width="250"></td>
+  </tr>
+</table>
 
 ---
 
