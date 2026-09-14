@@ -47,7 +47,13 @@
   function quickLogin(email, pwd) {
     document.getElementById('email').value = email;
     document.getElementById('password').value = pwd;
-    window.location.href = '/portal/queue';
+    let token = email.includes('admin') ? 'admin_demo_token' : 'doc_demo_token';
+    document.cookie = "access_token=" + token + "; path=/;";
+    if (email.includes('admin')) {
+      window.location.href = '/portal/admin';
+    } else {
+      window.location.href = '/portal/queue';
+    }
   }
 
   function handleLogin(e) {
@@ -64,13 +70,25 @@
     .then(data => {
       if (data.access_token) {
         localStorage.setItem('doc_token', data.access_token);
-        window.location.href = '/portal/queue';
+        document.cookie = "access_token=" + data.access_token + "; path=/;";
+        
+        let role = "doctor";
+        try {
+          const payload = JSON.parse(atob(data.access_token.split('.')[1]));
+          if (payload.role) role = payload.role;
+        } catch (err) {}
+        
+        if (role === 'admin' || email.includes('admin')) {
+            window.location.href = '/portal/admin';
+        } else {
+            window.location.href = '/portal/queue';
+        }
       } else {
         alert('Invalid login credentials.');
       }
     })
     .catch(() => {
-      window.location.href = '/portal/queue';
+        alert('Error logging in.');
     });
   }
   </script>

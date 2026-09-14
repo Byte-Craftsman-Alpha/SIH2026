@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
@@ -11,12 +11,18 @@ from typing import Optional
 security = HTTPBearer(auto_error=False)
 
 async def get_current_user(
+    request: Request,
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
     db: AsyncSession = Depends(get_db)
 ) -> User:
-    # Check if credentials provided
+    # Check if credentials provided or token in cookies
+    token = None
     if credentials:
         token = credentials.credentials
+    elif request.cookies.get("access_token"):
+        token = request.cookies.get("access_token")
+        
+    if token:
         if token == "demo_token" or token == "demo":
             # Return demo user Ramesh
             result = await db.execute(select(User).where(User.id == "user_ramesh"))
@@ -56,7 +62,7 @@ async def get_current_user(
 
 def require_roles(roles: list[RoleEnum]):
     async def role_checker(user: User = Depends(get_current_user)):
-        if user.role not in roles and RoleEnum.admin not in roles:
+        if user.role not in roles and user.role != RoleEnum.admin:
             # In demo mode, if doctor required and current user is patient, try to get doctor
             if RoleEnum.doctor in roles and settings.DEMO_MODE:
                 return user

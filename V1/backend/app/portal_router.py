@@ -14,6 +14,8 @@ from app.models.user import User
 from app.models.alert import Alert
 from app.models.consent import Consent
 from app.models.audit_log import AuditLog
+from app.dependencies import require_roles, get_current_user
+from app.models.user import RoleEnum
 
 templates = Jinja2Templates(directory="app/templates")
 portal_router = APIRouter()
@@ -28,7 +30,7 @@ async def portal_login(request: Request):
     return templates.TemplateResponse(request=request, name="login.html")
 
 @portal_router.get("/queue", response_class=HTMLResponse)
-async def portal_queue(request: Request, db: AsyncSession = Depends(get_db)):
+async def portal_queue(request: Request, db: AsyncSession = Depends(get_db), user: User = Depends(require_roles([RoleEnum.doctor]))):
     appts = (await db.execute(select(Appointment).order_by(Appointment.urgency.desc(), Appointment.slot_start.asc()))).scalars().all()
     queue_data = []
 
@@ -44,16 +46,21 @@ async def portal_queue(request: Request, db: AsyncSession = Depends(get_db)):
         parts = p_name.split()
         masked_name = f"{parts[0]} {parts[1][0]}***" if len(parts) > 1 else f"{p_name[:3]}***"
 
+        # Dynamically calculate age from dob if available
+        age = 45
+        if patient and patient.dob:
+            age = (datetime.date.today() - patient.dob).days // 365
+
         queue_data.append({
             "appointment_id": a.id,
-            "token_no": a.token_no or "A-042",
+            "token_no": a.token_no or "A-000",
             "patient_name_masked": masked_name,
-            "age": 64 if "ramesh" in a.user_id else 45,
-            "gender": patient.gender if patient else "male",
-            "time": a.slot_start.strftime("%I:%M %p") if a.slot_start else "10:30 AM",
+            "age": age,
+            "gender": patient.gender if patient else "unknown",
+            "time": a.slot_start.strftime("%I:%M %p") if a.slot_start else "N/A",
             "urgency": a.urgency or "regular",
             "summary_ready": (summary is not None),
-            "summary_id": summary.id if summary else "sum_ramesh_01",
+            "summary_id": summary.id if summary else "",
             "red_flag": (a.urgency == "urgent")
         })
 
@@ -63,12 +70,13 @@ async def portal_queue(request: Request, db: AsyncSession = Depends(get_db)):
         context={
             "active_page": "queue",
             "queue": queue_data,
-            "today_date": datetime.date.today().strftime("%d %B %Y")
+            "today_date": datetime.date.today().strftime("%d %B %Y"),
+            "user": user
         }
     )
 
 @portal_router.get("/summary/{id}", response_class=HTMLResponse)
-async def portal_summary(id: str, request: Request, lang: str = "hi", db: AsyncSession = Depends(get_db)):
+async def portal_summary(id: str, request: Request, lang: str = "hi", db: AsyncSession = Depends(get_db), user: User = Depends(require_roles([RoleEnum.doctor]))):
     summary = (await db.execute(select(Summary).where(Summary.id == id))).scalar_one_or_none()
     if not summary:
         summary = (await db.execute(select(Summary))).scalars().first()
@@ -99,29 +107,30 @@ async def portal_summary(id: str, request: Request, lang: str = "hi", db: AsyncS
             },
             "content": summary.content_json if summary else {},
             "source_docs": source_docs,
-            "lang": lang
+            "lang": lang,
+            "user": user
         }
     )
 
 @portal_router.get("/exam/{visit_id}", response_class=HTMLResponse)
-async def portal_exam(visit_id: str, request: Request):
+async def portal_exam(visit_id: str, request: Request, user: User = Depends(require_roles([RoleEnum.doctor]))):
     return templates.TemplateResponse(
         request=request,
         name="ayush_exam.html",
-        context={"active_page": "queue", "visit_id": visit_id}
+        context={"active_page": "queue", "visit_id": visit_id, "user": user}
     )
 
 @portal_router.get("/triage", response_class=HTMLResponse)
-async def portal_triage(request: Request, db: AsyncSession = Depends(get_db)):
+async def portal_triage(request: Request, db: AsyncSession = Depends(get_db), user: User = Depends(require_roles([RoleEnum.doctor]))):
     alerts = (await db.execute(select(Alert).order_by(Alert.created_at.desc()).limit(15))).scalars().all()
     return templates.TemplateResponse(
         request=request,
         name="triage.html",
-        context={"active_page": "triage", "alerts": alerts}
+        context={"active_page": "triage", "alerts": alerts, "user": user}
     )
 
 @portal_router.get("/admin", response_class=HTMLResponse)
-async def portal_admin(request: Request, db: AsyncSession = Depends(get_db)):
+async def portal_admin(request: Request, db: AsyncSession = Depends(get_db), user: User = Depends(require_roles([RoleEnum.admin]))):
     logs = (await db.execute(select(AuditLog).order_by(AuditLog.created_at.desc()).limit(20))).scalars().all()
     consents = (await db.execute(select(Consent))).scalars().all()
 
@@ -153,7 +162,8 @@ async def portal_admin(request: Request, db: AsyncSession = Depends(get_db)):
                 "active_grants": active_c,
                 "revoked_grants": revoked_c
             },
-            "audit_logs": formatted_logs
+            "audit_logs": formatted_logs,
+            "user": user
         }
     )
 

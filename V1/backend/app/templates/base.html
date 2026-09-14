@@ -17,16 +17,24 @@
         </div>
       </a>
       <div class="nav-links">
+        {% if user and user.role.value == 'admin' %}
+        <a href="/portal/admin" class="nav-link {% if active_page == 'admin' %}active{% endif %}">🛡️ Audit & DPDP</a>
+        {% else %}
         <a href="/portal/queue" class="nav-link {% if active_page == 'queue' %}active{% endif %}">📋 Today's Queue</a>
         <a href="/portal/triage" class="nav-link {% if active_page == 'triage' %}active{% endif %}">🚨 Triage Desk</a>
-        <a href="/portal/admin" class="nav-link {% if active_page == 'admin' %}active{% endif %}">🛡️ Audit & DPDP</a>
+        {% endif %}
       </div>
     </div>
 
     <div style="display: flex; align-items: center; gap: 1rem;">
       <div class="doc-badge">
+        {% if user and user.role.value == 'admin' %}
+        <span>🛡️</span>
+        <span>{{ user.name }} (Admin)</span>
+        {% else %}
         <span>👨‍⚕️</span>
-        <span>Dr. Rajesh Sharma</span>
+        <span>Dr. {{ user.name if user else 'Rajesh Sharma' }}</span>
+        {% endif %}
         <span style="color: var(--ayush-green); font-size: 0.75rem;">● Online</span>
       </div>
       <a href="/portal/login" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.8rem;">Logout</a>
