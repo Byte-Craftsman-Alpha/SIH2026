@@ -118,3 +118,5 @@ release_artifacts/
 release_notes/
 dist/android/
 dist/ios/
+.claude/
+*.log
