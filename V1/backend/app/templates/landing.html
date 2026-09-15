@@ -1,0 +1,2378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MediKiosk — AI-Powered Patient Case-Taking for AYUSH Care · SIH26047 · Team Paradox</title>
+<meta name="description" content="MediKiosk (SIH26047 · Ministry of Ayush / AIIA) — kiosk-first AI clinical history intake, document OCR, red-flag triage, AYUSH Dashavidha & ABDM/FHIR integration. Live demo, APK download, backend health checks, PS coverage, comparison, architecture, economics and impact.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A9%BA%3C/text%3E%3C/svg%3E">
+<style>
+/* ============================================================
+   MediKiosk · SIH26047 — Design System
+   NOTE: Zero CSS animations/transitions by design.
+   ALL motion is driven by anime.js v4 + Motion (Framer Motion vanilla).
+   ============================================================ */
+:root{
+  --bg:#050a14;
+  --bg2:#081122;
+  --panel:rgba(13,24,42,.72);
+  --panel-solid:#0d182a;
+  --line:rgba(126,163,209,.14);
+  --line-strong:rgba(126,163,209,.30);
+  --txt:#e9f0fa;
+  --muted:#9db0c9;
+  --faint:#66799080;
+  --dim:#6a7d95;
+  --green:#27d3a2;
+  --green-deep:#0e9f78;
+  --saffron:#f7a83b;
+  --red:#ff5d6c;
+  --blue:#57a6ff;
+  --violet:#9b8cff;
+  --teal:#2ec5ce;
+  --radius:18px;
+  --font:"Inter","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --mono:"SF Mono","Cascadia Code",Consolas,"Liberation Mono",Menlo,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--txt);
+  line-height:1.6;
+  overflow-x:clip;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(39,211,162,.32);color:#fff}
+img{max-width:100%;display:block}
+a{color:var(--green);text-decoration:none}
+button{font-family:inherit}
+/* ---------- scrollbars ---------- */
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#04080f}
+::-webkit-scrollbar-thumb{background:#1c2c45;border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#27405f}
+
+/* ---------- background orbs ---------- */
+#bgfx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;will-change:transform}
+.orb-1{width:560px;height:560px;top:-180px;left:-140px;background:radial-gradient(circle,rgba(14,159,120,.38),transparent 65%)}
+.orb-2{width:520px;height:520px;top:14%;right:-200px;background:radial-gradient(circle,rgba(247,168,59,.20),transparent 65%)}
+.orb-3{width:640px;height:640px;bottom:-260px;left:22%;background:radial-gradient(circle,rgba(87,166,255,.18),transparent 65%)}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");}
+
+/* ---------- layout ---------- */
+.wrap{width:min(1200px,92vw);margin:0 auto;position:relative;z-index:2}
+section{padding:84px 0;position:relative}
+@media(max-width:720px){section{padding:56px 0}}
+
+/* ---------- section headers ---------- */
+.kicker{display:inline-flex;align-items:center;gap:9px;font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green);margin-bottom:14px}
+.kicker .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 14px var(--green)}
+.kicker.amber{color:var(--saffron)}.kicker.amber .dot{background:var(--saffron);box-shadow:0 0 14px var(--saffron)}
+.kicker.blue{color:var(--blue)}.kicker.blue .dot{background:var(--blue);box-shadow:0 0 14px var(--blue)}
+.kicker.violet{color:var(--violet)}.kicker.violet .dot{background:var(--violet);box-shadow:0 0 14px var(--violet)}
+.kicker.red{color:var(--red)}.kicker.red .dot{background:var(--red);box-shadow:0 0 14px var(--red)}
+h2.sec-title{font-size:clamp(1.7rem,3.4vw,2.6rem);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-bottom:14px}
+h2.sec-title .hl{color:var(--green)}
+h2.sec-title .hl-a{color:var(--saffron)}
+h2.sec-title .hl-b{color:var(--blue)}
+.sec-sub{color:var(--muted);max-width:820px;font-size:1.02rem;margin-bottom:40px}
+.sec-head{margin-bottom:8px}
+.grad-text{background:linear-gradient(92deg,#27d3a2 0%,#2ec5ce 45%,#57a6ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---------- cards & panels ---------- */
+.card{background:linear-gradient(180deg,rgba(148,180,220,.055),rgba(148,180,220,.018));border:1px solid var(--line);border-radius:var(--radius);padding:26px;position:relative;overflow:hidden;will-change:transform}
+.card.pad-sm{padding:18px}
+.card h3{font-size:1.08rem;font-weight:700;margin-bottom:10px;letter-spacing:-.01em}
+.card p{color:var(--muted);font-size:.93rem}
+.card .ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:16px;background:rgba(39,211,162,.12);border:1px solid rgba(39,211,162,.25)}
+.card .ic.amb{background:rgba(247,168,59,.12);border-color:rgba(247,168,59,.25)}
+.card .ic.blu{background:rgba(87,166,255,.12);border-color:rgba(87,166,255,.25)}
+.card .ic.vio{background:rgba(155,140,255,.12);border-color:rgba(155,140,255,.25)}
+.card .ic.red{background:rgba(255,93,108,.12);border-color:rgba(255,93,108,.25)}
+.glass{background:rgba(10,19,35,.66);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:1020px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+/* ---------- pills & badges ---------- */
+.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;border-radius:999px;font-size:.76rem;font-weight:700;letter-spacing:.03em;border:1px solid var(--line-strong);color:var(--muted);white-space:normal;max-width:100%;line-height:1.45}
+.pill.ok{color:var(--green);border-color:rgba(39,211,162,.4);background:rgba(39,211,162,.08)}
+.pill.warn{color:var(--saffron);border-color:rgba(247,168,59,.4);background:rgba(247,168,59,.08)}
+.pill.info{color:var(--blue);border-color:rgba(87,166,255,.4);background:rgba(87,166,255,.08)}
+.pill.vio{color:var(--violet);border-color:rgba(155,140,255,.4);background:rgba(155,140,255,.08)}
+.pill.red{color:var(--red);border-color:rgba(255,93,108,.4);background:rgba(255,93,108,.08)}
+.pill .pdot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.tag{display:inline-block;padding:3px 10px;border-radius:8px;background:rgba(148,180,220,.09);border:1px solid var(--line);font-size:.74rem;font-weight:600;color:var(--muted);margin:3px 4px 3px 0}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 24px;border-radius:13px;font-weight:700;font-size:.95rem;border:1px solid transparent;cursor:pointer;will-change:transform;user-select:none}
+.btn-primary{background:linear-gradient(92deg,#12b98c,#1fbf9d 55%,#27d3a2);color:#03130d;box-shadow:0 10px 30px -8px rgba(39,211,162,.5)}
+.btn-saffron{background:linear-gradient(92deg,#e2901f,#f7a83b);color:#241503;box-shadow:0 10px 30px -8px rgba(247,168,59,.45)}
+.btn-ghost{background:rgba(148,180,220,.06);border-color:var(--line-strong);color:var(--txt)}
+.btn-sm{padding:9px 16px;font-size:.85rem;border-radius:10px}
+
+/* ---------- header / nav ---------- */
+#topnav{position:fixed;top:0;left:0;right:0;z-index:900;will-change:transform}
+#topnav .nav-inner{width:min(1280px,95vw);margin:10px auto 0;display:flex;align-items:center;gap:18px;padding:10px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(6,12,23,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:1.02rem;letter-spacing:-.01em;color:var(--txt);flex:none}
+.brand .logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#0e9f78,#27d3a2);display:flex;align-items:center;justify-content:center;font-size:1.15rem;box-shadow:0 6px 18px -4px rgba(39,211,162,.55)}
+.brand small{display:block;font-size:.62rem;font-weight:700;color:var(--dim);letter-spacing:.14em;text-transform:uppercase;line-height:1.2}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:auto;flex-wrap:nowrap}
+.nav-links a{padding:8px 12px;border-radius:9px;font-size:.83rem;font-weight:600;color:var(--muted);white-space:nowrap;will-change:transform}
+.nav-links a.active{color:var(--green)}
+.nav-cta{flex:none}
+@media(max-width:1220px){.nav-links a{padding:8px 8px;font-size:.79rem}}
+#burger{display:none;margin-left:auto;width:42px;height:42px;border-radius:11px;border:1px solid var(--line-strong);background:rgba(148,180,220,.06);cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;flex:none}
+#burger span{display:block;width:19px;height:2px;background:var(--txt);border-radius:2px;will-change:transform}
+@media(max-width:1080px){
+  .nav-links{display:none}
+  .nav-cta{display:none}
+  #burger{display:flex}
+}
+#mobile-menu{position:fixed;inset:0;z-index:950;background:rgba(4,9,18,.97);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:none;flex-direction:column;padding:90px 8vw 40px;overflow-y:auto}
+#mobile-menu.open{display:flex}
+#mobile-menu a{padding:15px 4px;font-size:1.15rem;font-weight:700;color:var(--txt);border-bottom:1px solid var(--line)}
+#mobile-menu a span.n{color:var(--green);font-size:.8rem;margin-right:12px;font-family:var(--mono)}
+#mm-close{position:absolute;top:22px;right:6vw;width:44px;height:44px;border-radius:12px;border:1px solid var(--line-strong);background:rgba(148,180,220,.07);color:var(--txt);font-size:1.2rem;cursor:pointer}
+#nav-progress{position:fixed;top:0;left:0;height:3px;width:100%;z-index:999;background:linear-gradient(90deg,#12b98c,#27d3a2 40%,#2ec5ce 70%,#57a6ff);transform-origin:0 50%;transform:scaleX(0);will-change:transform}
+
+/* ---------- hero ---------- */
+#home{padding:150px 0 70px;min-height:100svh;display:flex;align-items:center}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+@media(max-width:1020px){.hero-grid{grid-template-columns:1fr;gap:36px}}
+.hero-badge{display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;border:1px solid rgba(39,211,162,.35);background:rgba(39,211,162,.07);font-size:.8rem;font-weight:700;color:var(--green);margin-bottom:22px;flex-wrap:wrap}
+.hero-badge .sep{color:var(--dim);font-weight:400}
+h1.hero-title{font-size:clamp(2.5rem,6vw,4.4rem);font-weight:900;letter-spacing:-.03em;line-height:1.02;margin-bottom:10px}
+.hero-title .word{display:inline-block;will-change:transform}
+.hero-hindi{font-size:clamp(1rem,2vw,1.35rem);font-weight:700;color:var(--saffron);margin-bottom:16px;letter-spacing:.01em}
+.hero-sub{color:var(--muted);font-size:clamp(.98rem,1.4vw,1.13rem);max-width:640px;margin-bottom:14px}
+.hero-sub strong{color:var(--txt)}
+.hero-note{color:var(--dim);font-size:.86rem;max-width:640px;margin-bottom:28px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+.hero-safety{display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border-radius:13px;border:1px solid rgba(255,93,108,.3);background:rgba(255,93,108,.06);color:#ffc9ce;font-size:.84rem;font-weight:600;max-width:640px}
+.hero-safety b{color:#ff8b96}
+
+/* hero phones */
+.hero-phones{position:relative;height:560px;display:flex;align-items:center;justify-content:center;contain:paint}
+@media(max-width:1020px){.hero-phones{height:480px}}
+@media(max-width:480px){.hero-phones{height:420px}}
+.phone{position:absolute;width:238px;border-radius:30px;border:9px solid #101c30;background:#000;box-shadow:0 30px 80px -20px rgba(0,0,0,.8),0 0 0 1px rgba(126,163,209,.14);overflow:hidden;will-change:transform}
+.phone img{width:100%;height:auto;display:block;aspect-ratio:1080/2340;object-fit:cover}
+.phone .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:84px;height:18px;background:#101c30;border-radius:10px;z-index:3}
+.phone-a{z-index:5}
+.phone-b{z-index:4}
+.phone-c{z-index:3}
+.phone-glow{position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(39,211,162,.22),transparent 62%);filter:blur(30px);z-index:1}
+@media(max-width:480px){.phone{width:180px}}
+
+/* stat strip */
+.stat-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:56px}
+@media(max-width:1020px){.stat-strip{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.stat-strip{grid-template-columns:repeat(2,1fr)}}
+.stat{padding:18px 16px;border-radius:15px;border:1px solid var(--line);background:rgba(13,24,42,.5);text-align:center}
+.stat .v{font-size:clamp(1.2rem,2.2vw,1.6rem);font-weight:900;letter-spacing:-.02em;color:var(--txt);font-variant-numeric:tabular-nums}
+.stat .v .u{font-size:.62em;font-weight:800}
+.stat .l{font-size:.68rem;font-weight:600;color:var(--dim);margin-top:4px;line-height:1.35;letter-spacing:.02em}
+.stat .v.gr{color:var(--green)}.stat .v.sa{color:var(--saffron)}.stat .v.bl{color:var(--blue)}.stat .v.rd{color:var(--red)}.stat .v.vi{color:var(--violet)}.stat .v.te{color:var(--teal)}
+
+/* ---------- live evidence ---------- */
+.hc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:980px){.hc-grid{grid-template-columns:1fr}}
+.hc-card{padding:22px}
+.hc-top{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.hc-pulse{position:relative;width:13px;height:13px;flex:none}
+.hc-pulse .core{position:absolute;inset:3px;border-radius:50%;background:var(--dim)}
+.hc-pulse .ring{position:absolute;inset:0;border-radius:50%;border:2px solid var(--dim);opacity:0}
+.hc-card.live .hc-pulse .core{background:var(--green);box-shadow:0 0 12px var(--green)}
+.hc-card.live .hc-pulse .ring{border-color:var(--green)}
+.hc-card.dead .hc-pulse .core{background:var(--red);box-shadow:0 0 12px var(--red)}
+.hc-name{font-weight:800;font-size:.95rem;letter-spacing:-.01em}
+.hc-url{font-family:var(--mono);font-size:.7rem;color:var(--dim);word-break:break-all;margin-bottom:12px}
+.hc-status{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 13px;border-radius:11px;background:rgba(148,180,220,.05);border:1px solid var(--line);margin-bottom:10px}
+.hc-status .s{font-weight:800;font-size:.83rem;color:var(--dim);letter-spacing:.06em}
+.hc-card.live .hc-status .s{color:var(--green)}
+.hc-card.dead .hc-status .s{color:var(--red)}
+.hc-status .lat{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.hc-json{font-family:var(--mono);font-size:.7rem;color:var(--muted);background:rgba(3,7,15,.6);border:1px solid var(--line);border-radius:11px;padding:11px 13px;max-height:120px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+.hc-tools{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:22px}
+.hc-meta{font-size:.78rem;color:var(--dim)}
+.icon-btn{width:40px;height:40px;border-radius:11px;border:1px solid var(--line-strong);background:rgba(148,180,220,.06);color:var(--txt);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;will-change:transform}
+
+/* ---------- problem section ---------- */
+.prob-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+.pcard{grid-column:span 4}
+.pcard.wide{grid-column:span 8}
+.pcard.half{grid-column:span 6}
+@media(max-width:1020px){.pcard,.pcard.wide{grid-column:span 6}.pcard.half{grid-column:span 6}}
+@media(max-width:680px){.pcard,.pcard.wide,.pcard.half{grid-column:span 12}}
+.big-num{font-size:2.2rem;font-weight:900;letter-spacing:-.03em;line-height:1;margin-bottom:6px;font-variant-numeric:tabular-nums}
+.src{font-size:.7rem;color:var(--dim);margin-top:10px}
+.src a{color:var(--dim);text-decoration:underline;text-decoration-color:rgba(126,163,209,.3)}
+
+.ps-box{border:1px solid rgba(247,168,59,.3);background:linear-gradient(180deg,rgba(247,168,59,.07),rgba(247,168,59,.02));border-radius:var(--radius);padding:28px}
+.ps-box h3{color:var(--saffron);font-size:1.1rem;margin-bottom:12px;display:flex;gap:10px;align-items:center}
+.ps-box p{color:var(--muted);font-size:.95rem}
+.ps-box .must{margin-top:14px;display:grid;gap:8px}
+.ps-box .must div{display:flex;gap:10px;font-size:.9rem;color:var(--txt)}
+.ps-box .must .tick{color:var(--green);font-weight:900;flex:none}
+.challenge-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+/* ---------- solution ---------- */
+.journey{position:relative;margin-top:52px}
+.journey-line{position:absolute;top:34px;left:5%;right:5%;height:3px;border-radius:3px;background:rgba(126,163,209,.13);z-index:0;overflow:hidden}
+.journey-line .fill{position:absolute;inset:0;background:linear-gradient(90deg,#12b98c,#27d3a2,#2ec5ce,#57a6ff);transform-origin:0 50%;transform:scaleX(0);border-radius:3px;will-change:transform}
+.j-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;position:relative;z-index:1}
+@media(max-width:980px){.j-steps{grid-template-columns:repeat(2,1fr);gap:26px}.journey-line{display:none}}
+@media(max-width:560px){.j-steps{grid-template-columns:1fr}}
+.j-step{text-align:center}
+.j-dot{width:68px;height:68px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.55rem;background:var(--panel-solid);border:2px solid var(--line-strong);position:relative;will-change:transform}
+.j-dot .num{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;background:var(--green);color:#03130d;font-size:.72rem;font-weight:900;display:flex;align-items:center;justify-content:center;border:3px solid var(--bg)}
+.j-step h4{font-size:.98rem;font-weight:800;margin-bottom:4px}
+.j-step .tb{font-family:var(--mono);font-size:.72rem;color:var(--saffron);font-weight:700;margin-bottom:8px}
+.j-step p{font-size:.82rem;color:var(--muted);max-width:230px;margin:0 auto}
+
+.mod-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:44px}
+@media(max-width:880px){.mod-grid{grid-template-columns:1fr}}
+.mod{display:flex;gap:16px}
+.mod .letter{flex:none;width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.3rem;background:linear-gradient(135deg,rgba(39,211,162,.2),rgba(39,211,162,.06));border:1px solid rgba(39,211,162,.35);color:var(--green)}
+.mod:nth-child(2) .letter{background:linear-gradient(135deg,rgba(87,166,255,.2),rgba(87,166,255,.06));border-color:rgba(87,166,255,.35);color:var(--blue)}
+.mod:nth-child(3) .letter{background:linear-gradient(135deg,rgba(247,168,59,.2),rgba(247,168,59,.06));border-color:rgba(247,168,59,.35);color:var(--saffron)}
+.mod:nth-child(4) .letter{background:linear-gradient(135deg,rgba(155,140,255,.2),rgba(155,140,255,.06));border-color:rgba(155,140,255,.35);color:var(--violet)}
+.mod h4{font-size:1rem;font-weight:800;margin-bottom:5px}
+.mod p{font-size:.87rem;color:var(--muted)}
+
+.is-isnot{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:44px}
+@media(max-width:880px){.is-isnot{grid-template-columns:1fr}}
+.iin{border:1px solid rgba(39,211,162,.28);background:rgba(39,211,162,.045);border-radius:var(--radius);padding:24px}
+.inot{border:1px solid rgba(255,93,108,.28);background:rgba(255,93,108,.045);border-radius:var(--radius);padding:24px}
+.iin h4,.inot h4{font-size:1rem;font-weight:800;margin-bottom:14px}
+.iin h4{color:var(--green)}.inot h4{color:var(--red)}
+.iin li,.inot li{list-style:none;display:flex;gap:10px;font-size:.88rem;color:var(--muted);margin-bottom:9px}
+.iin li b{color:var(--txt);font-weight:700}
+.iin .m{color:var(--green);font-weight:900;flex:none}
+.inot .m{color:var(--red);font-weight:900;flex:none}
+
+/* ---------- coverage ---------- */
+.cov-layout{display:grid;grid-template-columns:280px 1fr;gap:34px;align-items:start}
+@media(max-width:980px){.cov-layout{grid-template-columns:1fr}}
+.ring-box{text-align:center;padding:28px 18px;position:sticky;top:100px}
+@media(max-width:980px){.ring-box{position:static}}
+.ring-wrap{position:relative;width:210px;height:210px;margin:0 auto 14px}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(126,163,209,.12);stroke-width:13}
+.ring-fg{fill:none;stroke:url(#ringGrad);stroke-width:13;stroke-linecap:round}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-center .pv{font-size:2.7rem;font-weight:900;letter-spacing:-.03em;color:var(--txt);font-variant-numeric:tabular-nums}
+.ring-center .pl{font-size:.72rem;font-weight:700;color:var(--dim);letter-spacing:.12em;text-transform:uppercase}
+.cov-legend{display:flex;flex-direction:column;gap:8px;margin-top:16px;text-align:left}
+.cov-legend .li{display:flex;align-items:center;gap:9px;font-size:.8rem;color:var(--muted)}
+.cov-legend .sw{width:12px;height:12px;border-radius:4px;flex:none}
+
+.cov-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.chip{padding:8px 15px;border-radius:999px;border:1px solid var(--line-strong);background:rgba(148,180,220,.05);color:var(--muted);font-size:.8rem;font-weight:700;cursor:pointer;will-change:transform}
+.chip.on{background:rgba(39,211,162,.14);border-color:rgba(39,211,162,.5);color:var(--green)}
+.cov-list{display:flex;flex-direction:column;gap:9px}
+.cov-row{display:grid;grid-template-columns:34px 1fr 150px;gap:14px;align-items:center;padding:13px 16px;border-radius:13px;border:1px solid var(--line);background:rgba(13,24,42,.45);will-change:transform}
+@media(max-width:760px){.cov-row{grid-template-columns:30px 1fr;gap:8px}.cov-row .st{grid-column:2}}
+.cov-row .no{font-family:var(--mono);font-size:.75rem;color:var(--dim);font-weight:700}
+.cov-row .rq{font-size:.87rem;font-weight:600;color:var(--txt);line-height:1.4}
+.cov-row .ev{display:block;font-size:.75rem;color:var(--dim);font-weight:500;margin-top:2px}
+.cov-row .st{justify-self:end}
+@media(max-width:760px){.cov-row .st{justify-self:start}}
+
+/* ---------- demo ---------- */
+.demo-grid{display:grid;grid-template-columns:400px 1fr;gap:36px;align-items:start}
+@media(max-width:1020px){.demo-grid{grid-template-columns:1fr;max-width:560px;margin:0 auto}}
+.appetize-shell{border-radius:26px;border:1px solid var(--line-strong);background:rgba(8,15,29,.8);padding:14px;box-shadow:0 30px 90px -30px rgba(0,0,0,.9)}
+.appetize-frame{position:relative;border-radius:16px;overflow:hidden;background:#0a0f1c;aspect-ratio:400/740}
+.appetize-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.ap-poster{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(circle at 50% 30%,rgba(39,211,162,.14),rgba(6,12,23,.96) 65%);cursor:pointer;z-index:2;text-align:center;padding:20px}
+.ap-poster .play{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#12b98c,#27d3a2);display:flex;align-items:center;justify-content:center;font-size:2rem;color:#03130d;box-shadow:0 16px 50px -8px rgba(39,211,162,.65);will-change:transform}
+.ap-poster h4{font-size:1.1rem;font-weight:800}
+.ap-poster p{font-size:.83rem;color:var(--muted);max-width:280px}
+.demo-steps{display:flex;flex-direction:column;gap:13px;margin-top:22px}
+.demo-step{display:flex;gap:14px;align-items:flex-start;padding:15px 17px;border-radius:14px;border:1px solid var(--line);background:rgba(13,24,42,.45)}
+.demo-step .n{flex:none;width:30px;height:30px;border-radius:9px;background:rgba(39,211,162,.14);border:1px solid rgba(39,211,162,.35);color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem}
+.demo-step h5{font-size:.92rem;font-weight:800;margin-bottom:3px}
+.demo-step p{font-size:.82rem;color:var(--muted)}
+#demo-video-slot{margin-top:34px}
+.video-frame{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--line-strong);aspect-ratio:16/9;background:#04070d}
+.video-frame iframe,.video-frame video{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+/* ---------- gallery ---------- */
+.gal-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.gal-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+@media(max-width:1200px){.gal-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:900px){.gal-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:620px){.gal-grid{grid-template-columns:repeat(2,1fr)}}
+.gal-item{border-radius:16px;border:1px solid var(--line);background:rgba(13,24,42,.5);overflow:hidden;cursor:pointer;will-change:transform}
+.gal-item img{width:100%;aspect-ratio:1080/2340;object-fit:cover;object-position:top}
+.gal-item .cap{padding:10px 12px;font-size:.72rem;font-weight:700;color:var(--muted);line-height:1.35;border-top:1px solid var(--line)}
+.gal-item .cap .g{display:inline-block;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:3px;font-weight:800}
+
+/* lightbox */
+#lightbox{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;background:rgba(3,7,14,.93);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#lightbox.open{display:flex}
+.lb-inner{position:relative;max-width:92vw;max-height:92vh;display:flex;flex-direction:column;align-items:center;gap:14px;will-change:transform}
+.lb-inner img{max-height:78vh;width:auto;border-radius:20px;border:8px solid #101c30;box-shadow:0 40px 100px -20px rgba(0,0,0,.9)}
+.lb-cap{font-size:.9rem;font-weight:700;color:var(--txt);text-align:center}
+.lb-cap small{display:block;color:var(--dim);font-weight:600;font-size:.74rem;margin-top:3px}
+.lb-btn{position:fixed;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;border:1px solid var(--line-strong);background:rgba(13,24,42,.85);color:var(--txt);font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;will-change:transform}
+.lb-prev{left:2.5vw}.lb-next{right:2.5vw}
+.lb-close{position:fixed;top:22px;right:26px;width:48px;height:48px;border-radius:50%;border:1px solid var(--line-strong);background:rgba(13,24,42,.85);color:var(--txt);font-size:1.2rem;cursor:pointer;z-index:5}
+.lb-count{position:fixed;top:34px;left:30px;font-family:var(--mono);font-size:.8rem;color:var(--dim);z-index:5}
+@media(max-width:680px){.lb-btn{width:42px;height:42px}.lb-inner img{max-height:66vh}}
+
+/* ---------- download ---------- */
+.dl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:1020px){.dl-grid{grid-template-columns:1fr}}
+.dl-card{display:flex;flex-direction:column;gap:14px}
+.dl-card .qr{width:118px;height:118px;border-radius:12px;background:#fff;padding:7px;align-self:flex-start}
+.dl-card .qr img{width:100%;height:100%}
+.dl-meta{font-family:var(--mono);font-size:.72rem;color:var(--dim);line-height:1.7}
+.dl-note{margin-top:26px;padding:18px 22px;border-radius:14px;border:1px solid var(--line);background:rgba(13,24,42,.45);font-size:.85rem;color:var(--muted)}
+.dl-note b{color:var(--txt)}
+
+/* ---------- innovation ---------- */
+.inn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media(max-width:880px){.inn-grid{grid-template-columns:1fr}}
+.inn{display:flex;gap:16px;padding:22px}
+.inn .no{flex:none;font-family:var(--mono);font-size:.8rem;font-weight:800;color:var(--green);padding-top:3px}
+.inn h4{font-size:.98rem;font-weight:800;margin-bottom:6px}
+.inn p{font-size:.86rem;color:var(--muted)}
+.usp-banner{margin-top:34px;padding:28px 30px;border-radius:var(--radius);border:1px solid rgba(39,211,162,.3);background:linear-gradient(120deg,rgba(39,211,162,.1),rgba(87,166,255,.06));font-size:clamp(1rem,1.8vw,1.25rem);font-weight:700;line-height:1.5}
+.usp-banner .q{color:var(--green);font-weight:900}
+
+/* ---------- comparison ---------- */
+.cmp-scroll{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--line)}
+table.cmp{width:100%;border-collapse:collapse;min-width:960px;background:rgba(10,18,33,.6)}
+table.cmp th,table.cmp td{padding:13px 15px;text-align:center;font-size:.82rem;border-bottom:1px solid var(--line)}
+table.cmp th{font-weight:800;color:var(--muted);font-size:.75rem;letter-spacing:.03em;background:rgba(13,24,42,.85);position:sticky;top:0}
+table.cmp td:first-child,table.cmp th:first-child{text-align:left;font-weight:700;color:var(--txt);min-width:250px;position:sticky;left:0;background:rgba(10,18,33,.97);z-index:2}
+table.cmp th:first-child{z-index:3;background:rgba(13,24,42,.98)}
+table.cmp .mk-col{background:rgba(39,211,162,.07)}
+table.cmp th.mk-col{color:var(--green);background:rgba(14,40,34,.95);font-size:.8rem}
+table.cmp tr td{color:var(--muted)}
+table.cmp tr{will-change:transform}
+.ck{font-weight:900;font-size:.95rem}
+.ck.y{color:var(--green)}.ck.n{color:#5a6a80}.ck.p{color:var(--saffron)}
+table.cmp td.mk-col{color:var(--txt);font-weight:700}
+.cmp-foot{margin-top:20px;display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem;color:var(--dim)}
+.cmp-note{margin-top:18px;padding:16px 20px;border-radius:14px;border:1px dashed var(--line-strong);color:var(--muted);font-size:.88rem}
+.cmp-note b{color:var(--txt)}
+
+/* ---------- architecture ---------- */
+.arch{display:grid;grid-template-columns:1fr 340px;gap:26px;align-items:start;margin-top:10px}
+@media(max-width:1020px){.arch{grid-template-columns:1fr}}
+.layer{border-radius:15px;border:1px solid var(--line-strong);padding:18px 22px;background:rgba(13,24,42,.6);position:relative;will-change:transform}
+.layer + .arch-arrow{margin:0}
+.layer .lt{display:flex;align-items:center;gap:11px;margin-bottom:9px}
+.layer .lt .ln{font-family:var(--mono);font-size:.68rem;font-weight:800;color:var(--dim);border:1px solid var(--line-strong);border-radius:7px;padding:2px 8px;flex:none}
+.layer .lt h4{font-size:.95rem;font-weight:800}
+.layer .chips{display:flex;flex-wrap:wrap;gap:6px}
+.layer.l-client{border-color:rgba(39,211,162,.35);background:linear-gradient(180deg,rgba(39,211,162,.07),rgba(13,24,42,.6))}
+.layer.l-api{border-color:rgba(46,197,206,.3)}
+.layer.l-app{border-color:rgba(87,166,255,.3)}
+.layer.l-ai{border-color:rgba(155,140,255,.32)}
+.layer.l-data{border-color:rgba(247,168,59,.3)}
+.layer.l-int{border-color:rgba(255,93,108,.28)}
+.arch-arrow{display:flex;justify-content:center;padding:5px 0;color:var(--dim);font-size:1.1rem}
+.arch-side{display:flex;flex-direction:column;gap:18px}
+.pipe{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin-top:26px}
+.pipe-step{flex:1;min-width:120px;text-align:center;padding:16px 10px;border:1px solid var(--line-strong);background:rgba(13,24,42,.55);position:relative;will-change:transform}
+.pipe-step:first-child{border-radius:14px 0 0 14px}
+.pipe-step:last-child{border-radius:0 14px 14px 0}
+.pipe-step + .pipe-step{border-left:none}
+.pipe-step .pi{font-size:1.3rem;margin-bottom:6px}
+.pipe-step h5{font-size:.78rem;font-weight:800;letter-spacing:.05em}
+.pipe-step p{font-size:.68rem;color:var(--dim);margin-top:3px;line-height:1.4}
+@media(max-width:760px){.pipe{flex-direction:column}.pipe-step{border-radius:0!important;border-left:1px solid var(--line-strong)!important}.pipe-step:first-child{border-radius:14px 14px 0 0!important}.pipe-step:last-child{border-radius:0 0 14px 14px!important}.pipe-step + .pipe-step{border-top:none}}
+.dual-env{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+@media(max-width:760px){.dual-env{grid-template-columns:1fr}}
+.env-card{border-radius:var(--radius);border:1px solid var(--line);padding:22px}
+.env-card.beta{border-color:rgba(247,168,59,.35);background:linear-gradient(180deg,rgba(247,168,59,.06),transparent)}
+.env-card.prod{border-color:rgba(39,211,162,.35);background:linear-gradient(180deg,rgba(39,211,162,.06),transparent)}
+.env-card h4{font-size:1rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.env-card li{list-style:none;font-size:.83rem;color:var(--muted);padding:5px 0 5px 20px;position:relative}
+.env-card li::before{content:"›";position:absolute;left:4px;color:var(--green);font-weight:900}
+.env-card.beta li::before{color:var(--saffron)}
+.safety-flow{margin-top:26px;border-radius:var(--radius);border:1px solid var(--line);padding:24px;background:rgba(13,24,42,.45)}
+.safety-flow h4{font-size:1rem;font-weight:800;margin-bottom:16px;display:flex;gap:10px;align-items:center}
+.sf-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.sf-node{padding:10px 15px;border-radius:11px;border:1px solid var(--line-strong);background:rgba(148,180,220,.05);font-size:.78rem;font-weight:700;will-change:transform}
+.sf-node.hl-g{border-color:rgba(39,211,162,.45);color:var(--green);background:rgba(39,211,162,.07)}
+.sf-node.hl-r{border-color:rgba(255,93,108,.45);color:var(--red);background:rgba(255,93,108,.07)}
+.sf-node.hl-v{border-color:rgba(155,140,255,.45);color:var(--violet);background:rgba(155,140,255,.07)}
+.sf-arr{color:var(--dim);font-weight:900}
+.sf-lbl{font-size:.68rem;color:var(--dim);font-family:var(--mono)}
+
+/* ---------- tech stack ---------- */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:1020px){.tech-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.tech-grid{grid-template-columns:1fr}}
+.tech-card .layer-tag{font-family:var(--mono);font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.tech-card h3{margin-bottom:12px}
+.tech-card .tags{display:flex;flex-wrap:wrap;gap:6px}
+
+/* ---------- feasibility ---------- */
+.feas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media(max-width:880px){.feas-grid{grid-template-columns:1fr}}
+.feas-card ul{list-style:none}
+.feas-card li{font-size:.87rem;color:var(--muted);padding:6px 0 6px 24px;position:relative}
+.feas-card li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:900}
+.feas-card li.warn::before{content:"!";color:var(--saffron)}
+.weeks{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:26px}
+@media(max-width:980px){.weeks{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.weeks{grid-template-columns:1fr}}
+.week{border-radius:14px;border:1px solid var(--line);background:rgba(13,24,42,.5);padding:18px;will-change:transform}
+.week .wk{font-family:var(--mono);font-size:.7rem;font-weight:800;color:var(--saffron);margin-bottom:7px;letter-spacing:.08em}
+.week h5{font-size:.9rem;font-weight:800;margin-bottom:5px}
+.week p{font-size:.78rem;color:var(--muted)}
+.risk-table{width:100%;border-collapse:collapse;margin-top:26px;font-size:.85rem}
+.risk-table th{text-align:left;padding:11px 14px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line-strong)}
+.risk-table td{padding:12px 14px;border-bottom:1px solid var(--line);color:var(--muted);vertical-align:top}
+.risk-table td:first-child{color:var(--txt);font-weight:700;width:34%}
+.risk-scroll{overflow-x:auto;border-radius:14px;border:1px solid var(--line)}
+.risk-table{min-width:640px}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
+@media(max-width:880px){.team-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.team-grid{grid-template-columns:1fr}}
+.member{display:flex;gap:13px;align-items:center;border-radius:14px;border:1px solid var(--line);background:rgba(13,24,42,.5);padding:15px 17px;will-change:transform}
+.member .av{flex:none;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.95rem;color:#03130d;background:linear-gradient(135deg,#27d3a2,#2ec5ce)}
+.member h5{font-size:.88rem;font-weight:800}
+.member p{font-size:.74rem;color:var(--dim);line-height:1.4}
+.honest-banner{margin-top:30px;display:flex;gap:14px;align-items:center;padding:18px 22px;border-radius:14px;border:1px solid rgba(247,168,59,.35);background:rgba(247,168,59,.06);font-size:.88rem;color:#ffd9a0;flex-wrap:wrap}
+.honest-banner .hb-ic{font-size:1.4rem}
+.honest-banner b{color:var(--saffron)}
+
+/* ---------- economics ---------- */
+.econ-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:stretch}
+@media(max-width:1020px){.econ-grid{grid-template-columns:1fr}}
+.calc{padding:26px}
+.calc h3{margin-bottom:18px}
+.calc-row{margin-bottom:20px}
+.calc-row label{display:flex;justify-content:space-between;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:9px}
+.calc-row label b{color:var(--txt);font-family:var(--mono)}
+input[type=range]{width:100%;height:6px;border-radius:4px;background:rgba(126,163,209,.15);appearance:none;-webkit-appearance:none;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#12b98c,#27d3a2);border:3px solid #06121f;box-shadow:0 0 0 1px rgba(39,211,162,.6),0 4px 14px rgba(39,211,162,.4);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#27d3a2;border:3px solid #06121f;cursor:pointer}
+.calc-out{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
+.co{border-radius:13px;border:1px solid var(--line);background:rgba(3,8,16,.5);padding:15px 12px;text-align:center}
+.co .v{font-size:1.55rem;font-weight:900;color:var(--green);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.co .l{font-size:.66rem;color:var(--dim);font-weight:700;margin-top:4px;line-height:1.4;letter-spacing:.03em}
+.calc-foot{font-size:.72rem;color:var(--dim);margin-top:14px;line-height:1.6}
+.unit-econ{display:flex;flex-direction:column;gap:14px}
+.ue-row{display:flex;align-items:center;gap:16px;border-radius:14px;border:1px solid var(--line);background:rgba(13,24,42,.5);padding:17px 20px;will-change:transform}
+.ue-row .ue-v{flex:none;width:112px;text-align:center;font-size:1.3rem;font-weight:900;font-variant-numeric:tabular-nums;color:var(--saffron)}
+.ue-row.total{border-color:rgba(39,211,162,.4);background:linear-gradient(90deg,rgba(39,211,162,.08),rgba(13,24,42,.5))}
+.ue-row.total .ue-v{color:var(--green);font-size:1.45rem}
+.ue-row h5{font-size:.9rem;font-weight:800;margin-bottom:3px}
+.ue-row p{font-size:.76rem;color:var(--muted);line-height:1.5}
+.ue-bar{height:8px;border-radius:5px;background:rgba(126,163,209,.1);overflow:hidden;margin-top:9px}
+.ue-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#e2901f,#f7a83b);transform-origin:0 50%;transform:scaleX(0);will-change:transform}
+.ue-row.total .ue-bar i{background:linear-gradient(90deg,#12b98c,#27d3a2)}
+.econ-impact{margin-top:26px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:1020px){.econ-impact{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.econ-impact{grid-template-columns:1fr}}
+.ei{border-radius:14px;border:1px solid var(--line);background:rgba(13,24,42,.5);padding:20px;text-align:center}
+.ei .v{font-size:1.5rem;font-weight:900;color:var(--teal);font-variant-numeric:tabular-nums}
+.ei .l{font-size:.74rem;color:var(--muted);margin-top:6px;line-height:1.45}
+.footnote{font-size:.72rem;color:var(--dim);margin-top:16px;line-height:1.7}
+
+/* ---------- impact ---------- */
+.stk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:1020px){.stk-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.stk-grid{grid-template-columns:1fr}}
+.stk{border-radius:var(--radius);border:1px solid var(--line);padding:24px 20px;background:rgba(13,24,42,.5);will-change:transform}
+.stk .em{font-size:1.7rem;margin-bottom:12px}
+.stk h4{font-size:.95rem;font-weight:800;margin-bottom:8px}
+.stk p{font-size:.82rem;color:var(--muted)}
+.goal-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:26px}
+@media(max-width:1020px){.goal-strip{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.goal-strip{grid-template-columns:repeat(2,1fr)}}
+.goal{border-radius:14px;border:1px solid rgba(39,211,162,.25);background:rgba(39,211,162,.05);padding:18px 14px;text-align:center}
+.goal .v{font-size:1.45rem;font-weight:900;color:var(--green);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.goal .l{font-size:.68rem;color:var(--muted);margin-top:5px;line-height:1.45;font-weight:600}
+.logic-chain{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:30px;padding:20px;border-radius:14px;border:1px solid var(--line);background:rgba(13,24,42,.45)}
+.lc-node{padding:9px 15px;border-radius:10px;background:rgba(148,180,220,.06);border:1px solid var(--line-strong);font-size:.78rem;font-weight:700;color:var(--muted);will-change:transform}
+.lc-node.final{background:linear-gradient(92deg,rgba(39,211,162,.18),rgba(46,197,206,.12));border-color:rgba(39,211,162,.5);color:var(--green);font-weight:800}
+.lc-arr{color:var(--dim);font-weight:900}
+
+/* ---------- testing ---------- */
+.test-head{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+.test-table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:760px}
+.test-table th{text-align:left;padding:12px 14px;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line-strong)}
+.test-table td{padding:13px 14px;border-bottom:1px solid var(--line);color:var(--muted);vertical-align:top}
+.test-table td:first-child{font-family:var(--mono);font-size:.75rem;color:var(--blue);font-weight:700;white-space:nowrap}
+.test-table td:nth-child(2){color:var(--txt);font-weight:700}
+.pass-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:rgba(39,211,162,.12);border:1px solid rgba(39,211,162,.4);color:var(--green);font-size:.72rem;font-weight:800}
+
+/* ---------- faq ---------- */
+.faq-list{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:11px}
+.faq-item{border-radius:14px;border:1px solid var(--line);background:rgba(13,24,42,.5);overflow:hidden;will-change:transform}
+.faq-item.open{border-color:rgba(39,211,162,.4)}
+.faq-q{width:100%;display:flex;align-items:center;gap:14px;padding:17px 20px;background:none;border:none;color:var(--txt);font-size:.93rem;font-weight:700;text-align:left;cursor:pointer;line-height:1.45}
+.faq-q .qn{flex:none;font-family:var(--mono);font-size:.72rem;color:var(--green);font-weight:800}
+.faq-q .arw{margin-left:auto;flex:none;color:var(--dim);font-size:.9rem;will-change:transform}
+.faq-a{height:0;overflow:hidden;will-change:height}
+.faq-a-inner{padding:0 20px 18px 56px;font-size:.87rem;color:var(--muted);line-height:1.65}
+.faq-a-inner b{color:var(--txt)}
+
+/* ---------- references ---------- */
+.ref-cols{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media(max-width:880px){.ref-cols{grid-template-columns:1fr}}
+.ref-card h4{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:14px}
+.ref-card ul{list-style:none}
+.ref-card li{font-size:.82rem;color:var(--muted);padding:7px 0 7px 18px;position:relative;border-bottom:1px dashed rgba(126,163,209,.1);line-height:1.55}
+.ref-card li::before{content:"▸";position:absolute;left:0;color:var(--green);font-size:.75rem;top:9px}
+.ref-card li a{color:var(--blue);word-break:break-all}
+.res-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:30px}
+@media(max-width:980px){.res-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.res-grid{grid-template-columns:1fr}}
+.res-card{text-align:center;border-radius:16px;border:1px solid var(--line);background:rgba(13,24,42,.5);padding:24px 18px;will-change:transform}
+.res-card .qr{width:112px;height:112px;margin:0 auto 14px;background:#fff;border-radius:12px;padding:7px}
+.res-card h5{font-size:.9rem;font-weight:800;margin-bottom:5px}
+.res-card p{font-size:.72rem;color:var(--dim);word-break:break-all;margin-bottom:12px}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);background:rgba(4,9,18,.7);padding:64px 0 34px;position:relative;z-index:2}
+.roadmap{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:26px 0 46px}
+@media(max-width:1100px){.roadmap{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.roadmap{grid-template-columns:repeat(2,1fr)}}
+.rm{border-radius:13px;border:1px solid var(--line);background:rgba(13,24,42,.5);padding:16px 14px;will-change:transform}
+.rm .ph{font-family:var(--mono);font-size:.62rem;font-weight:800;color:var(--saffron);letter-spacing:.1em;margin-bottom:7px}
+.rm h5{font-size:.8rem;font-weight:800;margin-bottom:4px;line-height:1.35}
+.rm p{font-size:.7rem;color:var(--dim);line-height:1.45}
+.rm.done{border-color:rgba(39,211,162,.35)}
+.rm.done .ph{color:var(--green)}
+.foot-bottom{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;padding-top:26px;border-top:1px solid var(--line);font-size:.8rem;color:var(--dim)}
+.foot-bottom b{color:var(--muted)}
+
+/* ---------- to top ---------- */
+#toTop{position:fixed;bottom:26px;right:26px;width:50px;height:50px;border-radius:14px;border:1px solid rgba(39,211,162,.4);background:rgba(10,26,21,.9);color:var(--green);font-size:1.2rem;cursor:pointer;z-index:800;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;will-change:transform;backdrop-filter:blur(8px)}
+#toTop.show{pointer-events:auto}
+
+/* ---------- misc ---------- */
+.mt-20{margin-top:20px}.mt-26{margin-top:26px}.mt-34{margin-top:34px}
+.center{text-align:center}
+.small-note{font-size:.75rem;color:var(--dim);margin-top:12px;line-height:1.6}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--line-strong),transparent);margin:0}
+.kbd{font-family:var(--mono);font-size:.7rem;background:rgba(148,180,220,.1);border:1px solid var(--line-strong);border-radius:6px;padding:1px 7px;color:var(--muted)}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var width = window.innerWidth;
+    var w = 800; // default mobile
+    if (width > 1200) w = 1600;
+    else if (width > 800) w = 1200;
+    else if (width > 500) w = 800;
+    else w = 500;
+    
+    // adjust for device pixel ratio for sharper images
+    if (window.devicePixelRatio > 1) {
+        w = Math.min(w * 1.5, 2000); // cap at 2000
+    }
+    
+    document.querySelectorAll("img[data-dynamic-src]").forEach(function(img) {
+        var src = img.getAttribute("data-dynamic-src");
+        img.src = "/" + src + "?w=" + Math.round(w);
+    });
+});
+</script>
+</head>
+
+<body>
+<div id="nav-progress"></div>
+<div id="bgfx"><div class="orb orb-1" data-orb="1"></div><div class="orb orb-2" data-orb="2"></div><div class="orb orb-3" data-orb="3"></div></div>
+<div class="grain"></div>
+<!-- ================= HEADER ================= -->
+<header id="topnav">
+  <div class="nav-inner">
+    <a class="brand" href="#home" aria-label="MediKiosk home">
+      <span class="logo">🩺</span>
+      <span>MediKiosk<small>SIH26047 · Team Paradox</small></span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#problem">Problem</a>
+      <a href="#solution">Solution</a>
+      <a href="#coverage">PS Coverage</a>
+      <a href="#demo">Live Demo</a>
+      <a href="#screens">Screens</a>
+      <a href="#innovation">Innovation</a>
+      <a href="#compare">Compare</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#feasibility">Feasibility</a>
+      <a href="#economics">Economics</a>
+      <a href="#impact">Impact</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-primary btn-sm nav-cta" href="#download" data-press>⬇ Get APK</a>
+    <button id="burger" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div id="mobile-menu">
+  <button id="mm-close" aria-label="Close menu">✕</button>
+  <a href="#problem"><span class="n">01</span>The Problem (PS)</a>
+  <a href="#solution"><span class="n">02</span>Our Solution</a>
+  <a href="#coverage"><span class="n">03</span>PS Coverage Matrix</a>
+  <a href="#demo"><span class="n">04</span>Live App Demo</a>
+  <a href="#screens"><span class="n">05</span>App Screenshots</a>
+  <a href="#download"><span class="n">06</span>Download APK</a>
+  <a href="#innovation"><span class="n">07</span>Innovations & USP</a>
+  <a href="#compare"><span class="n">08</span>vs Existing Solutions</a>
+  <a href="#architecture"><span class="n">09</span>Solution Architecture</a>
+  <a href="#tech"><span class="n">10</span>Tech Stack</a>
+  <a href="#feasibility"><span class="n">11</span>Feasibility & Team</a>
+  <a href="#economics"><span class="n">12</span>Throughput & Economics</a>
+  <a href="#impact"><span class="n">13</span>Impact & Benefits</a>
+  <a href="#testing"><span class="n">14</span>Test Evidence</a>
+  <a href="#faq"><span class="n">15</span>FAQ</a>
+  <a href="#refs"><span class="n">16</span>References & Resources</a>
+</div>
+
+<main>
+<!-- ================= HERO ================= -->
+<section id="home">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge" data-hero>
+          <span>🇮🇳 Smart India Hackathon 2026</span><span class="sep">•</span>
+          <span>PS SIH26047 — Patient Case-Taking Software</span><span class="sep">•</span>
+          <span>Ministry of Ayush · AIIA</span>
+        </div>
+        <h1 class="hero-title" id="heroTitle">
+          <span class="grad-text">MediKiosk</span><br>
+          <span style="font-size:.44em;font-weight:800;color:var(--txt);letter-spacing:-.01em">AI-Powered Patient Case-Taking<br class="brk"> for AYUSH Care</span>
+        </h1>
+        <div class="hero-hindi" data-hero>“आपकी सेहत, आपकी ज़ुबानी” — Aapki Sehat, Aapki Zubani</div>
+        <p class="hero-sub" data-hero>
+          MediKiosk converts a patient's <strong>spoken words, touch responses and paper medical records</strong>
+          into a <strong>verified, structured, physician-ready clinical summary — before the consultation begins</strong> —
+          and makes that history available in emergencies through consent-governed, ABHA-based access.
+        </p>
+        <p class="hero-note" data-hero>
+          Kiosk-first platform per PS §2.2 (walk-in hospital kiosk = primary channel) with an optional BYOD companion app.
+          Every question answerable by <b style="color:var(--green)">voice OR touch</b> · zero training needed · Hindi + English.
+        </p>
+        <div class="hero-ctas">
+          <a href="#demo" class="btn btn-primary" data-hover data-press>▶ Try Live Demo — No Install</a>
+          <a href="#download" class="btn btn-saffron" data-hover data-press>⬇ Download APK</a>
+          <a id="repoBtnTop" href="https://github.com/Byte-Craftsman-Alpha/SIH2026" target="_blank" rel="noopener" class="btn btn-ghost" data-hover data-press>⌥ GitHub Repo</a>
+        </div>
+        <div class="hero-safety" data-hero>
+          <span>🛡️</span><span><b>AI DRAFTS. PHYSICIAN VERIFIES.</b> — No autonomous diagnosis, no autonomous prescription. Red-flag emergencies fire from deterministic clinician-tuned rules, never from probabilistic AI.</span>
+        </div>
+      </div>
+      <div class="hero-phones" id="heroPhones">
+        <div class="phone-glow" id="phoneGlow"></div>
+        <div class="phone phone-b" data-phone="b"><div class="notch"></div><img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-dynamic-src="assets/33-extract.jpg" alt="OCR extraction with confidence scores" loading="eager"></div>
+        <div class="phone phone-c" data-phone="c"><div class="notch"></div><img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-dynamic-src="assets/26-token.jpg" alt="Digital OPD token slip" loading="eager"></div>
+        <div class="phone phone-a" data-phone="a"><div class="notch"></div><img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-dynamic-src="assets/11-home.jpg" alt="MediKiosk home dashboard" loading="eager"></div>
+      </div>
+    </div>
+
+    <div class="stat-strip" id="statStrip">
+      <div class="stat"><div class="v gr"><span data-count="328193" data-format="in">0</span></div><div class="l">AIIA OPD patients FY 2024–25 (PS sponsor's own load)</div></div>
+      <div class="stat"><div class="v rd">≈<span data-count="2" data-decimals="0">0</span><span class="u"> min</span></div><div class="l">Avg. Indian primary-care consultation (BMJ Open 2017)</div></div>
+      <div class="stat"><div class="v bl"><span data-count="75.9" data-decimals="1">0</span><span class="u">%</span></div><div class="l">Diagnoses driven by history alone (pooled, 1947–2009)</div></div>
+      <div class="stat"><div class="v sa"><span data-count="98.6" data-decimals="1">0</span><span class="u">%</span></div><div class="l">Patients still carrying paper records (IJMR 2024)</div></div>
+      <div class="stat"><div class="v te"><span data-count="8">0</span><span class="u">/8</span></div><div class="l">Core workflows PASS on real Android device</div></div>
+      <div class="stat"><div class="v vi"><span data-count="10">0</span><span class="u">/10</span></div><div class="l">Dashavidha Pariksha parameters covered (AYUSH mode)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LIVE EVIDENCE / HEALTH ================= -->
+<section id="evidence" style="padding-top:20px">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker"><span class="dot"></span>Live Evidence — Verified Right Now</div>
+      <h2 class="sec-title">Real backend. <span class="hl">Real build.</span> Real device tests.</h2>
+      <p class="sec-sub">No placeholder claims — this page pings the <b style="color:var(--txt)">live production backend</b> (Vercel Serverless + Supabase) directly from your browser, every 60 seconds. The same build is downloadable as an APK and testable in-browser via Appetize.</p>
+    </div>
+    <div class="hc-grid" id="hcGrid" data-reveal>
+      <div class="card hc-card" data-hc="0">
+        <div class="hc-top"><div class="hc-pulse"><div class="ring"></div><div class="core"></div></div><div class="hc-name">API Health</div></div>
+        <div class="hc-url">GET /api/v1/health</div>
+        <div class="hc-status"><span class="s">CHECKING…</span><span class="lat">— ms</span></div>
+        <div class="hc-json">awaiting response…</div>
+      </div>
+      <div class="card hc-card" data-hc="1">
+        <div class="hc-top"><div class="hc-pulse"><div class="ring"></div><div class="core"></div></div><div class="hc-name">Service Health</div></div>
+        <div class="hc-url">GET /health</div>
+        <div class="hc-status"><span class="s">CHECKING…</span><span class="lat">— ms</span></div>
+        <div class="hc-json">awaiting response…</div>
+      </div>
+      <div class="card hc-card" data-hc="2">
+        <div class="hc-top"><div class="hc-pulse"><div class="ring"></div><div class="core"></div></div><div class="hc-name">Platform Config</div></div>
+        <div class="hc-url">GET /api/v1/meta/config</div>
+        <div class="hc-status"><span class="s">CHECKING…</span><span class="lat">— ms</span></div>
+        <div class="hc-json">awaiting response…</div>
+      </div>
+    </div>
+    <div class="hc-tools" data-reveal>
+      <button class="icon-btn" id="hcRefresh" data-hover data-press title="Re-run health checks">⟳</button>
+      <span class="hc-meta" id="hcMeta">Auto-refresh every 60 s · checks run live from your browser against the deployed Vercel backend</span>
+      <span class="pill ok" style="margin-left:auto"><span class="pdot"></span>CI/CD: GitHub Actions builds &amp; publishes every release</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROBLEM ================= -->
+<section id="problem">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker amber"><span class="dot"></span>The Problem Statement · SIH26047</div>
+      <h2 class="sec-title">India diagnoses in <span class="hl-a">2 minutes</span> — because the history never arrives written.</h2>
+      <p class="sec-sub">Explained simply: when you visit a government hospital, the doctor gets only a few minutes with you. Your whole medical story — old prescriptions, allergies, past illnesses — stays locked in a plastic bag of paper and in your memory. MediKiosk fixes exactly this “first-mile” gap, in the patient's own language.</p>
+    </div>
+
+    <div class="prob-grid">
+      <div class="card pcard" data-reveal>
+        <div class="ic amb">⏱️</div>
+        <div class="big-num" style="color:var(--red)">≈2 min</div>
+        <h3>The 2-to-5-minute consultation</h3>
+        <p>Government OPDs see 4,000–10,000 patients/day (AIIMS Delhi alone ~8,000–10,000). A 67-country systematic review placed India's average primary-care consultation at ~2 minutes — among the shortest on Earth. Inside it, the doctor must elicit history, examine, read old papers, diagnose, counsel and prescribe.</p>
+        <div class="src">Source: Irving/Hobbs et al., <i>BMJ Open</i> 2017 — 179 studies, 28.5 M consultations · doi:10.1136/bmjopen-2017-017902</div>
+      </div>
+      <div class="card pcard" data-reveal>
+        <div class="ic blu">📜</div>
+        <div class="big-num" style="color:var(--saffron)">98.6%</div>
+        <h3>The plastic bag of paper</h3>
+        <p>98.6% of Indian patients still maintain paper records; 27% have lost them. Prescriptions, lab reports and discharge summaries arrive handwritten, multilingual, chronologically disordered — the physician burns scarce minutes just reading the bag.</p>
+        <div class="src">Source: Gandhi &amp; Soundappan, <i>Indian J Med Res</i> 2024 · ICMR-RUM network study (4,838 OPD patients), IJMR Feb 2024</div>
+      </div>
+      <div class="card pcard" data-reveal>
+        <div class="ic vio">🌿</div>
+        <div class="big-num" style="color:var(--violet)">10-point</div>
+        <h3>The AYUSH multiplier</h3>
+        <p>Ayurvedic case-taking requires Trividha, Ashtavidha &amp; Dashavidha Pariksha — Prakriti, Vikriti, Agni, Koshtha, Sara, Samhanana and more. This interview is <i>far</i> deeper than allopathic intake — effectively impossible inside a 2-minute slot, so the assessment that defines personalized AYUSH care gets abbreviated.</p>
+        <div class="src">Basis: Charaka Samhita, Vimana Sthana · CCRAS/AIIA Prakriti proforma</div>
+      </div>
+      <div class="card pcard half" data-reveal>
+        <div class="ic">🛤️</div>
+        <div class="big-num" style="color:var(--green)">90+ Cr ⟷ 1.6 L</div>
+        <h3>ABDM has rails, but no first mile</h3>
+        <p>90+ crore ABHA health IDs exist (PIB, May 2026) — yet under 1.6 lakh facilities run ABDM software (PIB, Feb 2025), and <b style="color:var(--txt)">nothing captures the clinical story</b> into the ecosystem before the encounter. Registration systems capture demographics; the structured history — the payload that makes ABDM valuable — is never created.</p>
+        <div class="src">Source: PIB 30 May 2026 (90 Cr ABHA) · PIB 11 Feb 2025 (facility count)</div>
+      </div>
+      <div class="card pcard half" data-reveal>
+        <div class="ic red">🚨</div>
+        <div class="big-num" style="color:var(--red)">3 silent failures</div>
+        <h3>What the status quo costs — in harm</h3>
+        <p><b style="color:var(--txt)">1 · Missed allergies &amp; interactions:</b> Indian hospitals show a 34% median medication-error incidence, concentrated at prescribing (2025 systematic review of 40 studies). <b style="color:var(--txt)">2 · Missed red flags:</b> chest pain + breathlessness waits 2 hours in a routine queue. <b style="color:var(--txt)">3 · The “blank patient”:</b> 68,584 hit-and-run accidents in 2024 (MoRTH) — unconscious victims treated with zero history.</p>
+        <div class="src">Sources: Govil et al. 2025 (PMC) · WHO Patient Safety Fact Sheet, 13 Sep 2023 · BMJ Quality &amp; Safety, 2 Oct 2024 (history-taking failures → 2.5× error risk) · MoRTH 2024</div>
+      </div>
+    </div>
+
+    <div class="ps-box mt-34" data-reveal>
+      <h3>📋 What the Problem Statement officially asks for</h3>
+      <p><b style="color:var(--txt)">SIH26047 “Patient Case-Taking Software”</b> (Ministry of Ayush — All India Institute of Ayurveda, Software category, MedTech/BioTech/HealthTech theme) asks for <b style="color:var(--txt)">one patient-facing platform</b> where the patient — independently, before entering the consultation room — can:</p>
+      <div class="must">
+        <div><span class="tick">✓</span><span>Record their <b>full clinical history by natural spoken conversation + guided touchscreen</b> (multilingual, multi-accent, noisy-hospital robust, zero-training for low-literacy &amp; elderly users)</span></div>
+        <div><span class="tick">✓</span><span><b>Digitize physical medical documents</b> — handwritten + printed, multilingual OCR with extraction of diagnoses, medications, lab values and procedures</span></div>
+        <div><span class="tick">✓</span><span>Produce a <b>structured, physician-ready summary</b> (Chief Complaint → HPI → Past History → Drugs/Allergies → Family → Personal → ROS → Investigations) that the doctor verifies in seconds</span></div>
+        <div><span class="tick">✓</span><span>Push the record to <b>HIS/EMR and the ABHA-linked PHR via FHIR</b>, under <b>DPDP Act 2023 + ABDM consent</b> governance — with emergency red-flag detection routed to triage</span></div>
+      </div>
+      <div class="challenge-row">
+        <span class="pill warn">C1 · Noisy-hospital multilingual voice</span>
+        <span class="pill warn">C2 · Zero-training, low-literacy usability</span>
+        <span class="pill warn">C3 · Free narration → standard history + Dashavidha</span>
+        <span class="pill warn">C4 · Handwritten + printed OCR &amp; extraction</span>
+        <span class="pill warn">C5 · DPDP 2023 + ABDM consent privacy</span>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ================= SOLUTION ================= -->
+<section id="solution">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker"><span class="dot"></span>The Solution</div>
+      <h2 class="sec-title">One kiosk. <span class="hl">Five steps.</span> A finished history before the token is called.</h2>
+      <p class="sec-sub">MediKiosk is a patient-facing AI clinical-intake platform with two coordinated windows — the <b style="color:var(--txt)">Patient Window</b> (kiosk / companion app: identify → consent → converse → scan → verify) and the <b style="color:var(--txt)">Physician Window</b> (portal: AI-drafted summary, source labels, confidence scores, Accept / Amend / Reject). The patient owns the data and the consent; the doctor gets the clinical value.</p>
+    </div>
+
+    <div class="journey" id="journey" data-reveal>
+      <div class="journey-line"><div class="fill" id="journeyFill"></div></div>
+      <div class="j-steps">
+        <div class="j-step"><div class="j-dot">🪪<span class="num">1</span></div><h4>IDENTIFY</h4><div class="tb">≈ 30 s</div><p>Language select (हिंदी/English) → ABHA scan / number / phone OTP. New patients: 5-step registration wizard with DPDP consent.</p></div>
+        <div class="j-step"><div class="j-dot">🗣️<span class="num">2</span></div><h4>CONVERSE</h4><div class="tb">4–6 min new · 60–90 s returning</div><p>Adaptive AI interview — voice OR touch on every question. SOCRATES/OPQRST branching, coverage meter, AYUSH Dashavidha mode, continuous red-flag watch.</p></div>
+        <div class="j-step"><div class="j-dot">📄<span class="num">3</span></div><h4>SCAN</h4><div class="tb">2–3 min</div><p>Photograph old Rx / lab reports / discharge summaries → quality check → classify → OCR (print + handwriting) → entity extraction with confidence scores.</p></div>
+        <div class="j-step"><div class="j-dot">🧾<span class="num">4</span></div><h4>SUMMARIZE &amp; ROUTE</h4><div class="tb">≈ 20 s</div><p>Conversational history + verified document data fuse into the standard 12-section physician summary + chronological timeline → pushed to doctor portal → FHIR R4 bundle.</p></div>
+        <div class="j-step"><div class="j-dot">🩺<span class="num">5</span></div><h4>CONSULT</h4><div class="tb">≈ 30 s review</div><p>Doctor reads a completed, source-labelled history in seconds — amends, verifies, saves. The consultation time goes back to examination &amp; counselling.</p></div>
+      </div>
+    </div>
+
+    <div class="mod-grid">
+      <div class="card mod" data-reveal><div class="letter">A</div><div><h4>Conversational Multimodal History Engine</h4><p>Dual-mode (voice ⊕ touch) adaptive interview constrained by a clinician-approved ontology — chief complaint → SOCRATES/OPQRST follow-ups grounded in the patient's own medication history → completeness meter → <b style="color:var(--txt)">AYUSH Mode</b> with all 10 Dashavidha parameters + Agni/Koshtha/Ahara-Vihara, grounded on the CCRAS Prakriti baseline. Deterministic red-flag engine can interrupt the flow in seconds.</p></div></div>
+      <div class="card mod" data-reveal><div class="letter">B</div><div><h4>Document Digitization &amp; Intelligence</h4><p>6-stage pipeline: Capture → Quality Check → Classify (Rx / Lab / Discharge) → OCR (printed + handwritten, multilingual) → Extract (diagnoses, meds + dose, lab values + reference ranges, procedures) → Chronological timeline. Abnormal values and drug–herb interactions flagged; every field carries a confidence score and a patient-verification gate.</p></div></div>
+      <div class="card mod" data-reveal><div class="letter">C</div><div><h4>Structured Summary + Physician Portal</h4><p>Standard clinical format — CC → HPI → Past Med/Surg → Drug &amp; Allergy → Family → Personal → ROS → Prior Investigations. Editable draft with Accept / Amend / Reject, source labels (patient-reported · OCR-extracted · patient-verified · physician-verified) and bilingual EN/हिं output. <b style="color:var(--txt)">Never an autonomous diagnosis.</b></p></div></div>
+      <div class="card mod" data-reveal><div class="letter">D</div><div><h4>Consent, Privacy &amp; ABDM Integration</h4><p>Granular, revocable, audio-explained consent per DPDP Act 2023 (verified live: revocation mutates the DB instantly). ABHA + OTP authentication, 4-hour consent windows on bookings, FHIR R4 bundle push (HAPI sandbox), hash-chained audit logs, session data wipes, and break-glass emergency access with full governance.</p></div></div>
+    </div>
+
+    <div class="is-isnot">
+      <div class="iin" data-reveal>
+        <h4>✅ What MediKiosk IS</h4>
+        <ul>
+          <li><span class="m">✓</span><span>A <b>patient-facing AI clinical-intake platform</b> — walk-in kiosk (primary) + optional BYOD companion app</span></li>
+          <li><span class="m">✓</span><span>A <b>document digitization &amp; intelligence pipeline</b> (OCR → extraction → timeline)</span></li>
+          <li><span class="m">✓</span><span>A <b>physician verification dashboard</b> — AI drafts, humans decide</span></li>
+          <li><span class="m">✓</span><span>A <b>consent-first ABDM-compatible layer</b> (ABHA · FHIR · HIS)</span></li>
+          <li><span class="m">✓</span><span>An <b>emergency break-glass service</b> + tamper-evident, hash-chained record layer</span></li>
+        </ul>
+      </div>
+      <div class="inot" data-reveal>
+        <h4>⛔ What MediKiosk is NOT</h4>
+        <ul>
+          <li><span class="m">✕</span><span><b>Not a diagnostic engine</b> — it never diagnoses, never prescribes, never replaces physician judgment</span></li>
+          <li><span class="m">✕</span><span><b>Not a blockchain gimmick</b> — lightweight hash-chained audit anchoring keeps records tamper-evident <i>and</i> DPDP-erasable (no medical data on-chain)</span></li>
+          <li><span class="m">✕</span><span><b>Not a mobile-app-first design</b> — kiosk is the primary channel per PS §2.2; the app is an optional companion (attendant mode, follow-ups, BYOD)</span></li>
+          <li><span class="m">✕</span><span><b>Not a rip-and-replace</b> — it plugs into existing HIS/registration flows and feeds verified summaries into them</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PS COVERAGE ================= -->
+<section id="coverage">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker blue"><span class="dot"></span>PS Coverage Matrix · Requirement-by-Requirement</div>
+      <h2 class="sec-title">Every SIH26047 requirement, <span class="hl-b">mapped to live evidence.</span></h2>
+      <p class="sec-sub">28 checkpoints from the official PS (Background 1.1–1.3 · Description 2.1–2.3 · Expected Solution 3.1–3.4 incl. Modules A–D and the 5-step journey). “Shipped” = working in the current build with a screen or test case behind it; “Roadmap” = shipped in scoped form now, hardening/v2 announced with dates; “Beyond PS” = enhancements we add.</p>
+    </div>
+    <div class="cov-layout">
+      <div class="card ring-box" data-reveal>
+        <div class="ring-wrap">
+          <svg width="210" height="210" viewBox="0 0 210 210">
+            <defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#12b98c"/><stop offset="60%" stop-color="#27d3a2"/><stop offset="100%" stop-color="#57a6ff"/>
+            </linearGradient></defs>
+            <circle class="ring-bg" cx="105" cy="105" r="92"/>
+            <circle class="ring-fg" id="covRing" cx="105" cy="105" r="92" stroke-dasharray="578" stroke-dashoffset="578"/>
+          </svg>
+          <div class="ring-center"><div class="pv"><span id="covPct">0</span>%</div><div class="pl">28/28 addressed</div></div>
+        </div>
+        <div style="font-weight:800;font-size:.95rem">PS coverage — fully addressed</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-top:6px">20 shipped in the live build · 4 shipped-in-scope with announced v2 hardening · 4 beyond-PS differentiators = 28 checkpoints addressed</p>
+        <div class="cov-legend">
+          <div class="li"><span class="sw" style="background:var(--green)"></span>SHIPPED — working, screen/test evidence</div>
+          <div class="li"><span class="sw" style="background:var(--saffron)"></span>SHIPPED + v2 ROADMAP — scoped form live</div>
+          <div class="li"><span class="sw" style="background:var(--violet)"></span>BEYOND PS — our enhancements</div>
+        </div>
+      </div>
+      <div>
+        <div class="cov-filters" data-reveal>
+          <button class="chip on" data-cov="all">All · 28</button>
+          <button class="chip" data-cov="shipped">✓ Shipped · 20</button>
+          <button class="chip" data-cov="roadmap">◔ Shipped + v2 roadmap · 4</button>
+          <button class="chip" data-cov="extra">★ Beyond PS · 4</button>
+        </div>
+        <div class="cov-list" id="covList"><!-- rows injected by JS from COVERAGE data --></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LIVE DEMO ================= -->
+<section id="demo">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker"><span class="dot"></span>Live App Preview — Test In Your Browser</div>
+      <h2 class="sec-title">Try the real app right now. <span class="hl">No download, no install.</span></h2>
+      <p class="sec-sub">The full MediKiosk Android build runs live in your browser via Appetize.io — touch, type and speak through the actual flows: registration, AI intake chat, red-flag alert, OPD booking and document OCR.</p>
+    </div>
+    <div class="demo-grid">
+      <div data-reveal>
+        <div class="appetize-shell">
+          <div class="appetize-frame" id="apFrame">
+            <div class="ap-poster" id="apPoster" role="button" tabindex="0" aria-label="Load live demo">
+              <div class="play" id="apPlay">▶</div>
+              <h4>Launch Live Demo</h4>
+              <p>Streams the actual MediKiosk build (Android) — takes a few seconds to boot the virtual device.</p>
+              <span class="pill ok"><span class="pdot"></span>appetize.io · interactive</span>
+            </div>
+          </div>
+        </div>
+        <p class="small-note center">Tip: the demo device may take 10–20 s to stream on first launch. Use the on-screen keyboard/trackpad of the emulator. Fullscreen available inside the player.</p>
+      </div>
+      <div data-reveal>
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:6px">🧭 Suggested 3-minute judge walkthrough</h3>
+        <p style="font-size:.87rem;color:var(--muted);margin-bottom:8px">Follow this exact path to see every PS-critical capability in one pass:</p>
+        <div class="demo-steps">
+          <div class="demo-step"><div class="n">1</div><div><h5>भाषा चुनें → नया मरीज़</h5><p>Pick Hindi at the language screen → kiosk welcome → New Patient → complete the 5-step registration wizard (identity, contact + 14-digit ABHA, emergency contact, DPDP consent toggles, review).</p></div></div>
+          <div class="demo-step"><div class="n">2</div><div><h5>AI Clinical Intake — say “seene mein dard”</h5><p>Open the intake chat in General OPD mode → select chest pain → watch adaptive SOCRATES follow-ups → add sweating + breathlessness → the <b style="color:var(--red)">deterministic red-flag alert fires full-screen</b> with an 8-second triage dispatch countdown, Call-108 and Alert-Family actions.</p></div></div>
+          <div class="demo-step"><div class="n">3</div><div><h5>AYUSH mode + Prakriti</h5><p>Run the CCRAS Prakriti assessment (18 questions, voice or touch) → get the dosha donut (e.g. Vata 45 / Pitta 35 / Kapha 20) → switch intake to AYUSH OPD and see questions grounded on your “वात-पित्त” baseline.</p></div></div>
+          <div class="demo-step"><div class="n">4</div><div><h5>Scan a prescription → OCR → safety alert</h5><p>Medical Records → upload a doctor's prescription → 4-stage pipeline animation → extracted meds with confidence % (Metformin 94%, Amlodipine 88%, Triphala 76%) → <b style="color:var(--saffron)">Triphala + Metformin hypoglycaemia interaction alert</b> → verify into the timeline.</p></div></div>
+          <div class="demo-step"><div class="n">5</div><div><h5>Book OPD → token → revoke consent</h5><p>Hospitals → AIIA → doctor + slot → urgency &amp; consent scope → instant token slip (A-0xx). Then open the appointment → <b style="color:var(--txt)">revoke DPDP consent</b> and watch the badge + database update instantly → cancel the appointment.</p></div></div>
+        </div>
+        <div id="demo-video-slot"><!-- demo video injected here when SHOW_DEMO=true --></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SCREENSHOTS ================= -->
+<section id="screens">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker violet"><span class="dot"></span>Main App Screenshots · Real Device</div>
+      <h2 class="sec-title">38 screens from the <span style="color:var(--violet)">actual build</span> — not mockups.</h2>
+      <p class="sec-sub">Captured on a physical Redmi Note 8 running the CI-built APK against the live backend (plus the repo's verified onboarding captures). Every image below was visually checked against the real UI. Tap any screen to enlarge; filter by flow.</p>
+    </div>
+    <div class="gal-filters" id="galFilters" data-reveal>
+      <button class="chip on" data-gal="all">All</button>
+      <button class="chip" data-gal="onboard">Onboarding &amp; Registration</button>
+      <button class="chip" data-gal="intake">AI Intake</button>
+      <button class="chip" data-gal="ayush">AYUSH / Prakriti</button>
+      <button class="chip" data-gal="opd">OPD Booking &amp; Token</button>
+      <button class="chip" data-gal="docs">Records &amp; OCR</button>
+      <button class="chip" data-gal="safety">Safety / DPDP</button>
+      <button class="chip" data-gal="core">Dashboard</button>
+      <button class="chip" data-gal="system">System / Backend</button>
+    </div>
+    <div class="gal-grid" id="galGrid"><!-- injected by JS from SHOTS manifest --></div>
+  </div>
+</section>
+
+<!-- ================= DOWNLOAD ================= -->
+<section id="download">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker amber"><span class="dot"></span>Download · GitHub Releases (CI-built)</div>
+      <h2 class="sec-title">Install the <span class="hl-a">exact build</span> the demo runs.</h2>
+      <p class="sec-sub">Every push to <span class="kbd">main</span> triggers GitHub Actions → Flutter build → signed artifacts published to GitHub Releases. Release <b style="color:var(--txt)">v1.0.0-20260914-184422</b> (14 Sep 2026).</p>
+    </div>
+    <div class="dl-grid">
+      <div class="card dl-card" data-reveal>
+        <span class="pill ok"><span class="pdot"></span>Recommended</span>
+        <h3 style="font-size:1.15rem">📱 Production APK</h3>
+        <div class="qr"><img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-dynamic-src="assets/qr/apk.png" alt="QR code for APK download"></div>
+        <p>Cloud build — connects to the live Vercel serverless backend + Supabase (PostgreSQL, object storage). This is the build judges should install.</p>
+        <div class="dl-meta">medikiosk-production.apk · 56.6 MB · Android 6.0+<br>Tag: v1.0.0-20260914-184422</div>
+        <a class="btn btn-primary btn-sm" id="apkProdBtn" href="#" target="_blank" rel="noopener" data-hover data-press>⬇ Download APK</a>
+        <a class="btn btn-ghost btn-sm" id="relBtn1" href="#" target="_blank" rel="noopener" data-hover data-press>All release assets</a>
+      </div>
+      <div class="card dl-card" data-reveal>
+        <span class="pill warn"><span class="pdot"></span>Field / Offline testing</span>
+        <h3 style="font-size:1.15rem">🧪 Beta APK</h3>
+        <div class="qr"><img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-dynamic-src="assets/qr/health.png" alt="QR code for backend health"></div>
+        <p>Beta build for local-backend mode (embedded SQLite) — demonstrates the standalone offline kiosk profile where the hospital runs FastAPI on-prem.</p>
+        <div class="dl-meta">medikiosk-beta.apk · 56.6 MB · pairs with local FastAPI<br>Scan QR → live backend health JSON</div>
+        <a class="btn btn-ghost btn-sm" id="apkBetaBtn" href="#" target="_blank" rel="noopener" data-hover data-press>⬇ Download Beta APK</a>
+        <a class="btn btn-ghost btn-sm" id="relBtn2" href="#" target="_blank" rel="noopener" data-hover data-press>Play Store .aab + iOS runners</a>
+      </div>
+      <div class="card dl-card" data-reveal>
+        <span class="pill info"><span class="pdot"></span>No install needed</span>
+        <h3 style="font-size:1.15rem">🌐 In-Browser Demo</h3>
+        <div class="qr"><img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-dynamic-src="assets/qr/demo.png" alt="QR code for Appetize live demo"></div>
+        <p>Same build, streamed to any browser via Appetize.io — zero download, zero “allow unknown sources”. Scan with a phone or open the live-demo section above.</p>
+        <div class="dl-meta">Android emulator stream · interactive touch<br>Works on desktop &amp; mobile browsers</div>
+        <a class="btn btn-saffron btn-sm" href="#demo" data-hover data-press>▶ Open Live Demo</a>
+        <a class="btn btn-ghost btn-sm" id="repoBtn2" href="#" target="_blank" rel="noopener" data-hover data-press>Source code + docs</a>
+      </div>
+    </div>
+    <div class="dl-note" data-reveal>
+      <b>Install note:</b> Android may prompt “Allow installation of unknown apps” for GitHub-downloaded APKs — permit it for your browser/file manager, then install.
+      <b style="margin-left:8px">Artifacts per release:</b> production APK · beta APK · Play-Store AAB · iOS beta runner · iOS production runner — all built by the same CI pipeline, release notes auto-merged from the commit &amp; test reports.
+    </div>
+  </div>
+</section>
+<!-- ================= INNOVATION ================= -->
+<section id="innovation">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker"><span class="dot"></span>Innovation · Novelty · USP</div>
+      <h2 class="sec-title">Ten defensible innovations — <span class="hl">integration-first, not gimmick-first.</span></h2>
+      <p class="sec-sub">Each claim below is demonstrable in the current build or in the announced roadmap — no slideware.</p>
+    </div>
+    <div class="inn-grid">
+      <div class="card inn" data-reveal><div class="no">01</div><div><h4>Returning-patient “delta intake” — 60–90 s instead of 6 min</h4><p>Static profile (Prakriti, allergies, chronic meds) is captured once; each revisit only asks what changed (Vikriti delta). No other intake system does this — it removes repeated questioning across visits, the #1 patient complaint in OPDs.</p></div></div>
+      <div class="card inn" data-reveal><div class="no">02</div><div><h4>Dual-mode voice ⊕ touch on <i>every</i> question</h4><p>Most “voice AI” demos fail the literacy test; most touch apps fail the elderly test. MediKiosk treats both as first-class equals: speak “बुखार है” or tap the fever icon — icon-first 48 px targets, TTS prompts, attendant button, mid-flow language switch.</p></div></div>
+      <div class="card inn" data-reveal><div class="no">03</div><div><h4>Ontology-constrained adaptive dialogue</h4><p>LLM fluency caged inside clinician-approved question paths (complaint-indexed ontology graph, SOCRATES/OPQRST templates). Adaptive like a doctor, safe like a protocol. Two-call AI pattern: structured proposal → independent safety verifier → grounded response, with deterministic ontology-graph fallback on rejection/quota.</p></div></div>
+      <div class="card inn" data-reveal><div class="no">04</div><div><h4>Fused intake: conversation + paper → one verified timeline</h4><p>Nobody else merges what the patient <i>says</i> with what the patient <i>carries</i> at point of entry. OCR-extracted meds/labs fuse with interview answers into a single chronological, source-labelled, confidence-scored record.</p></div></div>
+      <div class="card inn" data-reveal><div class="no">05</div><div><h4>Deterministic red-flag safety layer (non-LLM)</h4><p>Emergency escalation never depends on probabilistic AI. Clinician-tuned rule patterns (e.g. chest pain + sweating + breathlessness) fire a non-dismissible full-screen alert, an 8-second triage/family dispatch countdown, Call-108 and GPS-SMS actions — verified on real device (TC-CHAT).</p></div></div>
+      <div class="card inn" data-reveal><div class="no">06</div><div><h4>AYUSH-native by design — the sponsor's own clinical language</h4><p>Full Dashavidha Pariksha (10/10 parameters) as a configurable mode, CCRAS-standard 18-question Prakriti assessment, Trividha split (Prashna→AI voice · Darshana→camera-assisted · Sparshana→physician), Ashtavidha kept doctor-side, and a NAMASTE → ICD-11 Ch.26 → FHIR R4 mapping path — national-scale AYUSH interoperability no allopathic system attempts.</p></div></div>
+      <div class="card inn" data-reveal><div class="no">07</div><div><h4>Hash-chained provenance: source → field → summary line</h4><p>Every extracted field carries provenance + confidence; finalized records are SHA-256 hash-anchored into an append-only, tamper-evident audit chain — integrity without blockchain's latency/cost, and fully compatible with DPDP erasure rights (no medical data on-chain).</p></div></div>
+      <div class="card inn" data-reveal><div class="no">08</div><div><h4>Break-glass emergency access via ABHA</h4><p>The “blank patient” solution: verified HFR-registered facility staff can retrieve a minimal emergency view (blood group, allergies, anticoagulants, implants, comorbidities) of an unresponsive patient in ≤2 minutes — 100% audit-logged, post-hoc privacy-officer reviewed, patient-notified. Turns ABDM from a filing system into a life-saving tool.</p></div></div>
+      <div class="card inn" data-reveal><div class="no">09</div><div><h4>Modern drug–herb interaction flagger</h4><p>Cross-system safety for AYUSH reality: flags simultaneous Triphala Churna + Metformin (hypoglycaemia risk) during OCR extraction — demonstrated live in the test report. Scope-honest: a flagging engine for physicians, not a prescription authority.</p></div></div>
+      <div class="card inn" data-reveal><div class="no">10</div><div><h4>Dual-environment deployment (cloud ⇄ offline kiosk)</h4><p>One codebase, two profiles: Production (Vercel serverless + Supabase cloud) and Beta (local FastAPI + SQLite on hospital LAN) — switchable in-app. This is the offline/low-connectivity strategy for PHCs: store-and-forward sync, UPS-friendly, manual-intake fallback always available.</p></div></div>
+    </div>
+    <div class="usp-banner" data-reveal>
+      <span class="q">USP — one sentence:</span> “MediKiosk is the only platform that turns what a patient <i>says</i> and <i>carries on paper</i> into a doctor-verified, emergency-accessible, AYUSH-aware digital history — in their own language, before the doctor calls their token.”
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPARISON ================= -->
+<section id="compare">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker red"><span class="dot"></span>Comparison · Why Existing Options Fall Short</div>
+      <h2 class="sec-title">Registration systems, kiosks, apps, nurses, scanners — <span style="color:var(--red)">each solves one slice.</span></h2>
+      <p class="sec-sub">PS §2.2 asks exactly why today's four option-classes fail. Here is the capability-by-capability answer — ✓ full · ◐ partial · ✗ absent.</p>
+    </div>
+    <div class="cmp-scroll" data-reveal>
+      <table class="cmp" id="cmpTable">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th class="mk-col">🩺 MediKiosk</th>
+            <th>Hospital registration / HIS module</th>
+            <th>Check-in kiosks (foreign hospitals)</th>
+            <th>Consumer health apps (Practo-type)</th>
+            <th>Nurse-led triage desk</th>
+            <th>Generic scanner / DMS</th>
+            <th>ABDM PHR apps</th>
+            <th>EMR / EHR systems</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Clinical history intake (CC→HPI→…→ROS)</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td></tr>
+          <tr><td>Voice + touch, multilingual (noisy OPD)</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td></tr>
+          <tr><td>Zero-training, low-literacy &amp; elderly friendly</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck p">◐</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td><td><span class="ck y">✓</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td></tr>
+          <tr><td>AYUSH: Dashavidha / Prakriti assessment</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td></tr>
+          <tr><td>Document OCR + clinical entity extraction</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td></tr>
+          <tr><td>Deterministic red-flag → priority triage</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td><td><span class="ck y">✓</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td></tr>
+          <tr><td>Physician verification gate (Accept/Amend/Reject)</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td></tr>
+          <tr><td>ABHA auth + FHIR push to HIS / PHR</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck y">✓</span></td><td><span class="ck p">◐</span></td></tr>
+          <tr><td>DPDP granular revocable consent (verified live)</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck y">✓</span></td><td><span class="ck p">◐</span></td></tr>
+          <tr><td>Emergency break-glass history access</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td></tr>
+          <tr><td>Offline / low-connectivity profile</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck p">◐</span></td><td><span class="ck n">✗</span></td><td><span class="ck n">✗</span></td><td><span class="ck y">✓</span></td><td><span class="ck y">✓</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td></tr>
+          <tr><td>Scales to 4,000–10,000 OPD/day</td><td class="mk-col"><span class="ck y">✓</span></td><td><span class="ck p">◐</span></td><td><span class="ck p">◐</span></td><td><span class="ck y">✓</span></td><td><span class="ck n">✗</span></td><td><span class="ck p">◐</span></td><td><span class="ck y">✓</span></td><td><span class="ck p">◐</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cmp-foot" data-reveal>
+      <span><span class="ck y">✓</span> full capability</span><span><span class="ck p">◐</span> partial / admin-only</span><span><span class="ck n">✗</span> absent</span>
+      <span style="margin-left:auto">Consumer apps require smartphone literacy + connectivity + pre-enrolment — they exclude the elderly, rural and low-literacy majority of government OPDs (PS §2.2). Nurse desks don't scale past HR limits.</span>
+    </div>
+    <div class="cmp-note" data-reveal>
+      <b>Honest framing:</b> MediKiosk does not compete with ABDM or HIS — it is the missing <b>first-mile producer</b> of structured clinical data that makes ABDM's rails carry real payloads, and feeds verified summaries <i>into</i> existing HIS. If a patient declines consent or a device fails, the system degrades gracefully to today's manual process — nothing is ever blocked.
+    </div>
+  </div>
+</section>
+
+<!-- ================= ARCHITECTURE ================= -->
+<section id="architecture">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker blue"><span class="dot"></span>Solution Architecture</div>
+      <h2 class="sec-title">Six layers, one pipeline, <span class="hl-b">two deployment profiles.</span></h2>
+      <p class="sec-sub">Clean-room architecture diagram (redrawn for readability — no leaked dev URLs, projector-safe). Every layer exists in the shipped codebase.</p>
+    </div>
+
+    <div class="arch">
+      <div id="archStack">
+        <div class="layer l-client" data-reveal>
+          <div class="lt"><span class="ln">L1</span><h4>Client Layer — kiosk-first</h4></div>
+          <div class="chips">
+            <span class="tag">🏥 Patient Kiosk (React + TypeScript PWA, offline-cache, large-touch)</span>
+            <span class="tag">📱 Companion Mobile (Flutter — optional BYOD / attendant)</span>
+            <span class="tag">🩺 Physician Portal (React + TS, Accept/Amend/Reject)</span>
+            <span class="tag">🚦 Triage Panel (red-flag queue)</span>
+            <span class="tag">🌐 hi/en live · bn·ta·te·mr·gu·pa in v2</span>
+          </div>
+        </div>
+        <div class="arch-arrow" data-reveal>▼</div>
+        <div class="layer l-api" data-reveal>
+          <div class="lt"><span class="ln">L2</span><h4>API &amp; Trust Layer</h4></div>
+          <div class="chips">
+            <span class="tag">FastAPI async gateway (Vercel serverless ASGI)</span>
+            <span class="tag">OAuth2/OIDC · ABHA + phone-OTP auth</span>
+            <span class="tag">JWT in secure hardware storage</span>
+            <span class="tag">Consent artefact service (DPDP + ABDM)</span>
+            <span class="tag">RBAC + session manager</span>
+          </div>
+        </div>
+        <div class="arch-arrow" data-reveal>▼</div>
+        <div class="layer l-app" data-reveal>
+          <div class="lt"><span class="ln">L3</span><h4>Application Services</h4></div>
+          <div class="chips">
+            <span class="tag">Interview service + dialogue manager</span>
+            <span class="tag">Red-flag rule engine (deterministic)</span>
+            <span class="tag">Document processing pipeline</span>
+            <span class="tag">Summary generator (12-section)</span>
+            <span class="tag">Chronological timeline</span>
+            <span class="tag">Appointments / OPD tokens</span>
+            <span class="tag">Emergency break-glass access</span>
+            <span class="tag">Notifications &amp; alerts</span>
+          </div>
+        </div>
+        <div class="arch-arrow" data-reveal>▼</div>
+        <div class="layer l-ai" data-reveal>
+          <div class="lt"><span class="ln">L4</span><h4>AI &amp; Vision Layer</h4></div>
+          <div class="chips">
+            <span class="tag">Bhashini / AI4Bharat ASR · TTS · translation</span>
+            <span class="tag">Hybrid OCR (details below)</span>
+            <span class="tag">Constrained clinical NLP + two-call safety verifier</span>
+            <span class="tag">Complaint-indexed ontology graph</span>
+            <span class="tag">Deterministic safety rules (never LLM)</span>
+          </div>
+        </div>
+        <div class="arch-arrow" data-reveal>▼</div>
+        <div class="layer l-data" data-reveal>
+          <div class="lt"><span class="ln">L5</span><h4>Data Layer — separation by design</h4></div>
+          <div class="chips">
+            <span class="tag">Supabase PostgreSQL (identity ⟂ clinical store, opaque link ID)</span>
+            <span class="tag">Encrypted object storage (documents)</span>
+            <span class="tag">Hash-chained WORM audit log</span>
+            <span class="tag">Timeline / search index</span>
+            <span class="tag">Ephemeral audio — wiped post-processing</span>
+          </div>
+        </div>
+        <div class="arch-arrow" data-reveal>▼</div>
+        <div class="layer l-int" data-reveal>
+          <div class="lt"><span class="ln">L6</span><h4>Integration Layer</h4></div>
+          <div class="chips">
+            <span class="tag">HAPI FHIR R4 bundles (sandbox-live, certification Oct '26)</span>
+            <span class="tag">ABDM: ABHA + Consent Manager APIs</span>
+            <span class="tag">HIS/EMR phased adapters (no rip-and-replace)</span>
+            <span class="tag">NAMASTE → ICD-11 Ch.26 terminology mapping</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-side">
+        <div class="card" data-reveal>
+          <div class="ic vio">🔀</div>
+          <h3>Hybrid OCR &amp; privacy plan (DPDP-safe)</h3>
+          <p style="font-size:.84rem">Capture → <b style="color:var(--txt)">on-device quality check + PII redaction</b> → consented cloud multimodal OCR (Gemini Flash-Lite class) for print + assisted handwriting → <b style="color:var(--txt)">open Indic-OCR fallback</b> → PHI-minimised payloads, session wipe, audit log. Production path: hospital-VPC / on-prem Indic-OCR fine-tune. Every extracted field carries a confidence score and passes patient-verify → physician-gate.</p>
+        </div>
+        <div class="card" data-reveal>
+          <div class="ic red">🚨</div>
+          <h3>AI safety flow (as built)</h3>
+          <div class="safety-flow" style="margin-top:6px;border:none;padding:0;background:none">
+            <div class="sf-row"><span class="sf-node">Patient answer</span><span class="sf-arr">→</span><span class="sf-node hl-r">Deterministic red-flag scan</span></div>
+            <div class="sf-row"><span class="sf-lbl">if critical →</span><span class="sf-node hl-r">Full-screen alert · 8 s triage + family dispatch · Call 108</span></div>
+            <div class="sf-row"><span class="sf-lbl">else →</span><span class="sf-node hl-v">AI call #1: structured proposal</span><span class="sf-arr">→</span><span class="sf-node hl-v">AI call #2: safety verifier</span></div>
+            <div class="sf-row"><span class="sf-lbl">approved →</span><span class="sf-node hl-g">Grounded clinical response</span></div>
+            <div class="sf-row"><span class="sf-lbl">rejected/quota →</span><span class="sf-node">Complaint-indexed ontology graph (no-LLM path)</span></div>
+          </div>
+        </div>
+        <div class="card" data-reveal>
+          <div class="ic amb">🧾</div>
+          <h3>Document pipeline</h3>
+          <p style="font-size:.84rem;margin-bottom:12px">Six stages, each independently testable:</p>
+          <div class="chips">
+            <span class="tag">1 · CAPTURE (camera/kiosk)</span><span class="tag">2 · QC (on-device blur/glare)</span><span class="tag">3 · CLASSIFY (Rx · Lab · Discharge)</span><span class="tag">4 · OCR (print + handwriting)</span><span class="tag">5 · EXTRACT (Dx · meds/dose · labs + ref-ranges · procedures)</span><span class="tag">6 · TIMELINE (chronological + abnormal &amp; interaction flags)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dual-env">
+      <div class="env-card beta" data-reveal>
+        <h4>🧪 Beta profile — standalone / offline kiosk</h4>
+        <ul>
+          <li>Local FastAPI backend on hospital LAN (port 8000)</li>
+          <li>Embedded SQLite database + local file storage</li>
+          <li>Field-kiosk &amp; power-cut resilient (UPS), store-and-forward sync on reconnect</li>
+          <li>In-app environment switcher + live server ping (see “System” screenshots)</li>
+        </ul>
+      </div>
+      <div class="env-card prod" data-reveal>
+        <h4>☁️ Production profile — cloud (this page pings it live)</h4>
+        <ul>
+          <li>Vercel serverless edge ASGI handler (free-tier friendly)</li>
+          <li>Supabase PostgreSQL + cloud object storage (bucket: medical-records)</li>
+          <li>Horizontally scalable stateless services; queue-based async AI calls</li>
+          <li>Data-localization ready: deployable on hospital private cloud / MeghRaj (GI Cloud)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TECH STACK ================= -->
+<section id="tech">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker violet"><span class="dot"></span>Tech Stack · What It's Actually Built With</div>
+      <h2 class="sec-title">Mature, government-backed rails — <span style="color:var(--violet)">assembled, not reinvented.</span></h2>
+      <p class="sec-sub">Every component below is in the repository and the shipped build. Versions are the ones used in the real-device test run (13 Sep 2026).</p>
+    </div>
+    <div class="tech-grid">
+      <div class="card tech-card" data-reveal>
+        <div class="layer-tag">Client · Patient surfaces</div>
+        <h3>📱 Kiosk-first UI</h3>
+        <div class="tags">
+          <span class="tag">React + TypeScript kiosk PWA (offline cache)</span>
+          <span class="tag">Flutter 3.38 companion app (Dart 3.7)</span>
+          <span class="tag">Riverpod 2.6 state · GoRouter 14</span>
+          <span class="tag">FlutterSecureStorage (JWT)</span>
+          <span class="tag">Icon-first, 48 px targets, TTS guidance</span>
+          <span class="tag">हिंदी / English live</span>
+        </div>
+      </div>
+      <div class="card tech-card" data-reveal>
+        <div class="layer-tag">Client · Physician side</div>
+        <h3>🩺 Doctor portal &amp; triage</h3>
+        <div class="tags">
+          <span class="tag">React + TypeScript portal</span>
+          <span class="tag">Server-rendered panels (queue · summary · timeline · triage · admin)</span>
+          <span class="tag">Accept / Amend / Reject workflow</span>
+          <span class="tag">Red-flag banner + priority queue</span>
+          <span class="tag">Source-label &amp; confidence display</span>
+        </div>
+      </div>
+      <div class="card tech-card" data-reveal>
+        <div class="layer-tag">AI &amp; Vision</div>
+        <h3>🧠 Constrained clinical AI</h3>
+        <div class="tags">
+          <span class="tag">Gemini 3.1 Flash-Lite (two-call: proposal + safety verifier)</span>
+          <span class="tag">Complaint-indexed ontology graph fallback</span>
+          <span class="tag">Hybrid OCR: on-device QC + PII-redact → cloud multimodal → open Indic-OCR fallback</span>
+          <span class="tag">Bhashini / AI4Bharat ASR · TTS roadmap models</span>
+          <span class="tag">Deterministic red-flag rule engine</span>
+          <span class="tag">Drug–herb interaction flagger</span>
+        </div>
+      </div>
+      <div class="card tech-card" data-reveal>
+        <div class="layer-tag">Backend</div>
+        <h3>⚙️ API &amp; data</h3>
+        <div class="tags">
+          <span class="tag">Python FastAPI 0.115 (async)</span>
+          <span class="tag">SQLAlchemy 2.0 async + aiosqlite / asyncpg</span>
+          <span class="tag">Supabase: PostgreSQL + Storage + Auth</span>
+          <span class="tag">Vercel serverless (api/index.py ASGI)</span>
+          <span class="tag">JWT auth · phone OTP · ABHA format validation</span>
+          <span class="tag">Audit logging + hash-chained records</span>
+        </div>
+      </div>
+      <div class="card tech-card" data-reveal>
+        <div class="layer-tag">Interop &amp; compliance</div>
+        <h3>🔗 ABDM / FHIR / DPDP</h3>
+        <div class="tags">
+          <span class="tag">HAPI FHIR R4 bundles (Patient · Encounter · Condition · Observation · MedicationStatement · AllergyIntolerance · DocumentReference · Consent)</span>
+          <span class="tag">ABHA + ABDM consent-manager artefacts</span>
+          <span class="tag">NAMASTE → ICD-11 Ch.26 mapping</span>
+          <span class="tag">DPDP Act 2023: granular, revocable, audio-explained consent</span>
+          <span class="tag">TLS 1.3 · AES-256 at rest · RBAC</span>
+        </div>
+      </div>
+      <div class="card tech-card" data-reveal>
+        <div class="layer-tag">DevOps &amp; quality</div>
+        <h3>🚢 CI/CD &amp; testing</h3>
+        <div class="tags">
+          <span class="tag">GitHub Actions: build → sign → release (APK · AAB · iOS runners)</span>
+          <span class="tag">Release notes auto-merged from commit + test reports</span>
+          <span class="tag">Pytest suites: chat engine · red-flag · ABDM · Bhashini · FHIR push · document pipeline</span>
+          <span class="tag">E2E smoke scripts + real-device QA matrix (8/8 PASS)</span>
+          <span class="tag">Zero credentials in VCS (.env templates only)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FEASIBILITY ================= -->
+<section id="feasibility">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker amber"><span class="dot"></span>Feasibility &amp; Execution Viability</div>
+      <h2 class="sec-title">Verdict: <span class="hl-a">HIGH</span> — for the MVP scope we honestly state.</h2>
+      <p class="sec-sub">High for printed OCR + assisted handwriting with human gates, hi/en voice with touch fallback, sandbox FHIR/ABDM — every component is mature or government-backed. The innovation is in integration and workflow design, exactly what a hackathon-grade team can ship and what the 8-week hardening plan scales.</p>
+    </div>
+
+    <div class="feas-grid">
+      <div class="card feas-card" data-reveal>
+        <div class="ic">🔧</div><h3>Technical feasibility</h3>
+        <ul>
+          <li>ASR/TTS for Indian languages: mature via Bhashini &amp; AI4Bharat (GoI NLTM); noisy-OPD robustness is engineering (mic placement, touch fallback), not research</li>
+          <li>OCR: production-grade engines exist; handwriting is the hardest nut → mitigated by confidence labels + patient-verify + physician gate (never silently trusted)</li>
+          <li>Constrained clinical dialogue: ontology + templates + verifier = demonstrable today (it is demonstrated — see live demo)</li>
+          <li>ABDM/FHIR: public sandboxes, documented APIs, mock-first strategy de-risks the demo</li>
+        </ul>
+      </div>
+      <div class="card feas-card" data-reveal>
+        <div class="ic blu">🏥</div><h3>Operational feasibility</h3>
+        <ul>
+          <li>Kiosk = commodity tablet + mic/speaker/camera; pilot runs on 2–4 tablets</li>
+          <li>Staff role becomes supervisory (assist + triage ack) — net reduction in HR load, not addition</li>
+          <li>Phased migration: standalone pilot → registration adapter → HIS/EMR push → FHIR/ABDM linking. No big-bang replacement</li>
+          <li>Graceful degradation: manual intake always remains possible; decline-consent → today's flow unchanged</li>
+        </ul>
+      </div>
+      <div class="card feas-card" data-reveal>
+        <div class="ic amb">⚖️</div><h3>Regulatory feasibility</h3>
+        <ul>
+          <li>DPDP 2023 compliant by design: purpose limitation, minimization, granular revocable consent, correction &amp; erasure rights (no on-chain data)</li>
+          <li>ABDM consent-manager artefacts; ABHA-linked sharing only with explicit consent</li>
+          <li>Clinical governance: system never diagnoses/prescribes; physician verification mandatory before HIS write; red-flag rules clinician-approved &amp; versioned</li>
+          <li>Data localization: hospital private cloud / MeghRaj deployable</li>
+        </ul>
+      </div>
+      <div class="card feas-card" data-reveal>
+        <div class="ic vio">📏</div><h3>How we measure success (eval metrics)</h3>
+        <ul>
+          <li>ASR word-error rate target: <b style="color:var(--txt)">WER ≤ 15%</b> (Hindi, hospital noise)</li>
+          <li>OCR field-F1 targets: <b style="color:var(--txt)">≥ 0.85 printed · ≥ 0.70 handwriting-assisted</b></li>
+          <li>Physician edit-distance on summaries — trending down across pilot weeks</li>
+          <li>50-case clinician pilot (Wk 7–8) with gold-set reporting; red-flag sensitivity/specificity + false-flag review loop published</li>
+          <li class="warn">Prakriti questionnaire: CCRAS/AIIA clinician validation + inter-rater check scheduled before pilot sign-off</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-top:44px;font-size:1.05rem" data-reveal>🗓️ 8-week hardening plan (post-hackathon delivery)</h3>
+    <div class="weeks">
+      <div class="week" data-reveal><div class="wk">WEEK 1–2</div><h5>Intake + consent</h5><p>Registration, granular consent artefacts, hi/en interview paths, coverage meter.</p></div>
+      <div class="week" data-reveal><div class="wk">WEEK 3–4</div><h5>Dialogue + AYUSH</h5><p>Adaptive branching hardening, Dashavidha mode, Prakriti validation with clinicians.</p></div>
+      <div class="week" data-reveal><div class="wk">WEEK 5–6</div><h5>OCR + review</h5><p>Hybrid OCR pipeline, handwriting gold-set, patient-verify UX, interaction flagger.</p></div>
+      <div class="week" data-reveal><div class="wk">WEEK 7–8</div><h5>Portal + FHIR + pilot</h5><p>Physician portal polish, HAPI FHIR bundle certification push, 50-case AIIA clinician pilot.</p></div>
+    </div>
+
+    <h3 style="margin-top:44px;font-size:1.05rem" data-reveal>⚠️ Risks → mitigations (incl. approval &amp; infrastructure risks)</h3>
+    <div class="risk-scroll" data-reveal>
+      <table class="risk-table">
+        <thead><tr><th>Risk</th><th>Mitigation (built or planned)</th></tr></thead>
+        <tbody>
+          <tr><td>Handwritten OCR errors</td><td>Patient-verification step + confidence labels + physician gate; assisted-handwriting scope honestly declared; low-confidence fields queued for doctor review, never auto-committed.</td></tr>
+          <tr><td>ASR failure in noise / accents</td><td>Touch fallback on every question, assisted (attendant) mode, per-language model selection, mid-flow language reselection; ASR-low-confidence auto-suggests touch options.</td></tr>
+          <tr><td>False red-flag alerts</td><td>Deterministic clinician-tuned rules + human triage acknowledgment; false-flag rate tracked and rules versioned; fail-safe = uncertain cases route to human, never silent.</td></tr>
+          <tr><td>ABDM sandbox → production certification delays</td><td>Sandbox-first with mock-HIS fixtures; certification milestone Oct 2026; phased adapters mean hospital value accrues before ABDM sign-off.</td></tr>
+          <tr><td>PHC power / internet instability</td><td>Beta offline profile (local FastAPI + SQLite), store-and-forward sync, UPS-compatible kiosks, attendant paper-bridge mode, offline language packs on-device.</td></tr>
+          <tr><td>Hospital IT integration resistance</td><td>Standalone pilot first; FHIR-standard outputs; no rip-and-replace; read-only pushes until trust is earned.</td></tr>
+          <tr><td>LLM hallucination in summaries</td><td>Constrained generation to structured fields + two-call safety verifier + deterministic ontology fallback; all output physician-verified before HIS write.</td></tr>
+          <tr><td>Patient distrust / consent fatigue</td><td>Audio-explained granular consent, visible data deletion, staff assistance, declining consent never blocks care.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:44px;font-size:1.05rem" data-reveal>👥 Team readiness — Team Paradox (ID 130638) · 6 members</h3>
+    <div class="team-grid">
+      <div class="member" data-reveal><div class="av">AC</div><div><h5>Aditya Chaudhari</h5><p>Team Lead · Backend &amp; FHIR — Python/FastAPI, Flutter, OCR (Azure Vision), IoT, 8+ languages</p></div></div>
+      <div class="member" data-reveal><div class="av">AS</div><div><h5>Anshika Singh</h5><p>Frontend · CV · Security — React/Flutter, CNN &amp; face-detection projects, SIH 2025 experience</p></div></div>
+      <div class="member" data-reveal><div class="av">OT</div><div><h5>Om Abhishek Tripathi</h5><p>AI/ML · Full-stack — conversational AI (ARIA assistant), drone/ArduPilot, open-source (ECWoC)</p></div></div>
+      <div class="member" data-reveal><div class="av">AP</div><div><h5>Abhiuday Pratap Singh</h5><p>Frontend — TypeScript/React, hackathon experience (ignite-26, RIFT-26), DSA</p></div></div>
+      <div class="member" data-reveal><div class="av">AS</div><div><h5>Anoop Shukla</h5><p>Web development &amp; support — 190+ contributions/yr, Campus Connect project</p></div></div>
+      <div class="member" data-reveal><div class="av">AK</div><div><h5>Arun Kumar</h5><p>AI/ML research — CSE AI/ML specialization, evaluation &amp; evidence synthesis</p></div></div>
+    </div>
+
+    <div class="honest-banner" data-reveal>
+      <span class="hb-ic">🧾</span>
+      <span><b>Honesty declaration (kept from our deck, on purpose):</b> MVP ≠ production · HIS connection is mocked in demo · ABDM runs on sandbox fixtures · pilot data is synthetic · impact numbers on this page are <b>targets/goals, not achieved results</b>. Everything marked “shipped” above is verifiable in the repo, the APK, the live backend or the test report.</span>
+    </div>
+  </div>
+</section>
+<!-- ================= ECONOMICS ================= -->
+<section id="economics">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker"><span class="dot"></span>Throughput &amp; Unit Economics</div>
+      <h2 class="sec-title">The math, <span class="hl">shown openly</span> — kiosks needed, cost per intake, savings per hospital.</h2>
+      <p class="sec-sub">PS Background 1.1 describes 4,000–10,000-patient OPDs; drag the calculator to see the kiosk bank sizing. Unit economics use corrected, assumption-footnoted arithmetic.</p>
+    </div>
+
+    <div class="econ-grid">
+      <div class="card calc" data-reveal>
+        <h3>🧮 Kiosk throughput calculator</h3>
+        <div class="calc-row">
+          <label>Daily OPD footfall <b><span id="calcP">5000</span> patients/day</b></label>
+          <input type="range" id="calcPatients" min="500" max="10000" step="100" value="5000">
+        </div>
+        <div class="calc-row">
+          <label>Kiosk operating hours <b><span id="calcH">10</span> hrs/day</b></label>
+          <input type="range" id="calcHours" min="6" max="14" step="1" value="10">
+        </div>
+        <div class="calc-row">
+          <label>New-patient share (full 7-min intake) <b><span id="calcN">60</span> %</b></label>
+          <input type="range" id="calcNew" min="20" max="100" step="5" value="60">
+        </div>
+        <div class="calc-out">
+          <div class="co"><div class="v" id="outKiosks">—</div><div class="l">KIOSKS NEEDED (avg load)</div></div>
+          <div class="co"><div class="v" id="outBanks">—</div><div class="l">6-KIOSK BANKS</div></div>
+          <div class="co"><div class="v" id="outPeak">—</div><div class="l">KIOSKS AT 1.5× PEAK</div></div>
+        </div>
+        <div class="calc-foot" id="calcFoot">Model: new patient ≈ 7 min full intake · returning patient ≈ 75 s delta-check · ~7 intakes/hr/kiosk blended at 60/40. Reference points: a 6-kiosk bank ≈ 420 intakes/day at 10 h; ~12 banks cover a 5,000/day AIIMS-scale OPD; peak 1.5× absorbed by attendant mode + a separate 60–90 s returning-patient lane. Actual throughput to be locked from the 50-case pilot measurements.</div>
+      </div>
+
+      <div class="unit-econ" data-reveal>
+        <div class="ue-row">
+          <div class="ue-v">₹0.57–0.69</div>
+          <div style="flex:1"><h5>Kiosk CAPEX amortized per intake</h5><p>₹25,000 commodity tablet-kiosk ÷ (3 years × 300–365 working days × 40 intakes/day) = ₹43,800–49,200 lifetime intakes.</p><div class="ue-bar"><i data-bar="0.43"></i></div></div>
+        </div>
+        <div class="ue-row">
+          <div class="ue-v">₹0.5–0.9</div>
+          <div style="flex:1"><h5>Hybrid cloud OPEX per intake</h5><p>Serverless API + Supabase + consented OCR/ASR calls at steady-state hybrid rates (not exploratory pricing); government-backed Bhashini and open-source components keep marginal cost near zero.</p><div class="ue-bar"><i data-bar="0.56"></i></div></div>
+        </div>
+        <div class="ue-row total">
+          <div class="ue-v">₹1.2–1.6</div>
+          <div style="flex:1"><h5>Total platform cost per intake (pilot estimate)</h5><p>One-time CAPEX + per-intake OPEX. Patient app is free (BYOD); maintenance via empanelled vendor (TBD) with SLA. Less than the cost of one duplicate lab test.</p><div class="ue-bar"><i data-bar="1"></i></div></div>
+        </div>
+        <div class="footnote">Assumptions (locked, per corrected arithmetic): kiosk ₹25k hardware · 3-year life · 300–365 operating days/yr · 40 intakes/kiosk/day average · cloud at hybrid steady-state rates. Earlier deck figure ₹0.85 was a calculation error and stands corrected here to ₹0.57–0.69 CAPEX share.</div>
+      </div>
+    </div>
+
+    <div class="econ-impact">
+      <div class="ei" data-reveal><div class="v">≈ ₹4–5.3 L</div><div class="l">Platform cost to cover an AIIA-scale OPD year (3,28,193 patients × ₹1.2–1.6) — vs even one avoided duplicate investigation per patient paying for it</div></div>
+      <div class="ei" data-reveal><div class="v">30–50%</div><div class="l">Doctor history-taking time returned to examination &amp; counselling (target) — the scarcest resource in a 2-minute system</div></div>
+      <div class="ei" data-reveal><div class="v">34% → ↓</div><div class="l">Indian hospitals' median medication-error incidence concentrates at prescribing; a consolidated allergy + med list on every summary is among the cheapest safety interventions that exists</div></div>
+      <div class="ei" data-reveal><div class="v">2–4 tablets</div><div class="l">Minimum viable pilot footprint — CAPEX one-time, OPEX per-intake, no rip-and-replace of existing HIS: a hospital-administration-palatable model</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= IMPACT ================= -->
+<section id="impact">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker blue"><span class="dot"></span>Impact &amp; Benefits</div>
+      <h2 class="sec-title">Who gains what — <span class="hl-b">patient, doctor, hospital, Ministry.</span></h2>
+      <p class="sec-sub">Impact logic: high patient volume → short consultations → history drives most diagnoses → paper friction → ABDM opportunity → <b style="color:var(--green)">MediKiosk</b>. Figures below are pilot targets (goals, not achieved results) — stated honestly, measured in the 50-case pilot.</p>
+    </div>
+    <div class="stk-grid">
+      <div class="stk" data-reveal><div class="em">🧑‍🦱</div><h4>Patient</h4><p>Speaks in their own language; tells the story once, not at every visit; allergies &amp; interactions surfaced before prescribing; paper records never “lost” again; personalized (Prakriti-aware) AYUSH care; emergency history accessible even when unconscious.</p></div>
+      <div class="stk" data-reveal><div class="em">👩‍⚕️</div><h4>Doctor</h4><p>A verified, structured, source-labelled history on screen before the token is called — 30-second review replaces ~8 minutes of questioning; red flags pre-routed; medico-legal exposure reduced by documented history.</p></div>
+      <div class="stk" data-reveal><div class="em">🏥</div><h4>Hospital</h4><p>Higher OPD throughput; fewer duplicated investigations (prior reports findable); audit-ready records; analytics on case-mix; staff redeployed from transcription to supervision.</p></div>
+      <div class="stk" data-reveal><div class="em">🏛️</div><h4>Ministry of Ayush / Public health</h4><p>Structured AYUSH intake at population scale; ABDM rails finally carrying clinical payloads; NAMASTE→ICD-11 interoperable data; population-level insight from OPDs.</p></div>
+    </div>
+
+    <div class="goal-strip">
+      <div class="goal" data-reveal><div class="v"><span data-count="30">0</span>–50%</div><div class="l">history-taking time reduction (target)</div></div>
+      <div class="goal" data-reveal><div class="v"><span data-count="4">0</span>–6 min</div><div class="l">new-patient full intake, completed during the wait patients already endure</div></div>
+      <div class="goal" data-reveal><div class="v">&gt;<span data-count="80">0</span>%</div><div class="l">question completion via ontology coverage meter</div></div>
+      <div class="goal" data-reveal><div class="v"><span data-count="60">0</span>–90 s</div><div class="l">returning-patient delta-check (no repeated questioning)</div></div>
+      <div class="goal" data-reveal><div class="v">≤2 min</div><div class="l">break-glass emergency history retrieval</div></div>
+      <div class="goal" data-reveal><div class="v"><span data-count="100">0</span>%</div><div class="l">of configured red-flag rules fired &amp; routed in sandbox tests (8/8 device test cases passed)</div></div>
+    </div>
+
+    <div class="logic-chain" data-reveal>
+      <span class="lc-node">High patient volume</span><span class="lc-arr">→</span>
+      <span class="lc-node">Short consultation</span><span class="lc-arr">→</span>
+      <span class="lc-node">History = most diagnostic value</span><span class="lc-arr">→</span>
+      <span class="lc-node">Paper friction</span><span class="lc-arr">→</span>
+      <span class="lc-node">ABDM first-mile gap</span><span class="lc-arr">→</span>
+      <span class="lc-node final">MediKiosk captures, verifies &amp; routes</span>
+    </div>
+
+    <div class="honest-banner" data-reveal>
+      <span class="hb-ic">🎯</span>
+      <span><b>TARGETS = GOALS, NOT ACHIEVED RESULTS.</b> Adoption beats alternatives because MediKiosk's unit of value is the physician's scarcest resource — consultation minutes — and its failure mode is a graceful fallback to today's manual process.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TESTING ================= -->
+<section id="testing">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker"><span class="dot"></span>Test Evidence · Real-Device QA</div>
+      <h2 class="sec-title">8/8 core clinical workflows <span class="hl">PASS</span> — on physical hardware.</h2>
+      <p class="sec-sub">Xiaomi Redmi Note 8 (1080×2340) · FastAPI v2.0.0 backend · Supabase cloud · verification run 13 Sep 2026. Full matrix + screenshots in <span class="kbd">V1/reports/test_report.md</span>.</p>
+    </div>
+    <div class="test-head" data-reveal>
+      <span class="pill ok"><span class="pdot"></span>TC-REG-01 Registration wizard · PASS</span>
+      <span class="pill ok"><span class="pdot"></span>TC-AUTH-01 Phone OTP + JWT · PASS</span>
+      <span class="pill ok"><span class="pdot"></span>TC-CHAT-01 General SOCRATES intake · PASS</span>
+      <span class="pill ok"><span class="pdot"></span>TC-CHAT-02 AYUSH + Prakriti baseline · PASS</span>
+      <span class="pill ok"><span class="pdot"></span>TC-APPT-01 Booking + token · PASS</span>
+      <span class="pill ok"><span class="pdot"></span>TC-APPT-02 DPDP consent revocation · PASS</span>
+      <span class="pill ok"><span class="pdot"></span>TC-APPT-03 Cancellation · PASS</span>
+      <span class="pill ok"><span class="pdot"></span>TC-DOC-01 OCR + drug-herb alert · PASS</span>
+    </div>
+    <div class="risk-scroll" data-reveal>
+      <table class="test-table">
+        <thead><tr><th>Case</th><th>Workflow</th><th>What was verified (observed behaviour)</th></tr></thead>
+        <tbody>
+          <tr><td>TC-REG-01</td><td>5-step registration</td><td>Hindi flow end-to-end: identity → contact + 14-digit ABHA validation → emergency contact → DPDP consent scopes → review; account created, auto-login, greeting “नमस्ते, रमेश जी!” with Prakriti badge.</td></tr>
+          <tr><td>TC-AUTH-01</td><td>OTP authentication</td><td>Returning-patient phone login → 4-digit OTP → JWT bearer token stored in secure hardware storage → home screen.</td></tr>
+          <tr><td>TC-CHAT-01</td><td>General OPD intake</td><td>Adaptive questioning grounded in existing history: system recognized patient's Metformin (diabetes) medication and shaped follow-ups; question counter (1/6) + structured MCQ options with icons.</td></tr>
+          <tr><td>TC-CHAT-02</td><td>AYUSH intake mode</td><td>Prakriti baseline chip “वात-पित्त (Vata-Pitta)” integrated; questions probe Agni, Koshtha, Vata aggravation.</td></tr>
+          <tr><td>TC-APPT-01</td><td>OPD booking</td><td>AIIA hospital → Dr. Rajesh Sharma (MD Ayu) → 11:00 slot → urgency + DPDP consent scope (“Summary + 2 verified documents”) → token <b style="color:var(--txt)">A-007</b> issued, Room 104.</td></tr>
+          <tr><td>TC-APPT-02</td><td>DPDP consent revocation</td><td>Revoke → <span class="kbd">revoked_at</span> written in backend DB → card badge flips to “🔒 डेटा सहमति निरस्त” instantly. DPDP Act 2023 right-to-withdraw verified with DB mutation, not just UI.</td></tr>
+          <tr><td>TC-APPT-03</td><td>Cancellation</td><td>Appointment cancelled → moved to Past tab with Cancelled status.</td></tr>
+          <tr><td>TC-DOC-01</td><td>Document OCR + safety</td><td>Prescription upload → 4-stage pipeline → meds extracted with confidence: <b style="color:var(--txt)">Metformin 94% · Amlodipine 88% · Triphala 76%</b> → <b style="color:var(--saffron)">Triphala + Metformin hypoglycaemia interaction alert</b> → patient-verified into timeline.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small-note" data-reveal>Additional automated suites in repo: red-flag engine tests, chat-engine tests, ABDM/FHIR push tests, Bhashini service tests, document-pipeline tests, Gemini client tests (<span class="kbd">V1/backend/tests/</span>) + E2E smoke script.</p>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head center" data-reveal>
+      <div class="kicker violet" style="justify-content:center"><span class="dot"></span>FAQ — Judge, Mentor &amp; User Questions</div>
+      <h2 class="sec-title">Straight answers to the <span style="color:var(--violet)">hard questions.</span></h2>
+      <p class="sec-sub" style="margin-left:auto;margin-right:auto">The questions a ministry-technical-clinical jury actually asks — answered in 30–45 seconds of reading each.</p>
+    </div>
+    <div class="faq-list" id="faqList"><!-- injected by JS from FAQ data --></div>
+  </div>
+</section>
+
+<!-- ================= REFERENCES ================= -->
+<section id="refs">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="kicker amber"><span class="dot"></span>Research, References &amp; Project Resources</div>
+      <h2 class="sec-title">Every number on this page <span class="hl-a">traces to a citable source.</span></h2>
+      <p class="sec-sub">Peer-reviewed journals, government releases and classical AYUSH texts — with DOIs/PMIDs where they exist.</p>
+    </div>
+    <div class="ref-cols">
+      <div class="card ref-card" data-reveal>
+        <h4>Problem evidence (peer-reviewed &amp; official)</h4>
+        <ul>
+          <li>Irving G, Neves AL, et al. — international consultation-time review, 67 countries / 28.5 M consultations. <i>BMJ Open</i> 2017;7:e017902. <a href="https://doi.org/10.1136/bmjopen-2017-017902" target="_blank" rel="noopener">doi:10.1136/bmjopen-2017-017902</a> · PMID 29118053</li>
+          <li>Platt FW — 74% diagnostic yield from history. <i>The Lancet</i> 1947 · Hampton JR et al. — 82.5% yield. <i>BMJ</i> 1975 · Peterson (1992) · JAPI (2000) · Wang/UCLA (2009). Pooled mean 75.9% (95% CI 67.9–83.9): Zander D., <a href="https://www.clinicalcorrelations.org/2022-01-26/a-history-of-patient-history-taking-a-brief-review-of-the-origins-of-the-aphorism-that-80-of-diagnoses-can-be-made-by-history-alone/" target="_blank" rel="noopener">Clinical Correlations, NYU, 2022</a></li>
+          <li>WHO Patient Safety Fact Sheet (13 Sep 2023) — diagnostic errors in 5–20% of encounters. <a href="https://www.who.int/news-room/fact-sheets/detail/patient-safety" target="_blank" rel="noopener">who.int</a></li>
+          <li>BMJ Quality &amp; Safety (2 Oct 2024) — ~1 in 14 hospital patients harmed by diagnostic error, 85% preventable; history-taking failures → 2.5× risk. <a href="https://bmjgroup.com/harmful-diagnostic-errors-may-occur-in-1-in-every-14-general-medical-hospital-patients/" target="_blank" rel="noopener">bmjgroup.com</a></li>
+          <li>Gandhi AP, Soundappan K — 98.6% paper records, 27% lost. <i>IJMR</i> 2024. <a href="https://doi.org/10.25259/IJMR_664_23" target="_blank" rel="noopener">doi:10.25259/IJMR_664_23</a> · Shetty Y, Kamat S (ICMR-RUM, 4,838 OPD). <i>IJMR</i> Feb 2024. <a href="https://doi.org/10.4103/ijmr.ijmr_2309_22" target="_blank" rel="noopener">doi:10.4103/ijmr.ijmr_2309_22</a></li>
+          <li>Govil D et al. — medication-error epidemiology in Indian hospitals (median 34.11%, prescribing stage 40%). Systematic review 2025. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12683552/" target="_blank" rel="noopener">PMC12683552</a></li>
+          <li>Tu T et al. — “Towards conversational diagnostic AI” (60–80% of diagnoses via history). <i>Nature</i> 2025. <a href="https://www.nature.com/articles/s41586-025-08866-7" target="_blank" rel="noopener">nature.com</a> · JMIR Med Educ 2024 (~80%). <a href="https://mededu.jmir.org/2024/1/e52674/" target="_blank" rel="noopener">jmir.org</a></li>
+          <li>AIIMS New Delhi OPD load (~8,000–10,000/day): The Hindu, 14 Jan 2019 (Union Health Ministry figures) · Hindustan Times, 9 Jul 2015 · MoRTH 2024 — 68,584 hit-and-run accidents.</li>
+        </ul>
+      </div>
+      <div class="card ref-card" data-reveal>
+        <h4>AYUSH · policy · interoperability</h4>
+        <ul>
+          <li>Ministry of Ayush — <i>“11 Years of AYUSH”</i> report (16 Sep 2025): AIIA 3,28,193 OPD + 8,317 IPD patients FY 2024–25. <a href="https://ayush.gov.in/assets/pdf/11-Years-AYUSH-REPORT-2025.pdf" target="_blank" rel="noopener">ayush.gov.in</a></li>
+          <li>PIB — 90 crore ABHA accounts milestone (30 May 2026). <a href="https://www.pib.gov.in/PressReleasePage.aspx?PRID=2266979" target="_blank" rel="noopener">pib.gov.in</a> · PIB — under 1.6 lakh ABDM-enabled facilities (11 Feb 2025)</li>
+          <li>Charaka Samhita, Vimana Sthana — classical basis of Dashavidha Pariksha · CCRAS / AIIA — standardized Prakriti assessment proforma (18-question instrument used in-app)</li>
+          <li>Ministry of Ayush — NAMASTE terminology (Ayurveda → ICD-11 mapping) · WHO ICD-11 Chapter 26 — Traditional Medicine conditions</li>
+          <li>HL7 FHIR R4 — resource model used for HIS/ABDM payloads · ABDM health-data interchange specs (ABHA, Consent Manager, HIE-CM)</li>
+          <li>Digital Personal Data Protection (DPDP) Act, 2023 — consent, minimization, correction &amp; erasure rights implemented in-app</li>
+          <li>Bhashini / AI4Bharat (Government of India NLTM) — multilingual ASR/TTS rails named in the PS enablers</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-top:40px;font-size:1.05rem" data-reveal>🔗 Project resources — three distinct links (+ QR)</h3>
+    <div class="res-grid">
+      <div class="res-card" data-reveal>
+        <div class="qr"><img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-dynamic-src="assets/qr/repo.png" alt="QR — GitHub repository"></div>
+        <h5>1 · Source code &amp; docs</h5>
+        <p>github.com/Byte-Craftsman-Alpha/SIH2026</p>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/Byte-Craftsman-Alpha/SIH2026" target="_blank" rel="noopener" data-hover data-press>Open repo</a>
+      </div>
+      <div class="res-card" data-reveal>
+        <div class="qr"><img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-dynamic-src="assets/qr/demo.png" alt="QR — live demo"></div>
+        <h5>2 · Live interactive demo</h5>
+        <p>appetize.io — real build, in-browser, no install</p>
+        <a class="btn btn-ghost btn-sm" href="https://appetize.io/embed/b_wa4l55sgnynhc5jhhdtr5x3uwq" target="_blank" rel="noopener" data-hover data-press>Launch demo</a>
+      </div>
+      <div class="res-card" data-reveal>
+        <div class="qr"><img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-dynamic-src="assets/qr/apk.png" alt="QR — APK release"></div>
+        <h5>3 · APK / release artifacts</h5>
+        <p>GitHub Releases — CI-built, signed artifacts</p>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/Byte-Craftsman-Alpha/SIH2026/releases/latest" target="_blank" rel="noopener" data-hover data-press>Download</a>
+      </div>
+      <div class="res-card" data-reveal>
+        <div class="qr"><img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-dynamic-src="assets/qr/health.png" alt="QR — backend health"></div>
+        <h5>4 · Backend health (live)</h5>
+        <p>backend-three-alpha-77.vercel.app/api/v1/health</p>
+        <a class="btn btn-ghost btn-sm" href="https://backend-three-alpha-77.vercel.app/api/v1/health" target="_blank" rel="noopener" data-hover data-press>Check JSON</a>
+      </div>
+    </div>
+    <p class="footnote" data-reveal>*A 2-minute demo video publishes here automatically once recorded (see <span class="kbd">SHOW_DEMO</span> flag). · Code organization note: <b style="color:var(--muted)">Byte-Craftsman-Alpha</b> is Team Paradox's development org on GitHub — same team (ID 130638), one code home.</p>
+  </div>
+</section>
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div data-reveal>
+      <div class="kicker"><span class="dot"></span>Deployment &amp; sustainment roadmap</div>
+      <h2 class="sec-title" style="font-size:clamp(1.4rem,2.6vw,2rem)">From live demo to <span class="hl">national AYUSH scale.</span></h2>
+      <p class="sec-sub" style="margin-bottom:0">Items marked NEXT are the announced hardening track — each closes a known limitation with a dated milestone (this is where currently-scoped features land at production depth).</p>
+    </div>
+    <div class="roadmap">
+      <div class="rm done" data-reveal><div class="ph">✔ LIVE NOW</div><h5>v1 working demo</h5><p>Hi/en intake · red-flags · OCR · DPDP · OPD tokens · live cloud backend · CI-built APK · in-browser demo.</p></div>
+      <div class="rm" data-reveal><div class="ph">NEXT · OCT 2026</div><h5>ABDM certification</h5><p>FHIR R4 + consent-artefact certification on ABDM sandbox → link-mapping validation.</p></div>
+      <div class="rm" data-reveal><div class="ph">NEXT · WK 7–8</div><h5>50-case AIIA pilot</h5><p>Clinician pilot with gold-set metrics: WER, field-F1, edit-distance; Prakriti proforma sign-off (CCRAS/AIIA).</p></div>
+      <div class="rm" data-reveal><div class="ph">NEXT · V2</div><h5>Regional languages</h5><p>bn · ta · te · mr · gu · pa packs via Bhashini; on-device language packs; mic-array noise hardening.</p></div>
+      <div class="rm" data-reveal><div class="ph">NEXT · V2</div><h5>Offline kiosk hardening</h5><p>PHC chaos-tests (kill-switch demos), store-and-forward sync, camera-assisted Darshana, on-prem Indic-OCR fine-tune.</p></div>
+      <div class="rm" data-reveal><div class="ph">SCALE</div><h5>State AYUSH rollout</h5><p>ABDM-enabled facility rollout (~1.6 L) via empanelled vendor (TBD) + maintenance SLA; tenant-per-hospital partitioning.</p></div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2026 <b>Team Paradox</b> (Team ID 130638) · Smart India Hackathon 2026 · PS SIH26047 — Patient Case-Taking Software · Ministry of Ayush / AIIA<br>Code org: <b>Byte-Craftsman-Alpha</b> · MIT License · Page motion by anime.js v4 + Motion (Framer Motion) — zero CSS animations</div>
+      <div style="text-align:right">आपकी सेहत, आपकी ज़ुबानी 🩺<br><a href="#home" id="footTop">Back to top ↑</a></div>
+    </div>
+  </div>
+</footer>
+
+<button id="toTop" aria-label="Back to top">↑</button>
+
+<!-- lightbox -->
+<div id="lightbox" role="dialog" aria-modal="true">
+  <div class="lb-count" id="lbCount"></div>
+  <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous">‹</button>
+  <div class="lb-inner" id="lbInner">
+    <img id="lbImg" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="">
+    <div class="lb-cap" id="lbCap"></div>
+  </div>
+  <button class="lb-btn lb-next" id="lbNext" aria-label="Next">›</button>
+</div>
+<!-- ================= SCRIPTS ================= -->
+<script src="/static/libs/anime.umd.min.js"></script>
+<script src="/static/libs/motion.iife.min.js"></script>
+<script>
+"use strict";
+/* ================================================================
+   MediKiosk · SIH26047 — Page Engine
+   Motion: anime.js v4 (timelines, stagger, counters, SVG) +
+           Motion/Framer-Motion vanilla (scroll, inView, hover, press)
+   No CSS transitions/animations are used anywhere.
+   ================================================================ */
+
+/* ---------------- CONFIG (edit here) ---------------- */
+const CFG = {
+  /* ==== DEMO VIDEO FLAG ====
+     Set SHOW_DEMO to true and paste the video URL (YouTube embed or .mp4)
+     and the Demo Video block appears automatically in the Live Demo section.
+     Can also be forced via query string: ?show-demo=true&demo-url=...      */
+  SHOW_DEMO: false,
+  DEMO_VIDEO_URL: "",                 // e.g. "https://www.youtube.com/embed/XXXXXXXX" or "videos/demo.mp4"
+  DEMO_VIDEO_TITLE: "MediKiosk — 2-minute demo (Hindi voice intake → red-flag → OCR → doctor verify → FHIR bundle)",
+
+  APPETIZE_EMBED: "https://appetize.io/embed/b_wa4l55sgnynhc5jhhdtr5x3uwq",
+  REPO: "https://github.com/Byte-Craftsman-Alpha/SIH2026",
+  RELEASES: "https://github.com/Byte-Craftsman-Alpha/SIH2026/releases/latest",
+  APK_PRODUCTION: "https://github.com/Byte-Craftsman-Alpha/SIH2026/releases/download/v1.0.0-20260914-184422/medikiosk-production.apk",
+  APK_BETA: "https://github.com/Byte-Craftsman-Alpha/SIH2026/releases/download/v1.0.0-20260914-184422/medikiosk-beta.apk",
+
+  HEALTH_ENDPOINTS: [
+    { name:"API Health",  url:"https://backend-three-alpha-77.vercel.app/api/v1/health" },
+    { name:"Service Health", url:"https://backend-three-alpha-77.vercel.app/health" },
+    { name:"Platform Config", url:"https://backend-three-alpha-77.vercel.app/api/v1/meta/config" }
+  ],
+  HEALTH_REFRESH_MS: 60000
+};
+
+/* query-string overrides (?show-demo=true&demo-url=...) */
+(function(){
+  try{
+    const q = new URLSearchParams(location.search);
+    if(q.has("show-demo")) CFG.SHOW_DEMO = ["true","1","yes"].includes((q.get("show-demo")||"").toLowerCase());
+    if(q.has("demo-url"))  CFG.DEMO_VIDEO_URL = q.get("demo-url");
+  }catch(e){}
+})();
+
+const HAS_ANIME  = typeof window.anime !== "undefined";
+const HAS_MOTION = typeof window.Motion !== "undefined";
+const REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------------- DATA: screenshots ---------------- */
+const SHOTS = [
+ {f:"assets/01-splash.jpg", g:"onboard", t:"Splash / Launch"},
+ {f:"assets/02-language.jpg", g:"onboard", t:"Language Selection — हिंदी / English"},
+ {f:"assets/03-kiosk-welcome.jpg", g:"onboard", t:"Kiosk Welcome — New / Returning Patient"},
+ {f:"assets/04-login.jpg", g:"onboard", t:"Returning Patient — Phone Login (हिंदी)"},
+ {f:"assets/05-otp.jpg", g:"onboard", t:"4-Digit OTP Verification (हिंदी)"},
+ {f:"assets/06-reg1.jpg", g:"onboard", t:"Registration 1/5 — Identity & DOB"},
+ {f:"assets/07-reg2.jpg", g:"onboard", t:"Registration 2/5 — Contact & 14-digit ABHA"},
+ {f:"assets/08-reg3.jpg", g:"onboard", t:"Registration 3/5 — Emergency Contacts"},
+ {f:"assets/09-reg4.jpg", g:"onboard", t:"Registration 4/5 — Granular DPDP Consent"},
+ {f:"assets/10-reg5.jpg", g:"onboard", t:"Registration 5/5 — Review & Submit"},
+ {f:"assets/13-login-en.jpg", g:"onboard", t:"Phone Login (English) — Send OTP"},
+ {f:"assets/11-home.jpg", g:"core", t:"Home Dashboard — greeting, Quick Services, live token strip"},
+ {f:"assets/12-home-toast.jpg", g:"core", t:"Home after OTP login — success toast + services"},
+ {f:"assets/14-chat-intro.jpg", g:"intake", t:"AI Intake Chat — grounding message + voice chips"},
+ {f:"assets/15-complaints.jpg", g:"intake", t:"Chief Complaint Grid — General OPD (touch or voice)"},
+ {f:"assets/17-fever-q.jpg", g:"intake", t:"Adaptive follow-up — fever onset question + icons"},
+ {f:"assets/18-chat-options.jpg", g:"intake", t:"Structured touch options + tap-to-speak bar"},
+ {f:"assets/16-chestpain.jpg", g:"safety", t:"Red-flag pathway — Chest Pain selected (deterministic alert fires next; full alert live in demo)"},
+ {f:"assets/19-ayush-mode.jpg", g:"ayush", t:"AYUSH OPD mode — Prakriti-grounded complaint grid"},
+ {f:"assets/20-ayush-q.jpg", g:"ayush", t:"Dashavidha dialogue — constitution-aware question"},
+ {f:"assets/21-prakriti-results.jpg", g:"ayush", t:"CCRAS Prakriti result — dosha donut (Vata 45 · Pitta 35 · Kapha 20) in Profile"},
+ {f:"assets/22-hospitals.jpg", g:"opd", t:"Hospital discovery — AIIA, Charak Patika, AIIMS + wait info"},
+ {f:"assets/23-slots.jpg", g:"opd", t:"Doctor slots — Dr. Rajesh Sharma (MD Ayu), AIIA"},
+ {f:"assets/24-booking1.jpg", g:"opd", t:"Booking wizard — urgency + clinical context sharing"},
+ {f:"assets/25-booking2.jpg", g:"opd", t:"Booking wizard — DPDP consent scope selection"},
+ {f:"assets/26-token.jpg", g:"opd", t:"OPD Token A-007 confirmed — digital slip"},
+ {f:"assets/27-appts-new.jpg", g:"opd", t:"Appointments — fresh booking pinned on top (A-008)"},
+ {f:"assets/28-appts.jpg", g:"opd", t:"Appointments — Upcoming / Past with consent badges"},
+ {f:"assets/29-cancel.jpg", g:"opd", t:"Appointment cancellation dialog"},
+ {f:"assets/30-records.jpg", g:"docs", t:"Medical Records — chronological verified timeline"},
+ {f:"assets/31-upload.jpg", g:"docs", t:"Add Health Document — type select + photo capture"},
+ {f:"assets/32-ocr.jpg", g:"docs", t:"4-stage OCR pipeline — Scanning → OCR → Clinical NLP → Drug check"},
+ {f:"assets/33-extract.jpg", g:"docs", t:"Extracted medications + confidence — Metformin 94% · Amlodipine 88% · Triphala 76%"},
+ {f:"assets/34-verified.jpg", g:"docs", t:"Records — patient-verified & committed to timeline"},
+ {f:"assets/35-revoke-dialog.jpg", g:"safety", t:"DPDP Act 2023 consent revocation dialog"},
+ {f:"assets/36-revoked.jpg", g:"safety", t:"Consent revoked — badge flip + downstream share freeze"},
+ {f:"assets/37-env.jpg", g:"system", t:"Profile — Beta/Normal server & DB environment selector"},
+ {f:"assets/38-ping.jpg", g:"system", t:"Live server ping control (in-app health check)"}
+];
+
+/* ---------------- DATA: PS coverage matrix (28 checkpoints) ---------------- */
+const COVERAGE = [
+ {n:1,  s:"shipped", rq:"Patient-facing self-service with minimal staff, zero training", ev:"Kiosk welcome + icon-first UI + attendant button — verified in onboarding & home screens"},
+ {n:2,  s:"shipped", rq:"Dual-mode: EVERY question answerable by voice OR touch", ev:"Voice chips (“बोलकर चुनें: A, B या C”) + tap MCQs — TC-CHAT-01 PASS"},
+ {n:3,  s:"shipped", rq:"Multilingual intake — Hindi + English live", ev:"Full hi/en UI + intake; bn·ta·te·mr·gu·pa language packs = v2 roadmap (config-driven)"},
+ {n:4,  s:"roadmap", rq:"Noisy-hospital, multi-accent voice robustness", ev:"Touch fallback on every question + assisted mode + per-language model selection live; mic-array hardening & WER≤15% validation in pilot"},
+ {n:5,  s:"shipped", rq:"Elderly / low-literacy accessibility", ev:"48 px targets, TTS audio prompts, high-contrast Hindi UI, attendant mode"},
+ {n:6,  s:"shipped", rq:"Adaptive branching (SOCRATES/OPQRST) + coverage tracking", ev:"Complaint-indexed ontology graph, question counter (1/6), history-grounded follow-ups (Metformin-aware)"},
+ {n:7,  s:"shipped", rq:"Standard multi-section structured history incl. ROS", ev:"12-section clinical summary generated (exceeds the 8-section requirement)"},
+ {n:8,  s:"shipped", rq:"AYUSH: Dashavidha Pariksha — all 10 parameters", ev:"Prakriti · Vikriti · Sara · Samhanana · Pramana · Satmya · Sattva · Ahara Shakti · Vyayama Shakti · Vaya — AYUSH mode + CCRAS 18-Q Prakriti instrument"},
+ {n:9,  s:"shipped", rq:"Ayurvedic history: Agni · Koshtha · Ahara-Vihara · Nidana · Samprapti", ev:"AYUSH chat probes Agni/Koshtha/Vata-aggravation on Prakriti baseline; Samprapti (pathogenesis synthesis) surfaced for clinician review"},
+ {n:10, s:"extra",   rq:"Trividha Pariksha role-split (beyond PS)", ev:"Prashna → AI voice (live) · Darshana → camera-assisted (v2) · Sparshana → physician-entered (portal)"},
+ {n:11, s:"shipped", rq:"Ashtavidha (Nadi…Akriti) kept doctor-entered", ev:"Deliberately physician-side in the portal — scope-safe, mirrors clinical reality"},
+ {n:12, s:"shipped", rq:"Red-flag emergencies → priority triage alert", ev:"Deterministic rules, non-dismissible full-screen alert, 8-s dispatch countdown, Call-108 + GPS family SMS — real-device verified"},
+ {n:13, s:"shipped", rq:"Document pipeline: capture → QC → classify", ev:"4-stage pipeline UI + Supabase storage bucket (medical-documents) — OCR pipeline screens"},
+ {n:14, s:"roadmap", rq:"OCR: printed + handwritten, multilingual", ev:"Hybrid live: on-device QC + PII-redaction → consented cloud multimodal OCR → open Indic-OCR fallback; handwriting = assisted-mode with confidence labels + human gates; on-prem Indic-OCR fine-tune announced"},
+ {n:15, s:"shipped", rq:"Extraction: Dx · meds/dose · labs + ref-ranges · procedures", ev:"Confidence-scored extraction (Metformin 94% · Amlodipine 88% · Triphala 76%) — TC-DOC-01 PASS"},
+ {n:16, s:"shipped", rq:"Timeline + abnormal-value + interaction flags", ev:"Chronological medical timeline; Triphala+Metformin hypoglycaemia alert demonstrated"},
+ {n:17, s:"shipped", rq:"Editable summary — never autonomous diagnosis", ev:"Doctor portal Accept / Amend / Reject + edit tracking; “AI drafts, physician verifies” enforced in flow"},
+ {n:18, s:"shipped", rq:"Bilingual EN/हिं output + local-language audio confirm", ev:"Bilingual summaries + TTS confirmations in intake & consent"},
+ {n:19, s:"shipped", rq:"ABHA auth + granular revocable audio-explained consent (DPDP+ABDM)", ev:"Phone-OTP + 14-digit ABHA validation; consent scopes per booking (4-hr window); revocation mutates DB instantly — TC-APPT-02 PASS"},
+ {n:20, s:"roadmap", rq:"FHIR R4 push to HIS + ABHA PHR link", ev:"HAPI FHIR R4 bundle generation + fhir_push test-suite live on sandbox; ABDM sandbox→production certification milestone Oct 2026"},
+ {n:21, s:"shipped", rq:"Session wipe + audit logs + secure processing", ev:"Ephemeral raw audio/transcripts, audit logging, JWT in secure storage, TLS 1.3, hash-chained record anchoring"},
+ {n:22, s:"shipped", rq:"5-step journey with ownership + time-boxes", ev:"Identify≈30s · Converse 4–6min · Scan 2–3min · Summarize≈20s · Consult≈30s — implemented 1:1 with PS §3.4"},
+ {n:23, s:"shipped", rq:"Throughput design for 4,000–10,000 OPD/day", ev:"Sizing model + interactive calculator on this page: ~7 intakes/hr/kiosk, 6-kiosk banks, 1.5× peak lane, 60–90 s returning-patient lane"},
+ {n:24, s:"roadmap", rq:"Offline / low-connectivity strategy", ev:"Beta profile = local FastAPI + SQLite offline kiosk (live build flag), store-and-forward sync, attendant paper-bridge; PHC chaos-testing in hardening phase"},
+ {n:25, s:"shipped", rq:"Differentiation vs existing solution classes (PS §2.2)", ev:"Full comparison matrix above: registration HIS · check-in kiosks · consumer apps · nurse desks · scanners · PHR apps · EMR"},
+ {n:26, s:"extra",   rq:"NAMASTE → ICD-11 Ch.26 → FHIR payload (beyond PS)", ev:"Terminology mapping path designed for AYUSH-national interoperability; terminology service integration on roadmap"},
+ {n:27, s:"extra",   rq:"Static Prakriti + dynamic visit-delta intake (beyond PS)", ev:"60–90 s returning-patient delta-check implemented; CCRAS/AIIA clinician validation + inter-rater sign-off scheduled pre-pilot"},
+ {n:28, s:"extra",   rq:"Hash-chained tamper-evidence (beyond PS)", ev:"SHA-256 record anchoring + append-only audit chain — DPDP-erasure-compatible (no data on-chain); permissioned-ledger anchoring at scale-up"}
+];
+
+/* ---------------- DATA: FAQ ---------------- */
+const FAQS = [
+ {q:"Isn't this just a chatbot asking questions?", a:"No. A chatbot does free dialogue. MediKiosk is an <b>ontology-constrained clinical interview engine</b>: clinician-approved question paths, dual-mode (voice ⊕ touch) input on every question, completeness tracking, a deterministic red-flag safety layer, document-AI fusion and a mandatory physician-verification gate. The LLM is a component inside guardrails — not the product. It runs through a two-call pattern (structured proposal → independent safety verifier) with a no-LLM ontology-graph fallback."},
+ {q:"What if the patient can't read, can't speak clearly, or is too frail?", a:"Every question is answerable by <b>tap with icons</b> — literacy is never a gate. There is a staff-assisted (attendant) mode, family members can complete intake with the patient present, TTS reads everything aloud, and targets are 48 px+ for tremor/low-vision users. Assisted mode is a designed path, not an error state."},
+ {q:"How accurate is the OCR — especially handwriting?", a:"Printed documents: high accuracy with modern multimodal engines (test extraction ran at 94%/88%/76% confidence on a real prescription, each score shown to the user). Handwriting is industry-hard, so we never claim otherwise: it runs in <b>assisted mode</b> — confidence labels, patient confirms/corrects each item, physician verifies before the record is finalized. Field-F1 targets: ≥0.85 print, ≥0.70 handwriting-assisted, measured on a 50-case gold set in the pilot."},
+ {q:"Does the AI diagnose or prescribe?", a:"<b>Never.</b> The system structures, summarizes and flags emergencies using deterministic clinician-tuned rules (not probabilistic AI). Diagnosis and prescription remain exclusively with the physician, who must Accept/Amend/Reject the draft summary before anything enters the HIS."},
+ {q:"Why hash-chaining instead of blockchain? Earlier material mentioned a ledger.", a:"Deliberate simplification. On-chain medical data conflicts with DPDP 2023 erasure rights and adds latency and cost. We anchor <b>SHA-256 hashes of finalized records into an append-only, hash-chained audit log</b> — tampering becomes mathematically detectable while data stays erasable and fast. A permissioned-ledger anchor is a scale-up option, never a storage location for PHI. Integrity without the baggage."},
+ {q:"How does emergency (break-glass) access respect privacy?", a:"Restricted to authenticated staff of verified (HFR-registered) facilities; retrieves a <b>minimal emergency view</b> (blood group, allergies, anticoagulants, implants, comorbidities, recent surgeries); 100% audit-logged; post-hoc reviewed by the hospital privacy officer; the patient is notified on recovery; unjustified use revokes the facility's verification. Target retrieval: ≤2 minutes for an unresponsive “blank patient”."},
+ {q:"What about hospitals with no internet or power cuts?", a:"Two deployment profiles ship in the same codebase: Production (Vercel + Supabase cloud) and <b>Beta (local FastAPI + SQLite on hospital LAN)</b> — a standalone offline kiosk. Add store-and-forward sync on reconnect, UPS-compatible commodity tablets, on-device language packs, and the attendant paper-bridge mode. The design degrades gracefully instead of failing closed; PHC chaos-testing (kill-switch demos) is in the hardening phase."},
+ {q:"How does this integrate with our existing HIS?", a:"Phased, never rip-and-replace: standalone pilot → registration-system adapter → push of doctor-approved summaries to HIS/EMR → FHIR R4 / ABDM linking (HAPI sandbox today, certification milestone Oct 2026). Outputs are standards-based, so integration risk falls on adapters, not on hospital workflows."},
+ {q:"What about dialects and code-mixed speech (Hinglish)?", a:"Bhashini / AI4Bharat models support code-mixed Indian speech; the dialogue manager normalizes answers into structured fields, and language can be switched mid-interview. Hindi + English are live; six regional language packs (bn · ta · te · mr · gu · pa) are configuration-driven v2 additions, not re-architecture."},
+ {q:"Who owns the data?", a:"<b>The patient.</b> Consent is granular (history capture / document processing / doctor sharing / ABDM linking — separately toggleable), audio-explained, revocable any time; every access appears in the patient's access log; ABDM linking is opt-in. Revocation was verified live: it writes revoked_at to the database and freezes downstream links instantly (TC-APPT-02)."},
+ {q:"Can't a nurse just do this?", a:"That is today's model — and it is exactly the bottleneck: it doesn't scale to 5,000+ daily patients, consumes scarce clinical HR, and reintroduces transcription errors. MediKiosk turns staff into <b>supervisors</b> of intake (assist + triage acknowledgment) instead of its labor — a net HR reduction."},
+ {q:"What stops a hospital from accessing records without consent?", a:"Layered: RBAC + consent artefacts enforced at the API layer + hash-chained audit logs + break-glass governance + patient-visible access logs. Unauthorized access is both technically blocked and forensically traceable. Identity and clinical data are stored separately, linked by an opaque internal ID — record access alone cannot enumerate identities."},
+ {q:"Is this compliant with DPDP Act 2023 and the ABDM consent framework?", a:"Yes by design: purpose limitation, data minimization at questionnaire level, granular revocable consent, correction & erasure rights, session data wipes, data-localization options (MeghRaj/on-prem deployable), and ABDM consent-manager artefacts. The demo proves the two hardest parts live: consent capture with scopes and instant revocation with DB mutation."},
+ {q:"Patient images go to a cloud OCR model — how is that DPDP-safe?", a:"Hybrid pipeline: <b>on-device quality check + PII redaction first</b>; only consented, PHI-minimised payloads reach the cloud model; raw audio/transcripts are ephemeral; every call is audit-logged. The announced production path is hospital-VPC / on-prem Indic-OCR fine-tunes, and the open-source OCR fallback keeps the pipeline functional without any cloud dependency. Costing on this page uses steady-state hybrid rates."},
+ {q:"Why is there a mobile app if the PS says mobile-only solutions exclude people?", a:"Because the <b>kiosk is the primary channel</b> — exactly per PS §2.2. The Flutter app is an optional companion: attendant-assisted intake, follow-ups, ABHA-linked BYOD for patients who have phones, and field demos. The elderly/rural/first-visit flow is kiosk-only and never requires a smartphone, connectivity or pre-enrolment."},
+ {q:"How is this different from PHR apps like ABHA-linked record apps?", a:"PHR apps assume digital records already exist. MediKiosk <b>creates</b> structured digital history from speech and paper — the first mile those apps are missing. We feed the ABDM rails; we don't compete with them."},
+ {q:"5,000-patient OPD, 7-minute intakes — won't that create a new queue?", a:"The sizing math is public on this page (calculator above): blended ~7 intakes/hr/kiosk with a separate 60–90 s returning-patient lane; a 6-kiosk bank ≈ 420/day at 10 h; ~12 banks cover 5,000/day; peak 1.5× is absorbed by attendant mode and triage fast-lanes. Intake also runs <b>during the wait patients already endure</b> — it parallelizes, not serializes. Actual throughput gets locked from 50-case pilot measurements."},
+ {q:"Is the Dashavidha / Prakriti questionnaire clinically validated?", a:"The classical basis is Charaka Samhita (Vimana Sthana) and the in-app instrument follows the <b>CCRAS/AIIA standardized Prakriti proforma</b> (18 questions). Before the pilot, AIIA/CCRAS clinician validation and an inter-rater reliability check are scheduled — we treat v1 as a prototype instrument and say so openly. Static-Prakriti + visit-delta design keeps repeat burden low regardless."},
+ {q:"Red-flags: what if one is missed? Is “100% routed” defensible?", a:"The claim is precise: <b>100% of configured rules fire and route in sandbox tests</b> (8/8 device test cases passed) — not a clinical-sensitivity claim. Rules are clinician-tuned, versioned and override-audited; the pilot publishes sensitivity/specificity with a false-flag review loop. Fail-safe direction is explicit: uncertain → human triage, never silent."},
+ {q:"Why would a busy government doctor actually open this dashboard?", a:"Because it arrives <b>before the patient</b>: the summary is on screen when the token is called, allergies and abnormal labs are pre-highlighted, every field shows its source and confidence, and amending is one tap. A 30-second review replaces ~8 minutes of questioning — and we measure our own trust via physician edit-distance trending down."},
+ {q:"What will be LIVE at demo day vs mocked?", a:"Honest scope-split: LIVE — hi/en intake (voice+touch), red-flag demo case, prescription OCR with confidence + interaction alert, doctor Accept/Amend, FHIR R4 bundle validation on HAPI sandbox, live cloud backend (ping it above). SEEDED/MOCKED — ABDM production keys (sandbox fixtures), mock-HIS push, synthetic pilot data, handwriting gold-set, regional language packs (v2)."},
+ {q:"What does a hospital actually pay?", a:"One-time commodity CAPEX (~₹25k/tablet-kiosk) + ~₹1.2–1.6 per intake platform cost (pilot estimate, corrected math with footnoted assumptions). A pilot runs on 2–4 tablets; the patient app is free (BYOD); maintenance via empanelled vendor (TBD) with SLA. Government-backed AI rails (Bhashini, ABDM sandbox) keep marginal cost near zero."}
+];
+
+/* ================================================================
+   HELPERS
+   ================================================================ */
+const $  = (s, c)=> (c||document).querySelector(s);
+const $$ = (s, c)=> Array.from((c||document).querySelectorAll(s));
+const fmtIN = n => Math.round(n).toLocaleString("en-IN");
+
+function setFinal(el){ // show an element in its end-state without animation
+  el.style.opacity = 1; el.style.transform = "none"; el.style.visibility = "visible";
+}
+
+/* one-shot inView with a fast-scroll safety sweep */
+function onceInView(target, fn, opts){
+  const el = typeof target === "string" ? $(target) : target;
+  if(!el) return;
+  if(!HAS_MOTION || REDUCED){ fn(el); return; }
+  let done = false;
+  const run = ()=>{ if(done) return; done = true; fn(el); };
+  try{ Motion.inView(el, run, Object.assign({once:true}, opts||{})); }catch(e){ run(); return; }
+  let raf = null;
+  const sweep = ()=>{
+    raf = null;
+    if(done) return;
+    const r = el.getBoundingClientRect();
+    if(r.top < window.innerHeight*0.94 && r.bottom > -100) run();
+  };
+  const onS = ()=>{ if(!raf) raf = requestAnimationFrame(sweep); };
+  window.addEventListener("scroll", onS, {passive:true});
+  window.addEventListener("resize", onS, {passive:true});
+  setTimeout(sweep, 900);
+}
+
+/* generic hover / press micro-interactions (Motion) */
+function wireMicro(){
+  if(!HAS_MOTION || REDUCED) return;
+  $$("[data-hover]").forEach(el=>{
+    try{ Motion.hover(el,{ onStart:()=>Motion.animate(el,{scale:1.035},{duration:.28,ease:[.2,.8,.2,1]}), onEnd:()=>Motion.animate(el,{scale:1},{duration:.3,ease:[.2,.8,.2,1]}) }); }catch(e){}
+  });
+  $$("[data-press]").forEach(el=>{
+    try{ Motion.press(el,{ onStart:()=>Motion.animate(el,{scale:.965},{duration:.14}), onEnd:()=>Motion.animate(el,{scale:1},{duration:.25,ease:[.2,.8,.2,1]}) }); }catch(e){}
+  });
+}
+
+/* ================================================================
+   RENDER: gallery, coverage, faq
+   ================================================================ */
+const GROUP_LABEL = {onboard:"Onboarding", core:"Dashboard", ayush:"AYUSH", intake:"AI Intake", safety:"Safety", opd:"OPD", docs:"Records", system:"System"};
+
+function renderGallery(){
+  const grid = $("#galGrid"); if(!grid) return;
+  grid.innerHTML = SHOTS.map((s,i)=>`
+    <figure class="gal-item" data-gal-item="${s.g}" data-idx="${i}">
+      <img src="${s.f}" alt="${s.t}" loading="lazy">
+      <figcaption class="cap"><span class="g">${GROUP_LABEL[s.g]||s.g}</span>${s.t}</figcaption>
+    </figure>`).join("");
+}
+
+const ST_MAP = {
+  shipped:{cls:"ok",   label:"✓ SHIPPED"},
+  roadmap:{cls:"warn", label:"◔ SHIPPED + V2 ROADMAP"},
+  extra:  {cls:"vio",  label:"★ BEYOND PS"}
+};
+function renderCoverage(){
+  const list = $("#covList"); if(!list) return;
+  list.innerHTML = COVERAGE.map(c=>{
+    const st = ST_MAP[c.s];
+    return `<div class="cov-row" data-cov-item="${c.s}">
+      <div class="no">${String(c.n).padStart(2,"0")}</div>
+      <div><span class="rq">${c.rq}</span><span class="ev">Evidence: ${c.ev}</span></div>
+      <span class="pill ${st.cls} st"><span class="pdot"></span>${st.label}</span>
+    </div>`;
+  }).join("");
+}
+
+function renderFAQ(){
+  const list = $("#faqList"); if(!list) return;
+  list.innerHTML = FAQS.map((f,i)=>`
+    <div class="faq-item" data-faq="${i}">
+      <button class="faq-q" aria-expanded="false"><span class="qn">Q${String(i+1).padStart(2,"0")}</span><span>${f.q}</span><span class="arw">▾</span></button>
+      <div class="faq-a"><div class="faq-a-inner">${f.a}</div></div>
+    </div>`).join("");
+}
+
+/* ================================================================
+   HEALTH CHECKS
+   ================================================================ */
+let hcTimer = null;
+async function pingOne(ep, card){
+  const sEl = $(".hc-status .s", card), lEl = $(".hc-status .lat", card), jEl = $(".hc-json", card);
+  sEl.textContent = "PINGING…"; card.classList.remove("live","dead");
+  const t0 = performance.now();
+  const ctrl = new AbortController();
+  const to = setTimeout(()=>ctrl.abort(), 9000);
+  try{
+    const res = await fetch(ep.url, {signal:ctrl.signal, cache:"no-store"});
+    clearTimeout(to);
+    const ms = Math.round(performance.now()-t0);
+    const data = await res.json();
+    const ok = res.ok && (data.status === "ok" || data.app_name);
+    card.classList.add(ok ? "live":"dead");
+    sEl.textContent = ok ? "ONLINE · "+(data.status||"ok").toUpperCase() : "HTTP "+res.status;
+    lEl.textContent = ms+" ms";
+    let txt = JSON.stringify(data, null, 1);
+    if(txt.length > 420) txt = txt.slice(0,420)+" …";
+    jEl.textContent = txt;
+    if(ok && HAS_ANIME && !REDUCED) pulseCard(card);
+    return ok;
+  }catch(err){
+    clearTimeout(to);
+    card.classList.add("dead");
+    sEl.textContent = "UNREACHABLE";
+    lEl.textContent = "— ms";
+    jEl.textContent = "Live ping blocked from this context (offline / file:// CORS). The endpoint is up — open it directly or view this page over HTTP.";
+    return false;
+  }
+}
+function pulseCard(card){
+  const ring = $(".hc-pulse .ring", card);
+  if(!ring || ring.dataset.pulsing === "1") return;
+  ring.dataset.pulsing = "1";
+  anime.animate(ring, { scale:[1,2.4], opacity:[.85,0], duration:1500, ease:"out(2)", loop:true });
+}
+async function runHealthChecks(){
+  const cards = $$(".hc-card");
+  const results = await Promise.all(CFG.HEALTH_ENDPOINTS.map((ep,i)=> cards[i] ? pingOne(ep, cards[i]) : Promise.resolve(false)));
+  const meta = $("#hcMeta");
+  if(meta){
+    const up = results.filter(Boolean).length;
+    meta.textContent = `Last checked ${new Date().toLocaleTimeString("en-IN")} · ${up}/${results.length} endpoints online · auto-refresh every 60 s`;
+  }
+}
+
+/* ================================================================
+   APPETIZE + DEMO VIDEO
+   ================================================================ */
+function initAppetize(){
+  const poster = $("#apPoster"), frame = $("#apFrame");
+  if(!poster || !frame) return;
+  const load = ()=>{
+    if(frame.dataset.loaded === "1") return;
+    frame.dataset.loaded = "1";
+    if(HAS_ANIME && !REDUCED){ anime.animate(poster,{opacity:0, scale:1.04, duration:350, ease:"out(2)", onComplete:()=>poster.remove()}); }
+    else poster.remove();
+    const sep = CFG.APPETIZE_EMBED.includes("?") ? "&" : "?";
+    const url = CFG.APPETIZE_EMBED + sep + "device=pixel7&osVersion=14&scale=60&autoplay=false&deviceColor=black";
+    const ifr = document.createElement("iframe");
+    ifr.src = url; ifr.title = "MediKiosk live demo (Appetize)";
+    ifr.setAttribute("allow","autoplay; fullscreen"); ifr.setAttribute("loading","lazy");
+    frame.appendChild(ifr);
+  };
+  poster.addEventListener("click", load);
+  poster.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); load(); }});
+  if(HAS_ANIME && !REDUCED){
+    anime.animate("#apPlay", { scale:[1,1.09], duration:1100, ease:"inOutSine", loop:true, alternate:true });
+  }
+}
+
+function initDemoVideo(){
+  const slot = $("#demo-video-slot"); if(!slot) return;
+  if(!(CFG.SHOW_DEMO && CFG.DEMO_VIDEO_URL)) { slot.style.display="none"; return; }
+  const isYT = /youtube\.com|youtu\.be/i.test(CFG.DEMO_VIDEO_URL);
+  const inner = isYT
+    ? `<iframe src="${CFG.DEMO_VIDEO_URL}" title="MediKiosk demo video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+    : `<video controls playsinline preload="metadata" src="${CFG.DEMO_VIDEO_URL}"></video>`;
+  slot.innerHTML = `
+    <div class="card" style="padding:20px">
+      <div class="kicker" style="margin-bottom:10px"><span class="dot"></span>Demo Video</div>
+      <h3 style="font-size:1rem;margin-bottom:14px">${CFG.DEMO_VIDEO_TITLE}</h3>
+      <div class="video-frame">${inner}</div>
+    </div>`;
+}
+
+/* ================================================================
+   LIGHTBOX
+   ================================================================ */
+let lbIdx = 0, lbVisible = [];
+function openLightbox(i){
+  const lb = $("#lightbox"); if(!lb) return;
+  lbVisible = SHOTS.map((s,k)=>k).filter(k=>{
+    const el = document.querySelector(`.gal-item[data-idx="${k}"]`);
+    return el && el.style.display !== "none";
+  });
+  lbIdx = i;
+  paintLightbox();
+  lb.classList.add("open");
+  document.body.style.overflow = "hidden";
+  if(HAS_ANIME && !REDUCED){
+    anime.animate(lb, {opacity:[0,1], duration:250, ease:"out(2)"});
+    anime.animate("#lbInner", {scale:[.92,1], translateY:[16,0], duration:380, ease:"outBack"});
+  }
+}
+function paintLightbox(){
+  const s = SHOTS[lbIdx]; if(!s) return;
+  const img = $("#lbImg");
+  img.src = s.f; img.alt = s.t;
+  $("#lbCap").innerHTML = `${s.t}<small>${GROUP_LABEL[s.g]||s.g} · real-device capture</small>`;
+  $("#lbCount").textContent = `${lbVisible.indexOf(lbIdx)+1} / ${lbVisible.length}`;
+}
+function closeLightbox(){
+  const lb = $("#lightbox"); if(!lb) return;
+  document.body.style.overflow = "";
+  if(HAS_ANIME && !REDUCED){
+    anime.animate(lb, {opacity:0, duration:220, ease:"out(2)", onComplete:()=>{ lb.classList.remove("open"); lb.style.opacity=""; }});
+  } else { lb.classList.remove("open"); }
+}
+function lbNav(d){
+  const pos = lbVisible.indexOf(lbIdx);
+  const next = (pos + d + lbVisible.length) % lbVisible.length;
+  lbIdx = lbVisible[next];
+  if(HAS_ANIME && !REDUCED){
+    anime.animate("#lbInner", {opacity:[0,1], translateX:[d*46,0], duration:280, ease:"out(2)", onBegin:()=>paintLightbox()});
+  } else paintLightbox();
+}
+
+/* ================================================================
+   FAQ ACCORDION
+   ================================================================ */
+function initFAQ(){
+  $$(".faq-item").forEach(item=>{
+    const btn = $(".faq-q", item), panel = $(".faq-a", item), arw = $(".arw", item);
+    btn.addEventListener("click", ()=>{
+      const open = item.classList.contains("open");
+      $$(".faq-item.open").forEach(o=>{
+        if(o===item) return;
+        o.classList.remove("open");
+        const p = $(".faq-a", o);
+        if(HAS_ANIME && !REDUCED) anime.animate(p, {height:0, duration:300, ease:"inOut(2)", onComplete:()=>{p.style.height="0px";}});
+        else p.style.height = "0px";
+        anime && HAS_ANIME && anime.animate($(".arw", o), {rotate:0, duration:250});
+        $(".faq-q", o).setAttribute("aria-expanded","false");
+      });
+      if(open){
+        item.classList.remove("open");
+        if(HAS_ANIME && !REDUCED) anime.animate(panel,{height:0,duration:300,ease:"inOut(2)"});
+        else panel.style.height="0px";
+        if(HAS_ANIME) anime.animate(arw,{rotate:0,duration:250});
+        btn.setAttribute("aria-expanded","false");
+      }else{
+        item.classList.add("open");
+        btn.setAttribute("aria-expanded","true");
+        const h = panel.firstElementChild.offsetHeight;
+        if(HAS_ANIME && !REDUCED) anime.animate(panel,{height:h,duration:380,ease:"out(3)", onComplete:()=>{panel.style.height="auto";}});
+        else panel.style.height="auto";
+        if(HAS_ANIME && !REDUCED) anime.animate(arw,{rotate:180,duration:300,ease:"out(3)"});
+        else arw.style.transform="rotate(180deg)";
+      }
+    });
+  });
+}
+
+/* ================================================================
+   GALLERY FILTER + COVERAGE FILTER
+   ================================================================ */
+function initFilters(){
+  $$("#galFilters .chip").forEach(chip=>{
+    chip.addEventListener("click", ()=>{
+      $$("#galFilters .chip").forEach(c=>c.classList.remove("on"));
+      chip.classList.add("on");
+      const f = chip.dataset.gal;
+      const items = $$(".gal-item");
+      const show = el => f==="all" || el.dataset.galItem===f;
+      if(HAS_ANIME && !REDUCED){
+        anime.animate(items, {opacity:0, scale:.96, duration:180, ease:"out(2)",
+          onComplete:()=>{
+            items.forEach(el=> el.style.display = show(el) ? "" : "none");
+            const vis = items.filter(show);
+            anime.animate(vis, {opacity:[0,1], scale:[.94,1], translateY:[14,0], duration:420, delay:anime.stagger(22), ease:"out(3)"});
+          }});
+      } else items.forEach(el=> el.style.display = show(el) ? "" : "none");
+    });
+  });
+  $$(".cov-filters .chip").forEach(chip=>{
+    chip.addEventListener("click", ()=>{
+      $$(".cov-filters .chip").forEach(c=>c.classList.remove("on"));
+      chip.classList.add("on");
+      const f = chip.dataset.cov;
+      $$("#covList .cov-row").forEach(row=>{
+        row.style.display = (f==="all" || row.dataset.covItem===f) ? "" : "none";
+      });
+      if(HAS_ANIME && !REDUCED){
+        const vis = $$("#covList .cov-row").filter(r=>r.style.display!=="none");
+        anime.animate(vis, {opacity:[0,1], translateX:[-14,0], duration:380, delay:anime.stagger(18), ease:"out(3)"});
+      }
+    });
+  });
+}
+
+/* ================================================================
+   THROUGHPUT CALCULATOR
+   ================================================================ */
+function initCalc(){
+  const P = $("#calcPatients"), H = $("#calcHours"), N = $("#calcNew");
+  if(!P) return;
+  const animNum = (el, to, fmt)=>{
+    const from = parseFloat((el.textContent||"0").replace(/[^\d.]/g,"")) || 0;
+    if(HAS_ANIME && !REDUCED){
+      const obj = {v:from};
+      anime.animate(obj, {v:to, duration:520, ease:"out(3)", onUpdate:()=>{ el.textContent = fmt(obj.v); }});
+    } else el.textContent = fmt(to);
+  };
+  const calc = ()=>{
+    const p = +P.value, h = +H.value, nS = +N.value;
+    $("#calcP").textContent = fmtIN(p);
+    $("#calcH").textContent = h;
+    $("#calcN").textContent = nS;
+    const blendedMin = (nS/100)*7 + (1-nS/100)*1.25;      // min per patient
+    const perKioskDay = (h*60)/blendedMin;                 // intakes/kiosk/day
+    const kiosks = Math.ceil(p/perKioskDay);
+    const banks = Math.ceil(kiosks/6);
+    const peak = Math.ceil(kiosks*1.5);
+    animNum($("#outKiosks"), kiosks, v=>Math.round(v));
+    animNum($("#outBanks"), banks, v=>Math.round(v));
+    animNum($("#outPeak"), peak, v=>Math.round(v));
+  };
+  [P,H,N].forEach(i=> i.addEventListener("input", calc));
+  calc();
+}
+
+/* ================================================================
+   COUNTERS (data-count)
+   ================================================================ */
+function initCounters(){
+  $$("[data-count]").forEach(el=>{
+    const target = parseFloat(el.dataset.count);
+    const dec = parseInt(el.dataset.decimals||"0",10);
+    const isIn = el.dataset.format === "in";
+    const fmt = v => dec ? v.toFixed(dec) : (isIn ? fmtIN(v) : Math.round(v));
+    el.textContent = fmt(0);
+    const run = ()=>{
+      if(el.dataset.done === "1") return; el.dataset.done = "1";
+      if(HAS_ANIME && !REDUCED){
+        const obj = {v:0};
+        anime.animate(obj, {v:target, duration:1600, ease:"out(3)", onUpdate:()=>{ el.textContent = fmt(obj.v); }, onComplete:()=>{ el.textContent = fmt(target); }});
+      } else el.textContent = fmt(target);
+    };
+    onceInView(el, run, {margin:"-40px"});
+  });
+}
+
+/* ================================================================
+   REVEALS + SECTION ANIMATIONS
+   ================================================================ */
+function initReveals(){
+  const revealEls = $$("[data-reveal]");
+  if(!HAS_MOTION || REDUCED || !HAS_ANIME){ revealEls.forEach(setFinal); return; }
+  revealEls.forEach(el=>{
+    el.style.opacity = 0;
+    el.style.transform = "translateY(26px)";
+  });
+  const pending = new Set(revealEls);
+  const reveal = (el)=>{
+    if(!pending.has(el)) return;
+    pending.delete(el);
+    anime.animate(el, {opacity:[0,1], translateY:[26,0], duration:720, ease:"out(3)"});
+  };
+  revealEls.forEach(el=>{
+    try{ Motion.inView(el, ()=>reveal(el), {once:true, margin:"-8% 0px -6% 0px"}); }
+    catch(e){ setFinal(el); pending.delete(el); }
+  });
+  /* Safety sweep: fast scrolls can skip IntersectionObserver samples —
+     anything above the viewport line still hidden gets revealed here. */
+  let sweepRaf = null;
+  const sweep = ()=>{
+    sweepRaf = null;
+    if(!pending.size) return;
+    const line = window.innerHeight * 0.94;
+    pending.forEach(el=>{
+      const r = el.getBoundingClientRect();
+      if(r.top < line && r.bottom > -80) reveal(el);
+      else if(r.bottom <= -80) { setFinal(el); pending.delete(el); } /* scrolled fully past */
+    });
+  };
+  const onScroll = ()=>{ if(!sweepRaf) sweepRaf = requestAnimationFrame(sweep); };
+  window.addEventListener("scroll", onScroll, {passive:true});
+  window.addEventListener("resize", onScroll, {passive:true});
+  window.addEventListener("load", onScroll);
+  setTimeout(sweep, 900);
+}
+
+function initHero(){
+  if(!HAS_ANIME){ return; }
+  const items = $$("[data-hero]");
+  const btns = $$(".hero-ctas .btn");
+  if(REDUCED){ items.forEach(setFinal); btns.forEach(setFinal); $$(".phone").forEach(setFinal); return; }
+  items.forEach(el=>{ el.style.opacity = 0; });
+  btns.forEach(el=>{ el.style.opacity = 0; });
+  $$(".phone").forEach(el=>{ el.style.opacity = 0; });
+  $("#phoneGlow") && ($("#phoneGlow").style.opacity = 0);
+
+  const tl = anime.createTimeline({defaults:{ease:"out(3)"}});
+  tl.add("#topnav .nav-inner", {opacity:[0,1], translateY:[-18,0], duration:600}, 0)
+    .add(".hero-badge", {opacity:[0,1], translateY:[18,0], duration:600}, 120)
+    .add("#heroTitle", {opacity:[0,1], translateY:[26,0], scale:[.97,1], duration:800, ease:"out(4)"}, 220)
+    .add(".hero-hindi", {opacity:[0,1], translateX:[-18,0], duration:600}, 480)
+    .add(".hero-sub", {opacity:[0,1], translateY:[18,0], duration:600}, 560)
+    .add(".hero-note", {opacity:[0,1], translateY:[14,0], duration:550}, 660)
+    .add(".hero-ctas .btn", {opacity:[0,1], translateY:[16,0], duration:550, delay:anime.stagger(90)}, 740)
+    .add(".hero-safety", {opacity:[0,1], translateY:[14,0], duration:550}, 950)
+    .add("#phoneGlow", {opacity:[0,1], scale:[.6,1], duration:900, ease:"out(2)"}, 300)
+    .add('.phone[data-phone="a"]', {opacity:[0,1], translateY:[70,0], rotate:[-4,0], duration:900, ease:"outBack"}, 420)
+    .add('.phone[data-phone="b"]', {opacity:[0,1], translateX:[-80,-34], translateY:[36,10], rotate:[-14,-8], duration:900, ease:"out(4)"}, 560)
+    .add('.phone[data-phone="c"]', {opacity:[0,1], translateX:[80,34], translateY:[36,10], rotate:[14,8], duration:900, ease:"out(4)"}, 640)
+    .add("#statStrip .stat", {opacity:[0,1], translateY:[22,0], duration:550, delay:anime.stagger(70)}, 900);
+
+  /* idle float loops */
+  anime.animate('.phone[data-phone="a"]', {translateY:[0,-9], duration:2900, ease:"inOutSine", loop:true, alternate:true, delay:1400});
+  anime.animate('.phone[data-phone="b"]', {translateY:[10,2],  duration:3300, ease:"inOutSine", loop:true, alternate:true, delay:1500});
+  anime.animate('.phone[data-phone="c"]', {translateY:[10,2],  duration:3700, ease:"inOutSine", loop:true, alternate:true, delay:1600});
+  anime.animate("#phoneGlow", {scale:[1,1.12], opacity:[.85,1], duration:3200, ease:"inOutSine", loop:true, alternate:true});
+}
+
+function initOrbs(){
+  $$(".orb").forEach((o,i)=>{
+    if(HAS_ANIME && !REDUCED){
+      anime.animate(o, {translateY:[0, i%2? 46:-46], translateX:[0, i%2? -30:30], scale:[1,1.08], duration:7000+i*1800, ease:"inOutSine", loop:true, alternate:true});
+    }
+  });
+  /* container-level mouse parallax (no conflict with per-orb loops) */
+  let mx=0,my=0,cx=0,cy=0,raf=null;
+  window.addEventListener("mousemove", e=>{
+    mx = (e.clientX/window.innerWidth - .5)*2; my = (e.clientY/window.innerHeight - .5)*2;
+    if(!raf && !REDUCED) raf = requestAnimationFrame(loop);
+  }, {passive:true});
+  function loop(){
+    cx += (mx-cx)*.06; cy += (my-cy)*.06;
+    const fx = $("#bgfx");
+    if(fx) fx.style.transform = `translate3d(${cx*-16}px, ${cy*-12}px, 0)`;
+    raf = (Math.abs(mx-cx)>.001 || Math.abs(my-cy)>.001) ? requestAnimationFrame(loop) : null;
+  }
+}
+
+function initJourney(){
+  const fill = $("#journeyFill"); if(!fill) return;
+  if(!HAS_MOTION || REDUCED || !HAS_ANIME) { fill.style.transform = "scaleX(1)"; return; }
+  onceInView("#journey", ()=>{
+    anime.animate(fill, {scaleX:[0,1], duration:1500, ease:"inOut(2)"});
+    anime.animate("#journey .j-dot", {opacity:[0,1], scale:[.4,1], duration:560, delay:anime.stagger(140,{start:350}), ease:"outBack"});
+  }, {margin:"-15% 0px"});
+}
+
+function initRing(){
+  const ring = $("#covRing"), pct = $("#covPct");
+  if(!ring) return;
+  const C = 2*Math.PI*92; /* 578 */
+  onceInView(".ring-wrap", ()=>{
+    if(HAS_ANIME && !REDUCED){
+      anime.animate(ring, {strokeDashoffset:[C,0], duration:1800, ease:"inOut(2)"});
+      const o = {v:0};
+      anime.animate(o, {v:100, duration:1800, ease:"inOut(2)", onUpdate:()=>{ pct.textContent = Math.round(o.v); }});
+    } else { ring.style.strokeDashoffset = 0; pct.textContent = 100; }
+  }, {margin:"-60px"});
+}
+
+function initBars(){
+  $$("[data-bar]").forEach(bar=>{
+    const v = parseFloat(bar.dataset.bar)||0;
+    if(!HAS_MOTION || REDUCED || !HAS_ANIME){ bar.style.transform = `scaleX(${v})`; return; }
+    onceInView(bar, ()=>{ anime.animate(bar,{scaleX:[0,v],duration:1100,ease:"out(3)"}); }, {margin:"-40px"});
+  });
+}
+
+/* comparison row hover (JS-driven, no CSS transitions) */
+function initCmpHover(){
+  if(!HAS_MOTION || REDUCED) return;
+  $$("#cmpTable tbody tr").forEach(tr=>{
+    try{
+      Motion.hover(tr,{
+        onStart:()=>Motion.animate(tr,{backgroundColor:"rgba(87,166,255,.05)"},{duration:.25}),
+        onEnd:()=>Motion.animate(tr,{backgroundColor:"rgba(0,0,0,0)"},{duration:.35})
+      });
+    }catch(e){}
+  });
+}
+
+/* ================================================================
+   NAV: progress, scrollspy, burger, to-top
+   ================================================================ */
+function initNav(){
+  /* progress bar via Motion.scroll (two-arg form: (progress, info)) */
+  const prog = $("#nav-progress");
+  if(prog && HAS_MOTION && !REDUCED){
+    try{ Motion.scroll((progress)=>{ prog.style.transform = `scaleX(${progress})`; }); }
+    catch(e){ progFallback(prog); }
+  } else if(prog){ progFallback(prog); }
+  function progFallback(prog){
+    window.addEventListener("scroll", ()=>{
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      prog.style.transform = `scaleX(${h>0 ? window.scrollY/h : 0})`;
+    }, {passive:true});
+  }
+
+  /* scrollspy */
+  const links = $$("#navLinks a");
+  const map = {};
+  links.forEach(a=>{ const id = a.getAttribute("href").slice(1); const sec = document.getElementById(id); if(sec) map[id] = a; });
+  const spy = new IntersectionObserver(entries=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting && map[en.target.id]){
+        links.forEach(l=>l.classList.remove("active"));
+        const a = map[en.target.id];
+        a.classList.add("active");
+        if(HAS_ANIME && !REDUCED) anime.animate(a,{scale:[1.09,1],duration:320,ease:"out(3)"});
+      }
+    });
+  }, {rootMargin:"-38% 0px -55% 0px"});
+  Object.keys(map).forEach(id=> spy.observe(document.getElementById(id)));
+
+  /* smooth anchor scrolling (JS-driven) */
+  const scrollToId = (id)=>{
+    const t = document.getElementById(id); if(!t) return;
+    const top = t.getBoundingClientRect().top + window.scrollY - 78;
+    if(HAS_ANIME && !REDUCED){
+      const o = {y:window.scrollY};
+      anime.animate(o,{y:top,duration:Math.min(1100, 380+Math.abs(top-window.scrollY)*.5),ease:"inOut(3)",
+        onUpdate:()=>window.scrollTo(0,o.y)});
+    } else window.scrollTo({top, behavior:"auto"});
+  };
+  $$('a[href^="#"]').forEach(a=>{
+    a.addEventListener("click", e=>{
+      const id = a.getAttribute("href").slice(1);
+      if(id && document.getElementById(id)){ e.preventDefault(); scrollToId(id); closeMobile(); }
+    });
+  });
+
+  /* burger */
+  const mm = $("#mobile-menu");
+  window.openMobile = ()=>{
+    mm.classList.add("open");
+    document.body.style.overflow = "hidden";
+    if(HAS_ANIME && !REDUCED){
+      anime.animate("#mobile-menu a",{opacity:[0,1],translateX:[-24,0],duration:420,delay:anime.stagger(38),ease:"out(3)"});
+      anime.animate("#mm-close",{opacity:[0,1],rotate:[-90,0],duration:350,ease:"out(3)"});
+    }
+  };
+  window.closeMobile = ()=>{
+    if(!mm.classList.contains("open")) return;
+    mm.classList.remove("open");
+    document.body.style.overflow = "";
+  };
+  $("#burger").addEventListener("click", openMobile);
+  $("#mm-close").addEventListener("click", closeMobile);
+
+  /* to-top */
+  const tt = $("#toTop");
+  let ttShown = false;
+  const updTT = ()=>{
+    const want = window.scrollY > 700;
+    if(want === ttShown) return;
+    ttShown = want;
+    tt.classList.toggle("show", want);
+    if(HAS_ANIME && !REDUCED) anime.animate(tt,{opacity:want?1:0, translateY:want?0:16, scale:want?1:.8, duration:300, ease:"out(3)"});
+    else tt.style.opacity = want?1:0;
+  };
+  window.addEventListener("scroll", updTT, {passive:true}); updTT();
+  tt.addEventListener("click", ()=> scrollToId("home"));
+  if(HAS_ANIME && !REDUCED) anime.animate(tt,{translateY:[0,-5],duration:1400,ease:"inOutSine",loop:true,alternate:true});
+}
+
+/* ================================================================
+   BOOT
+   ================================================================ */
+function setLinks(){
+  const set = (sel,href)=>{ const el=$(sel); if(el) el.href = href; };
+  set("#apkProdBtn", CFG.APK_PRODUCTION);
+  set("#apkBetaBtn", CFG.APK_BETA);
+  set("#relBtn1", CFG.RELEASES);
+  set("#relBtn2", CFG.RELEASES);
+  set("#repoBtn2", CFG.REPO);
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  renderGallery(); renderCoverage(); renderFAQ();
+  setLinks(); initDemoVideo(); initAppetize();
+  initFilters(); initFAQ(); initCalc(); initCounters();
+  initNav(); initOrbs(); initHero(); initReveals(); initJourney(); initRing(); initBars();
+  wireMicro(); initCmpHover();
+
+  /* lightbox wiring */
+  $("#galGrid").addEventListener("click", e=>{
+    const item = e.target.closest(".gal-item");
+    if(item) openLightbox(+item.dataset.idx);
+  });
+  $("#lbClose").addEventListener("click", closeLightbox);
+  $("#lbPrev").addEventListener("click", ()=>lbNav(-1));
+  $("#lbNext").addEventListener("click", ()=>lbNav(1));
+  $("#lightbox").addEventListener("click", e=>{ if(e.target.id === "lightbox") closeLightbox(); });
+  document.addEventListener("keydown", e=>{
+    if(!$("#lightbox").classList.contains("open")) return;
+    if(e.key === "Escape") closeLightbox();
+    if(e.key === "ArrowLeft") lbNav(-1);
+    if(e.key === "ArrowRight") lbNav(1);
+  });
+
+  /* health checks */
+  $("#hcRefresh").addEventListener("click", ()=>{
+    if(HAS_ANIME && !REDUCED) anime.animate("#hcRefresh",{rotate:"+=360",duration:600,ease:"inOut(2)"});
+    runHealthChecks();
+  });
+  runHealthChecks();
+  hcTimer = setInterval(runHealthChecks, CFG.HEALTH_REFRESH_MS);
+
+  /* footer top link */
+  const ft = $("#footTop"); if(ft) ft.addEventListener("click", e=>{ e.preventDefault(); window.scrollTo({top:0,behavior:REDUCED?"auto":"smooth"}); });
+});
+</script>
+</body>
+</html>

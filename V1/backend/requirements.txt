@@ -13,3 +13,4 @@ supabase
 google-genai
 mangum
 requests
+Pillow

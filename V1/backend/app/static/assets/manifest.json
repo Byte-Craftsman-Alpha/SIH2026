@@ -1,0 +1,230 @@
+[
+ {
+  "file": "01-splash.jpg",
+  "label": "Splash / Launch",
+  "group": "onboard",
+  "kb": 13
+ },
+ {
+  "file": "02-language.jpg",
+  "label": "Language Selection — हिंदी / English",
+  "group": "onboard",
+  "kb": 18
+ },
+ {
+  "file": "03-kiosk-welcome.jpg",
+  "label": "Kiosk Welcome — New / Returning Patient",
+  "group": "onboard",
+  "kb": 19
+ },
+ {
+  "file": "04-login.jpg",
+  "label": "Returning Patient — Phone Login (हिंदी)",
+  "group": "onboard",
+  "kb": 23
+ },
+ {
+  "file": "05-otp.jpg",
+  "label": "4-Digit OTP Verification (हिंदी)",
+  "group": "onboard",
+  "kb": 23
+ },
+ {
+  "file": "06-reg1.jpg",
+  "label": "Registration 1/5 — Identity & DOB",
+  "group": "onboard",
+  "kb": 33
+ },
+ {
+  "file": "07-reg2.jpg",
+  "label": "Registration 2/5 — Contact & 14-digit ABHA",
+  "group": "onboard",
+  "kb": 44
+ },
+ {
+  "file": "08-reg3.jpg",
+  "label": "Registration 3/5 — Emergency Contacts",
+  "group": "onboard",
+  "kb": 49
+ },
+ {
+  "file": "09-reg4.jpg",
+  "label": "Registration 4/5 — Granular DPDP Consent",
+  "group": "onboard",
+  "kb": 58
+ },
+ {
+  "file": "10-reg5.jpg",
+  "label": "Registration 5/5 — Review & Submit",
+  "group": "onboard",
+  "kb": 51
+ },
+ {
+  "file": "13-login-en.jpg",
+  "label": "Phone Login (English) — Send OTP",
+  "group": "onboard",
+  "kb": 23
+ },
+ {
+  "file": "11-home.jpg",
+  "label": "Home Dashboard — greeting, Quick Services, live token strip",
+  "group": "core",
+  "kb": 42
+ },
+ {
+  "file": "12-home-toast.jpg",
+  "label": "Home after OTP login — success toast + services",
+  "group": "core",
+  "kb": 42
+ },
+ {
+  "file": "14-chat-intro.jpg",
+  "label": "AI Intake Chat — grounding message + voice chips",
+  "group": "intake",
+  "kb": 33
+ },
+ {
+  "file": "15-complaints.jpg",
+  "label": "Chief Complaint Grid — General OPD (touch or voice)",
+  "group": "intake",
+  "kb": 53
+ },
+ {
+  "file": "17-fever-q.jpg",
+  "label": "Adaptive follow-up — fever onset question + icons",
+  "group": "intake",
+  "kb": 47
+ },
+ {
+  "file": "18-chat-options.jpg",
+  "label": "Structured touch options + tap-to-speak bar",
+  "group": "intake",
+  "kb": 46
+ },
+ {
+  "file": "16-chestpain.jpg",
+  "label": "Red-flag pathway — Chest Pain selected (deterministic alert fires next; full alert live in demo)",
+  "group": "safety",
+  "kb": 53
+ },
+ {
+  "file": "19-ayush-mode.jpg",
+  "label": "AYUSH OPD mode — Prakriti-grounded complaint grid",
+  "group": "ayush",
+  "kb": 51
+ },
+ {
+  "file": "20-ayush-q.jpg",
+  "label": "Dashavidha dialogue — constitution-aware question",
+  "group": "ayush",
+  "kb": 47
+ },
+ {
+  "file": "21-prakriti-results.jpg",
+  "label": "CCRAS Prakriti result — dosha donut (Vata 45 · Pitta 35 · Kapha 20) in Profile",
+  "group": "ayush",
+  "kb": 46
+ },
+ {
+  "file": "22-hospitals.jpg",
+  "label": "Hospital discovery — AIIA, Charak Patika, AIIMS + wait info",
+  "group": "opd",
+  "kb": 51
+ },
+ {
+  "file": "23-slots.jpg",
+  "label": "Doctor slots — Dr. Rajesh Sharma (MD Ayu), AIIA",
+  "group": "opd",
+  "kb": 51
+ },
+ {
+  "file": "24-booking1.jpg",
+  "label": "Booking wizard — urgency + clinical context sharing",
+  "group": "opd",
+  "kb": 42
+ },
+ {
+  "file": "25-booking2.jpg",
+  "label": "Booking wizard — DPDP consent scope selection",
+  "group": "opd",
+  "kb": 59
+ },
+ {
+  "file": "26-token.jpg",
+  "label": "OPD Token A-007 confirmed — digital slip",
+  "group": "opd",
+  "kb": 53
+ },
+ {
+  "file": "27-appts-new.jpg",
+  "label": "Appointments — fresh booking pinned on top (A-008)",
+  "group": "opd",
+  "kb": 45
+ },
+ {
+  "file": "28-appts.jpg",
+  "label": "Appointments — Upcoming / Past with consent badges",
+  "group": "opd",
+  "kb": 51
+ },
+ {
+  "file": "29-cancel.jpg",
+  "label": "Appointment cancellation dialog",
+  "group": "opd",
+  "kb": 53
+ },
+ {
+  "file": "30-records.jpg",
+  "label": "Medical Records — chronological verified timeline",
+  "group": "docs",
+  "kb": 44
+ },
+ {
+  "file": "31-upload.jpg",
+  "label": "Add Health Document — type select + photo capture",
+  "group": "docs",
+  "kb": 46
+ },
+ {
+  "file": "32-ocr.jpg",
+  "label": "4-stage OCR pipeline — Scanning → OCR → Clinical NLP → Drug check",
+  "group": "docs",
+  "kb": 30
+ },
+ {
+  "file": "33-extract.jpg",
+  "label": "Extracted medications + confidence — Metformin 94% · Amlodipine 88% · Triphala 76%",
+  "group": "docs",
+  "kb": 48
+ },
+ {
+  "file": "34-verified.jpg",
+  "label": "Records — patient-verified & committed to timeline",
+  "group": "docs",
+  "kb": 44
+ },
+ {
+  "file": "35-revoke-dialog.jpg",
+  "label": "DPDP Act 2023 consent revocation dialog",
+  "group": "safety",
+  "kb": 45
+ },
+ {
+  "file": "36-revoked.jpg",
+  "label": "Consent revoked — badge flip + downstream share freeze",
+  "group": "safety",
+  "kb": 34
+ },
+ {
+  "file": "37-env.jpg",
+  "label": "Profile — Beta/Normal server & DB environment selector",
+  "group": "system",
+  "kb": 55
+ },
+ {
+  "file": "38-ping.jpg",
+  "label": "Live server ping control (in-app health check)",
+  "group": "system",
+  "kb": 56
+ }
+]

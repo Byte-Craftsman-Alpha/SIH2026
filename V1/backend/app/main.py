@@ -71,18 +71,60 @@ if os.path.exists(static_dir):
 if os.path.exists(uploads_dir):
     app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
-@app.get("/")
-async def root():
-    return {
-        "message": "MediKiosk Clinical History Intake Platform is running",
-        "api_docs": "/docs",
-        "doctor_portal": "/portal",
-        "health_check": "/health",
-        "config": "/api/v1/meta/config",
-        "env_mode": settings.ENV_MODE,
-        "database_type": "supabase_postgres" if "postgres" in settings.DATABASE_URL else "sqlite",
-        "deployment_target": "vercel" if os.environ.get("VERCEL") else "local"
-    }
+from fastapi import Request
+from fastapi.responses import HTMLResponse, Response, FileResponse
+from fastapi.templating import Jinja2Templates
+
+templates = Jinja2Templates(directory="app/templates")
+
+@app.get("/assets/{path:path}")
+async def get_resized_asset(path: str, w: int = None):
+    # This route dynamically resizes images for the landing page
+    import io
+    import aiofiles
+    from PIL import Image
+    
+    file_path = os.path.join(static_dir, "assets", path)
+    if not os.path.exists(file_path):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Asset not found")
+        
+    if not w or not file_path.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+        # Just serve the file directly if no resize needed or not an image
+        return FileResponse(file_path)
+        
+    # Resize image
+    try:
+        img = Image.open(file_path)
+        # Cap the width to prevent abuse
+        w = min(int(w), 2000)
+        
+        # Calculate new height maintaining aspect ratio
+        ratio = w / float(img.width)
+        h = int(float(img.height) * float(ratio))
+        
+        if img.width > w:
+            img = img.resize((w, h), Image.Resampling.LANCZOS)
+            
+        img_byte_arr = io.BytesIO()
+        fmt = "JPEG" if file_path.lower().endswith(('.jpg', '.jpeg')) else "PNG"
+        if file_path.lower().endswith('.webp'): fmt = "WEBP"
+        
+        img.save(img_byte_arr, format=fmt, optimize=True, quality=85)
+        media_type = f"image/{fmt.lower()}"
+        
+        return Response(content=img_byte_arr.getvalue(), media_type=media_type)
+    except Exception as e:
+        from fastapi.responses import FileResponse
+        return FileResponse(file_path)
+
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse(
+        request=request, 
+        name="landing.html",
+        context={"env_mode": settings.ENV_MODE}
+    )
 
 @app.get("/health")
 async def health():
