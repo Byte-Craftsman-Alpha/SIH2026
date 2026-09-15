@@ -115,7 +115,6 @@ async def get_resized_asset(path: str, w: int = None):
         
         return Response(content=img_byte_arr.getvalue(), media_type=media_type)
     except Exception as e:
-        from fastapi.responses import FileResponse
         return FileResponse(file_path)
 
 @app.get("/", response_class=HTMLResponse)
