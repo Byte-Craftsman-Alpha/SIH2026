@@ -7,6 +7,9 @@
 *.env
 *.pem
 *.key
+*.pdf
+*.docx
+*.pptx
 *.cert
 *.p8
 *.p12
@@ -119,5 +122,8 @@ release_notes/
 dist/android/
 dist/ios/
 .claude/
-*.log
 New Page.zip
+
+# Video Rendering Intermediate Frames
+**/reports/frames/
+**/reports/raw_videos/temp_web/

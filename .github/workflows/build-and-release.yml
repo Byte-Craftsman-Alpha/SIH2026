@@ -90,6 +90,13 @@ jobs:
             echo "" >> $OUTPUT_FILE
           fi
 
+          # Append Motion Design Demo Report if present
+          if [ -f "V1/reports/MOTION_DESIGN_DEMO_REPORT.md" ]; then
+            echo "## 🎬 Motion Design Demonstration & Storyboard" >> $OUTPUT_FILE
+            cat "V1/reports/MOTION_DESIGN_DEMO_REPORT.md" >> $OUTPUT_FILE
+            echo "" >> $OUTPUT_FILE
+          fi
+
       - name: Upload Merged Release Notes
         uses: actions/upload-artifact@v4
         with:
@@ -142,7 +149,7 @@ jobs:
       - name: Build Android Production APK
         working-directory: V1/medikiosk_app
         env:
-          PROD_URL: ${{ secrets.PRODUCTION_BACKEND_URL || 'https://medikiosk-backend.vercel.app/api/v1' }}
+          PROD_URL: ${{ secrets.PRODUCTION_BACKEND_URL || 'https://backend-three-alpha-77.vercel.app/api/v1' }}
         run: |
           flutter build apk --release \
             --dart-define=APP_ENV=normal \
@@ -153,7 +160,7 @@ jobs:
       - name: Build Android Production App Bundle (AAB)
         working-directory: V1/medikiosk_app
         env:
-          PROD_URL: ${{ secrets.PRODUCTION_BACKEND_URL || 'https://medikiosk-backend.vercel.app/api/v1' }}
+          PROD_URL: ${{ secrets.PRODUCTION_BACKEND_URL || 'https://backend-three-alpha-77.vercel.app/api/v1' }}
         run: |
           flutter build appbundle --release \
             --dart-define=APP_ENV=normal \
@@ -200,7 +207,7 @@ jobs:
       - name: Build iOS Production Package
         working-directory: V1/medikiosk_app
         env:
-          PROD_URL: ${{ secrets.PRODUCTION_BACKEND_URL || 'https://medikiosk-backend.vercel.app/api/v1' }}
+          PROD_URL: ${{ secrets.PRODUCTION_BACKEND_URL || 'https://backend-three-alpha-77.vercel.app/api/v1' }}
         run: |
           flutter build ios --no-codesign --release \
             --dart-define=APP_ENV=normal \
