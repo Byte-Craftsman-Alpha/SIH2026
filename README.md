@@ -618,13 +618,13 @@ We express our sincere gratitude to:
     <td width="25%" align="left"><a href="https://github.com/anoopshukla01">anoopshukla01</a></th>
     <td width="25%" align="left">Anoop Shukla</th>
     <td width="25%" align="left">anoopofficialpvt@gmail.com</th>
-    <td width="25%" align="center">Testing & QA</th>
+    <td width="25%" align="center">Research</th>
   </tr>
   <tr>
     <td width="25%" align="left"><a href="https://github.com/arunkumar562816-source">arunkumar562816-source</a></th>
     <td width="25%" align="left">Arun Kumar</th>
     <td width="25%" align="center">arunkumar562816@gmail.com</th>
-    <td width="25%" align="center">Leader, UI/UX, Product Manager</th>
+    <td width="25%" align="center">Testing & QA</th>
   </tr>
 </table>
 
